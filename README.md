@@ -1,6 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This project is the front-end for **Wave E-Commerce** built with [Next.js](https://nextjs.org) and Tailwind CSS. It consumes a .NET back-end API.
 
 ## Getting Started
+
+### Project structure
+
+- `src/app` - Next.js app router pages. Main routes include `products`, `cart` and `checkout`.
+- `src/components` - shared React components such as the navigation bar and footer.
+- `src/lib` - helper utilities. `api.ts` wraps calls to the .NET backend configured via `NEXT_PUBLIC_API_BASE`.
 
 First, run the development server:
 
@@ -12,6 +18,12 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+Create a `.env.local` file to configure the API base URL:
+
+```env
+NEXT_PUBLIC_API_BASE=http://localhost:5000
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
