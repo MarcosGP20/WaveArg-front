@@ -18,7 +18,7 @@ export default function NavBar() {
     <nav className="flex justify-between items-center p-4 border-b shadow-sm bg-white">
       {/* Logo / Título */}
       <Link href="/" className="text-2xl font-bold">
-        iStore
+        WaveArg 🌊
       </Link>
 
       {/* Links */}
@@ -33,7 +33,6 @@ export default function NavBar() {
           <FaShoppingCart className="inline mr-1" /> Carrito
         </Link>
 
-        {/* Mostrar solo si está logueado */}
         {isLoggedIn && (
           <Link href="/" className={linkStyle("/account")}>
             <FaUserCircle className="inline mr-1" /> Mi cuenta
