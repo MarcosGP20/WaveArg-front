@@ -4,22 +4,27 @@ import { products } from "@/lib/mock/products";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
+import { useCart } from "@/context/CartContext";
+import Toast from "@/components/ui/Toast";
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
-
-export default function ProductDetail({ params }: Props) {
-  const product = products.find((p) => p.slug === params.slug);
+export default function ProductDetail({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = use(params);
+  const product = products.find((p) => p.slug === slug);
+  const { addToCart } = useCart();
 
   if (!product) return notFound();
 
   const router = useRouter();
   const [selectedColor, setSelectedColor] = useState(product.color);
   const [selectedCapacity, setSelectedCapacity] = useState(product.memoria);
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   // Specs ficticias
   const specs = product.specs;
@@ -127,9 +132,43 @@ export default function ProductDetail({ params }: Props) {
           </p>
 
           {/* Botón agregar */}
-          <button className="mt-6 bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
-            Agregar al carrito
-          </button>
+          <div className="flex items-center gap-4 mt-6">
+            <input
+              type="number"
+              min={1}
+              max={product.stock}
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+              className="w-16 border rounded px-2 py-1"
+              aria-label="Cantidad"
+            />
+            <button
+              className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
+              disabled={!product.disponible || quantity < 1}
+              onClick={() => {
+                addToCart({
+                  id: product.slug + selectedColor + selectedCapacity,
+                  name: `${product.nombre} (${selectedColor}, ${selectedCapacity})`,
+                  price: product.precio,
+                  quantity,
+                  image: product.image,
+                });
+                setShowToast(true);
+                setAdded(true);
+                setTimeout(() => {
+                  setAdded(false);
+                  setShowToast(false);
+                }, 1200);
+              }}
+            >
+              {added ? "¡Agregado!" : "Agregar al carrito"}
+            </button>
+            <Toast
+              message="¡Agregado al carrito!"
+              show={showToast}
+              onClose={() => setShowToast(false)}
+            />
+          </div>
 
           {/* Detalles de entrega */}
           <p className="mt-4 text-sm text-gray-500">
