@@ -170,6 +170,15 @@ export function LoginForm() {
       >
         <ShieldCheck size={16} /> Iniciar sesión con Google
       </Button>
+      <p className="text-sm text-center mt-4 text-muted-foreground">
+        ¿No tenés una cuenta?{" "}
+        <a
+          href="/register"
+          className="text-blue-600 font-semibold hover:underline transition"
+        >
+          Registrate
+        </a>
+      </p>
     </div>
   );
 }
