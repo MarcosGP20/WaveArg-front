@@ -1,6 +1,8 @@
 "use client";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
+import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -9,9 +11,18 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Carrito</h1>
-        <p>Tu carrito está vacío.</p>
+      <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+        <ShoppingCart size={64} className="text-gray-400 mb-4" />
+        <h1 className="text-2xl font-bold mb-2">Tu carrito está vacío</h1>
+        <p className="text-gray-500 mb-6">
+          Aún no agregaste productos. ¡Descubrí lo mejor en iPhones ahora!
+        </p>
+        <Link
+          href="/products"
+          className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
+        >
+          Ver productos
+        </Link>
       </div>
     );
   }
