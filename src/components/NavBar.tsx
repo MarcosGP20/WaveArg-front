@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -13,6 +14,8 @@ export default function NavBar() {
     `px-3 py-1 rounded-md hover:bg-gray-200 transition ${
       pathname === href ? "font-bold underline" : ""
     }`;
+  const { cart } = useCart();
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <nav className="flex justify-between items-center p-4 border-b shadow-sm bg-white">
@@ -29,8 +32,14 @@ export default function NavBar() {
         <Link href="/products" className={linkStyle("/products")}>
           Productos
         </Link>
-        <Link href="/cart" className={linkStyle("/cart")}>
-          <FaShoppingCart className="inline mr-1" /> Carrito
+        <Link href="/cart" className="relative">
+          <FaShoppingCart size={28} className="text-[#333]" />
+
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-[#05467D] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {cartCount}
+            </span>
+          )}
         </Link>
 
         {isLoggedIn && (
