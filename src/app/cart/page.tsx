@@ -93,7 +93,10 @@ export default function CartPage() {
         </button>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          // Aquí podrías redirigir a checkout
+          onClick={() => {
+            window.location.href = "/checkout";
+          } 
+          }
         >
           Ir a pagar
         </button>
