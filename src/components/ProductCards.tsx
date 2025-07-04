@@ -1,27 +1,22 @@
 "use client";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useCompare } from "@/context/CompareContext";
 import { useState } from "react";
 import Toast from "@/components/ui/Toast";
+import { products } from "@/lib/mock/products";
+
+type Product = (typeof products)[0];
 
 type ProductCardProps = {
-  nombre: string;
-  color: string;
-  memoria: string;
-  precio: number;
-  image: string;
-  slug: string;
+  product: Product;
 };
 
-export default function ProductCard({
-  nombre,
-  color,
-  memoria,
-  precio,
-  image,
-  slug,
-}: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
+  const { nombre, color, memoria, precio, image, slug } = product;
+
   const { addToCart } = useCart();
+  const { modoComparacion, toggleCompare, compareList } = useCompare();
   const [showToast, setShowToast] = useState(false);
 
   const handleAdd = () => {
@@ -34,6 +29,8 @@ export default function ProductCard({
     });
     setShowToast(true);
   };
+
+  const seleccionado = compareList.some((p) => p.id === product.id);
 
   return (
     <div className="rounded-2xl shadow-sm p-5 hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900">
@@ -60,6 +57,19 @@ export default function ProductCard({
       >
         Agregar al carrito
       </button>
+
+      {modoComparacion && (
+        <button
+          onClick={() => toggleCompare(product)}
+          className={`mt-2 py-2 rounded-xl font-medium text-sm ${
+            seleccionado
+              ? "bg-[#0F3C64] text-white"
+              : "bg-gray-200 text-gray-800"
+          }`}
+        >
+          {seleccionado ? "Quitar de comparación" : "Seleccionar para comparar"}
+        </button>
+      )}
 
       <Toast
         message="¡Agregado al carrito!"
