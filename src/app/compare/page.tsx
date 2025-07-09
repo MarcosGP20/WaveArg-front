@@ -64,9 +64,9 @@ export default function ComparePage() {
     },
     ...specsLabels.map((label) => ({
       label,
-      render: (p) => (
+      render: (p: Producto) => (
         <span className="text-base">
-          {p.specs.find((s) => s.label === label)?.value || "-"}
+          {p.specs.find((s: Spec) => s.label === label)?.value || "-"}
         </span>
       ),
     })),

@@ -20,11 +20,14 @@ export const CompareProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleCompare = (product: Product) => {
     const exists = compareList.find((p) => p.id === product.id);
+    let updatedList;
     if (exists) {
-      setCompareList(compareList.filter((p) => p.id !== product.id));
+      updatedList = compareList.filter((p) => p.id !== product.id);
     } else {
-      setCompareList([...compareList, product]);
+      updatedList = [...compareList, product];
     }
+    setCompareList(updatedList);
+    setModoComparacion(updatedList.length > 0);
   };
 
   const clearCompare = () => setCompareList([]);
