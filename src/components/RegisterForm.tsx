@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { registerUser } from "@/lib/api";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -40,21 +40,20 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterData) => {
     setServerError("");
     setStatusMessage("Registrando...");
-
     try {
-      const response = await axios.post("/api/register", {
+      // Llama a tu backend real
+      await registerUser({
         name: data.name,
         email: data.email,
-        password: data.password,
+        Contraseña: data.password,
       });
-
       setStatusMessage("Registro exitoso. Redirigiendo...");
       setTimeout(() => {
         window.location.href = "/login";
       }, 1500);
     } catch (error: any) {
       setStatusMessage("");
-      setServerError(error?.response?.data?.message || "Error al registrarse");
+      setServerError(error?.message || "Error al registrarse");
     }
   };
 

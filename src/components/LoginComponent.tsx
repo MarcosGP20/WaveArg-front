@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Loader2, LogIn, Mail, Lock, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { loginUser } from "@/lib/api";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
@@ -35,21 +36,30 @@ export function LoginForm() {
   const onSubmit = async (data: LoginData) => {
     setServerError("");
     setStatusMessage("Iniciando sesión...");
-
     try {
-      // Login simulado según el mail
-      const isAdmin = data.email === "admin@wavearg.com";
-      const role = isAdmin ? "admin" : "user";
-
-      login(role); // ← actualiza el contexto y el localStorage
-
-      setStatusMessage("Sesión iniciada con éxito. Redirigiendo...");
-      setTimeout(() => {
-        router.push(role === "admin" ? "/admin" : "/account");
-      }, 1000);
-    } catch (error) {
+      // Llama a tu backend real
+      const response = (await loginUser({
+        email: data.email,
+        contraseña: data.password,
+      })) as { token?: string; role?: string };
+      if (response && response.token) {
+        localStorage.setItem("token", response.token);
+        // Solo permitimos "user" o "admin" como rol
+        const role = response.role === "admin" ? "admin" : "user";
+        login(role);
+        setStatusMessage("Sesión iniciada con éxito. Redirigiendo...");
+        setTimeout(() => {
+          router.push(role === "admin" ? "/admin" : "/account");
+        }, 1000);
+      } else {
+        setStatusMessage("");
+        setServerError("Credenciales incorrectas o respuesta inválida.");
+      }
+    } catch (error: any) {
       setStatusMessage("");
-      setServerError("Error inesperado. Reintentá más tarde.");
+      setServerError(
+        error?.message || "Error inesperado. Reintentá más tarde."
+      );
     }
   };
 
@@ -138,7 +148,10 @@ export function LoginForm() {
 
       <p className="text-sm text-center mt-4 text-muted-foreground">
         ¿No tenés una cuenta?{" "}
-        <a href="/register" className="text-blue-600 font-semibold hover:underline">
+        <a
+          href="/register"
+          className="text-blue-600 font-semibold hover:underline"
+        >
           Registrate
         </a>
       </p>
