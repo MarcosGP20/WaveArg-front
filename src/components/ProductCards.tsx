@@ -10,9 +10,10 @@ type Product = (typeof products)[0];
 
 type ProductCardProps = {
   product: Product;
+  className?: string; // Nueva propiedad opcional para estilos personalizados
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, className }: ProductCardProps) {
   const { nombre, color, memoria, precio, image, slug } = product;
 
   const { addToCart } = useCart();
@@ -33,7 +34,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   const seleccionado = compareList.some((p) => p.id === product.id);
 
   return (
-    <div className="rounded-2xl shadow-sm p-5 hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900">
+    <div
+      className={`rounded-2xl shadow-sm p-5 hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900 ${className}`}
+    >
       <Link href={`/products/${slug}`} className="block flex-1">
         <div className="relative w-full h-56 mb-4">
           <img
