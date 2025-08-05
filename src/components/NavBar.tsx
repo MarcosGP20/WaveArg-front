@@ -22,15 +22,34 @@ export default function NavBar() {
 
   const links = (
     <>
-      <Link href="/" className={linkStyle("/")} onClick={() => setMenuOpen(false)}>
+      <Link
+        href="/"
+        className={linkStyle("/")}
+        onClick={() => setMenuOpen(false)}
+      >
         Home
       </Link>
 
-      <Link href="/products" className={linkStyle("/products")} onClick={() => setMenuOpen(false)}>
+      <Link
+        href="/products"
+        className={linkStyle("/products")}
+        onClick={() => setMenuOpen(false)}
+      >
         Productos
       </Link>
+      <Link
+        href="/mayorista "
+        className={linkStyle("/mayorista")}
+        onClick={() => setMenuOpen(false)}
+      >
+        Mayorista
+      </Link>
 
-      <Link href="/cart" className="relative px-3 py-2" onClick={() => setMenuOpen(false)}>
+      <Link
+        href="/cart"
+        className="relative px-3 py-2"
+        onClick={() => setMenuOpen(false)}
+      >
         <div className="relative inline-block">
           <FaShoppingCart size={24} className="text-[#333]" />
           {cartCount > 0 && (
@@ -42,13 +61,21 @@ export default function NavBar() {
       </Link>
 
       {isLoggedIn && (
-        <Link href="/account" className={linkStyle("/account")} onClick={() => setMenuOpen(false)}>
+        <Link
+          href="/account"
+          className={linkStyle("/account")}
+          onClick={() => setMenuOpen(false)}
+        >
           <FaUserCircle className="inline mr-1" /> Mi cuenta
         </Link>
       )}
 
       {role === "admin" && (
-        <Link href="/admin" className={linkStyle("/admin")} onClick={() => setMenuOpen(false)}>
+        <Link
+          href="/admin"
+          className={linkStyle("/admin")}
+          onClick={() => setMenuOpen(false)}
+        >
           Panel Admin
         </Link>
       )}
@@ -64,7 +91,11 @@ export default function NavBar() {
           Cerrar sesión
         </button>
       ) : (
-        <Link href="/login" className={linkStyle("/login")} onClick={() => setMenuOpen(false)}>
+        <Link
+          href="/login"
+          className={linkStyle("/login")}
+          onClick={() => setMenuOpen(false)}
+        >
           Iniciar sesión
         </Link>
       )}
