@@ -10,8 +10,10 @@ type Product = (typeof products)[0];
 
 type ProductCardProps = {
   product: Product;
-  className?: string; // Nueva propiedad opcional para estilos personalizados
+  className?: string;
 };
+
+const MAX_COMPARE = 3;
 
 export default function ProductCard({ product, className }: ProductCardProps) {
   const { nombre, color, memoria, precio, image, slug } = product;
@@ -32,6 +34,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
   };
 
   const seleccionado = compareList.some((p) => p.id === product.id);
+  const atLimit = !seleccionado && compareList.length >= MAX_COMPARE;
 
   return (
     <div
@@ -54,24 +57,45 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         </p>
       </Link>
 
-      <button
-        onClick={handleAdd}
-        className="mt-4 bg-[#05467D] text-white py-2 rounded-xl font-medium hover:bg-[#0F3C64] transition-colors"
+      <Link
+        href={`/products/${slug}`}
+        className="mt-4 bg-[#05467D] text-white py-2 rounded-xl font-medium hover:bg-[#0F3C64] transition-colors text-center block"
       >
-        Agregar al carrito
+        Más información
+      </Link>
+
+      {/* Botón de comparación (siempre visible) */}
+      <button
+        onClick={() => toggleCompare(product)}
+        disabled={atLimit}
+        aria-disabled={atLimit}
+        title={
+          atLimit ? `Máximo ${MAX_COMPARE} modelos para comparar` : undefined
+        }
+        className={`mt-2 py-2 rounded-xl font-medium text-sm border transition-colors
+          ${
+            seleccionado
+              ? "bg-[#0F3C64] text-white border-transparent"
+              : "bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
+          }
+          ${atLimit ? "opacity-50 cursor-not-allowed hover:bg-gray-100" : ""}
+        `}
+      >
+        {seleccionado ? "Quitar de comparación" : "Seleccionar para comparar"}
       </button>
 
-      {modoComparacion && (
-        <button
-          onClick={() => toggleCompare(product)}
-          className={`mt-2 py-2 rounded-xl font-medium text-sm ${
-            seleccionado
-              ? "bg-[#0F3C64] text-white"
-              : "bg-gray-200 text-gray-800"
-          }`}
-        >
-          {seleccionado ? "Quitar de comparación" : "Seleccionar para comparar"}
-        </button>
+      {/* Mensajito cuando el modo no está activo */}
+      {!modoComparacion && (
+        <span className="mt-1 text-xs text-neutral-500">
+          Podés preseleccionar modelos y ver la comparación cuando quieras.
+        </span>
+      )}
+
+      {/* Aviso cuando se alcanzó el máximo (visible solo si no está seleccionada esta card) */}
+      {atLimit && (
+        <span className="mt-1 text-xs text-neutral-500">
+          Máximo {MAX_COMPARE} modelos para comparar
+        </span>
       )}
 
       <Toast

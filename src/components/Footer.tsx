@@ -1,4 +1,6 @@
 import { Instagram, Mail, PhoneCall } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -6,8 +8,16 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Marca */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">WaveArg</h2>
-          <p className="text-sm text-gray-200">
+          <Link href="/">
+            <Image
+              src="/waves6.svg"
+              alt="Logo"
+              width={120}
+              height={120}
+              priority
+            />
+          </Link>
+          <p className="text-sm text-gray-200 mt-2">
             Tu tienda de confianza para conseguir los últimos modelos de iPhone
             con garantía y envío rápido.
           </p>

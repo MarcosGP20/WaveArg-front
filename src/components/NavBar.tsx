@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { FaShoppingCart, FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
@@ -103,10 +104,26 @@ export default function NavBar() {
   );
 
   return (
-    <nav className="p-4 border-b shadow-sm bg-white relative">
+    <nav className="p-4 border-b shadow-sm bg-white relative ">
       <div className="flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold">
-          WaveArg 🌊
+        <Link href="/">
+          <Image
+            src="/waves5.svg"
+            alt="Logo"
+            width={120}
+            height={120}
+            className="hidden md:block"
+            priority
+          />
+        </Link>
+        <Link href="/">
+          <Image
+            src="iso3.svg"
+            alt="Logo"
+            width={40}
+            height={40}
+            className="md:hidden "
+          />
         </Link>
 
         <div className="hidden md:flex items-center gap-4">{links}</div>
