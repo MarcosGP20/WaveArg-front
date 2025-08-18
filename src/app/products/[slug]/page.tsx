@@ -169,20 +169,6 @@ export default function ProductDetail({
               onClose={() => setShowToast(false)}
             />
           </div>
-
-          {/* Detalles de entrega */}
-          <p className="mt-4 text-sm text-gray-500">
-            Entrega estimada en 24 a 72hs hábiles.
-          </p>
-
-          {/* Calificación y opiniones */}
-          <div className="mt-2 flex items-center gap-2 text-yellow-600 text-base">
-            <span>⭐</span>
-            <span>{product.calificacion} / 5</span>
-            <span className="text-gray-500">
-              ({product.opiniones} opiniones)
-            </span>
-          </div>
         </div>
       </div>
 

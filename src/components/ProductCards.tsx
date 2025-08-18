@@ -48,7 +48,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             className="object-contain w-full h-full rounded-xl"
           />
         </div>
-        <h2 className="text-xl font-bold text-[#333]">{nombre}</h2>
+        <h2 className="text-xl font-bold text-[#333] ">{nombre}</h2>
         <p className="text-sm text-[#999999] mt-1">
           {color} · {memoria}
         </p>
