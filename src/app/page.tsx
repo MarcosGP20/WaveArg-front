@@ -153,7 +153,7 @@ export default function HomePage() {
               <img
                 src="/tripode.jpg"
                 alt="Creador con trípode"
-                className="w-full h-full object-cover rounded-full shadow-2xl"
+                className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
               />
             </motion.div>
 
@@ -168,7 +168,7 @@ export default function HomePage() {
               <img
                 src="/mic.jpg"
                 alt="Micrófono profesional"
-                className="w-full h-full object-cover rounded-full shadow-2xl"
+                className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
               />
             </motion.div>
 

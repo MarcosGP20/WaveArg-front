@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible } from "next/font/google";
+import { Work_Sans } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
@@ -11,6 +12,12 @@ const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
   variable: "--font-atkinson",
   weight: ["400", "700"],
+});
+
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  variable: "--font-work-sans",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -25,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={atkinson.variable}>
+      <body className={`${atkinson.variable} ${workSans.variable}`}>
         <AuthProvider>
           <CartProvider>
             <CompareProvider>

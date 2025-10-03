@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  --font-work-sans: "Work Sans", sans-serif;
+}
+
+body {
+  font-family: var(--font-work-sans);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -118,5 +126,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-work-sans);
   }
 }
