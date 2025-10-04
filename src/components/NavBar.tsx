@@ -17,8 +17,8 @@ export default function NavBar() {
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const linkStyle = (href: string) =>
-    `px-3 py-2 rounded-md hover:bg-gray-200 transition ${
-      pathname === href ? "font-bold underline" : ""
+    `px-3 py-2 rounded-md hover:bg-gray-200 transition text-[#05467D] ${
+      pathname === href ? "font-bold " : ""
     }`;
 
   const links = (
@@ -28,7 +28,7 @@ export default function NavBar() {
         className={linkStyle("/")}
         onClick={() => setMenuOpen(false)}
       >
-        Home
+        Inicio
       </Link>
 
       <Link
@@ -44,6 +44,20 @@ export default function NavBar() {
         onClick={() => setMenuOpen(false)}
       >
         Mayorista
+      </Link>
+      <Link
+        href="/mayorista "
+        className={linkStyle("/mayorista")}
+        onClick={() => setMenuOpen(false)}
+      >
+        Guia creadores
+      </Link>
+      <Link
+        href="/mayorista "
+        className={linkStyle("/mayorista")}
+        onClick={() => setMenuOpen(false)}
+      >
+        Contacto
       </Link>
 
       <Link
@@ -104,7 +118,7 @@ export default function NavBar() {
   );
 
   return (
-    <nav className="p-4 border-b shadow-sm bg-white relative ">
+    <nav className="p-4 border-b shadow-sm bg-white relative  ">
       <div className="flex justify-between items-center">
         <Link href="/">
           <Image
