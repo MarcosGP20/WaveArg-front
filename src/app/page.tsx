@@ -29,10 +29,7 @@ const CommunitySection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-full transition-colors">
-                ¡Quiero unirme!
-              </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full transition-colors">
+              <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full transition-colors">
                 ¡Quiero unirme!
               </button>
             </div>
@@ -84,8 +81,8 @@ export default function HomePage() {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   // Animaciones para las imágenes circulares
-  const leftImageX = useTransform(creatorsScrollY, [0, 1], [-100, 0]);
-  const rightImageX = useTransform(creatorsScrollY, [0, 1], [100, 0]);
+  const leftImageX = useTransform(creatorsScrollY, [0, 1], [-80, 0]); // Se reduce el desplazamiento inicial
+  const rightImageX = useTransform(creatorsScrollY, [0, 1], [80, -20]); // La imagen de la derecha se mueve más hacia la izquierda
   const textY = useTransform(creatorsScrollY, [0, 1], [50, 0]);
 
   return (
@@ -99,7 +96,7 @@ export default function HomePage() {
           playsInline
           className="w-full h-full object-cover"
         >
-          <source src="/animacion.mp4" type="video/mp4" />
+          <source src="/wave-video-portada.mp4" type="video/mp4" />
         </video>
       </section>
 
@@ -121,10 +118,7 @@ export default function HomePage() {
                   Conocé nuestros productos
                 </h2>
                 <div className="flex gap-4">
-                  <button className="bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full border border-white/30">
-                    Ver más
-                  </button>
-                  <button className="bg-blue-600 text-white px-8 py-3 rounded-full">
+                  <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full">
                     Ver más
                   </button>
                 </div>
