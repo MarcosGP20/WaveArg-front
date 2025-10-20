@@ -38,13 +38,13 @@ export default function NavBar() {
       >
         Productos
       </Link>
-      <Link
+      {/* <Link
         href="/mayorista "
         className={linkStyle("/mayorista")}
         onClick={() => setMenuOpen(false)}
       >
         Mayorista
-      </Link>
+      </Link> */}
       <Link
         href="/mayorista "
         className={linkStyle("/mayorista")}

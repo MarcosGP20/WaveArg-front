@@ -10,6 +10,7 @@ const ASSET_PATHS = {
   VIDEO: "/wave-video-portada.mp4",
   IPHONE_IMG: "/iphone-div-landing.jpg",
   TRIPODE_IMG: "/tripode.jpg",
+  CREATORS: "wave-imagen-web.png",
   MIC_IMG: "/mic.jpg",
 };
 
@@ -79,46 +80,26 @@ export default function HomePage() {
       </section>
 
       {/* Sección - Guía para creadores */}
-      <section
-        ref={creatorsSectionRef}
-        className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20"
-      >
+      <section className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          {/* Lado izquierdo - Imágenes circulares */}
-          <div className="relative">
-            <motion.div
-              style={{ x: leftImageX }}
-              className="absolute will-change-transform top-0 left-0 w-64 h-64 md:w-80 md:h-80"
-            >
-              <img
-                src={ASSET_PATHS.TRIPODE_IMG}
-                alt="Creador con trípode"
-                className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
-                loading="lazy"
-              />
-            </motion.div>
-            <motion.div
-              style={{ x: rightImageX }}
-              className="absolute will-change-transform top-32 right-0 md:top-40 w-56 h-56 md:w-72 md:h-72 z-10"
-            >
-              <img
-                src={ASSET_PATHS.MIC_IMG}
-                alt="Micrófono profesional"
-                className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
-                loading="lazy"
-              />
-            </motion.div>
-            <div className="w-full h-96 md:h-[500px]"></div>
+          {/* Lado izquierdo - Imagen Única */}
+          <div className="flex items-center justify-center">
+            {/* Reemplazamos los divs 'relative' y 'absolute' por este Image.
+              El 'h-96 md:h-[500px]' que tenía el div espaciador ahora
+              lo podemos controlar con el 'height' de la imagen misma.
+            */}
+            <img
+              src={ASSET_PATHS.CREATORS} // ¡Asegurate que esta sea la ruta correcta!
+              alt="Guía para creadores"
+              width={500} // Ajustá esto al ancho real de tu nueva imagen
+              height={500} // Ajustá esto al alto (el spacer anterior era 'md:h-[500px]')
+              className="w-full h-auto max-w-md lg:max-w-full object-cover "
+              loading="lazy"
+            />
           </div>
 
-          {/* Lado derecho - Contenido de texto */}
-          <motion.div
-            style={{ y: textY }}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="space-y-8 will-change-transform"
-          >
+          {/* Lado derecho - Contenido de texto (sin cambios) */}
+          <div className="space-y-8">
             <div>
               <h2 className="text-4xl md:text-4xl font-bold text-[#05467D] mb-6">
                 Guía para creadores
@@ -133,7 +114,7 @@ export default function HomePage() {
                 Ver más
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
