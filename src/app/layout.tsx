@@ -21,7 +21,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Wave E-Commerce",
+  title: "Wave ARG",
   description: "E-commerce demo built with Next.js and .NET backend",
 };
 
@@ -33,7 +33,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Wave ARG</title>
         <link rel="icon" href="/iso3.svg" />
       </head>
       <body className={`${atkinson.variable} ${workSans.variable}`}>
