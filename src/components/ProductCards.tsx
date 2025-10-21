@@ -48,11 +48,11 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             className="object-contain w-full h-full rounded-xl"
           />
         </div>
-        <h2 className="text-xl font-bold text-[#333] ">{nombre}</h2>
+        <h2 className="text-xl font-semibold text-[#05467D] ">{nombre}</h2>
         <p className="text-sm text-[#999999] mt-1">
           {color} · {memoria}
         </p>
-        <p className="text-2xl font-extrabold text-black dark:text-white mt-2">
+        <p className="text-2xl font-semibold text-[#05467D] dark:text-white mt-2">
           ${precio.toLocaleString()}
         </p>
       </Link>
@@ -85,11 +85,11 @@ export default function ProductCard({ product, className }: ProductCardProps) {
       </button>
 
       {/* Mensajito cuando el modo no está activo */}
-      {!modoComparacion && (
+      {/* {!modoComparacion && (
         <span className="mt-1 text-xs text-neutral-500">
           Podés preseleccionar modelos y ver la comparación cuando quieras.
         </span>
-      )}
+      )} */}
 
       {/* Aviso cuando se alcanzó el máximo (visible solo si no está seleccionada esta card) */}
       {atLimit && (
