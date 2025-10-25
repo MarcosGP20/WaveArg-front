@@ -50,7 +50,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
 
       <Link
         href={`/products/${slug}`}
-        className="mt-4 bg-[#05467D] text-white py-2 rounded-xl font-medium hover:bg-[#0F3C64] transition-colors text-center self-center px-16"
+        className="mt-4 bg-[#05467D] text-white py-2 rounded-full font-medium hover:bg-[#0F3C64] transition-colors text-center self-center px-16"
       >
         Más información
       </Link>
@@ -63,7 +63,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         title={
           atLimit ? `Máximo ${MAX_COMPARE} modelos para comparar` : undefined
         }
-        className={`mt-2 py-2 rounded-xl font-medium text-sm border transition-colors self-center px-9
+        className={`mt-2 py-2 rounded-full font-medium text-sm border transition-colors self-center px-9
           ${
             seleccionado
               ? "bg-[#0F3C64] text-white border-transparent"
