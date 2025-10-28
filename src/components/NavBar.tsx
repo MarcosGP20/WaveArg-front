@@ -66,9 +66,9 @@ export default function NavBar() {
         onClick={() => setMenuOpen(false)}
       >
         <div className="relative inline-block">
-          <FaShoppingCart size={24} className="text-[#333]" />
+          <FaShoppingCart size={24} className="text-[#05467D]" />
           {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#05467D] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
             </span>
           )}
