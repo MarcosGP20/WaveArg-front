@@ -46,14 +46,14 @@ export default function NavBar() {
         Mayorista
       </Link> */}
       <Link
-        href="/mayorista "
+        href="/creadores "
         className={linkStyle("/mayorista")}
         onClick={() => setMenuOpen(false)}
       >
         Guia creadores
       </Link>
       <Link
-        href="/mayorista "
+        href="/contacto "
         className={linkStyle("/mayorista")}
         onClick={() => setMenuOpen(false)}
       >

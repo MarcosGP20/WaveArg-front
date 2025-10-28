@@ -19,7 +19,7 @@ export default function CartPage() {
         </p>
         <Link
           href="/products"
-          className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
+          className="bg-[#05467D] text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
         >
           Ver productos
         </Link>
@@ -95,8 +95,7 @@ export default function CartPage() {
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           onClick={() => {
             window.location.href = "/checkout";
-          } 
-          }
+          }}
         >
           Ir a pagar
         </button>
