@@ -176,39 +176,6 @@ export default function ContactPage() {
                 </div>
               </div>
             </div>
-
-            {/* FAQ rápida */}
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-              <h3 className="font-semibold text-[#05467D] mb-4">
-                Preguntas frecuentes
-              </h3>
-              <div className="space-y-3">
-                <Link
-                  href="/faq#envios"
-                  className="block text-gray-700 hover:text-[#05467D] transition"
-                >
-                  ¿Cuáles son los tiempos de entrega para pedidos mayoristas?
-                </Link>
-                <Link
-                  href="/faq#pagos"
-                  className="block text-gray-700 hover:text-[#05467D] transition"
-                >
-                  ¿Qué métodos de pago aceptan?
-                </Link>
-                <Link
-                  href="/faq#devoluciones"
-                  className="block text-gray-700 hover:text-[#05467D] transition"
-                >
-                  ¿Cuál es la política de devoluciones?
-                </Link>
-                <Link
-                  href="/faq#garantia"
-                  className="block text-gray-700 hover:text-[#05467D] transition"
-                >
-                  ¿Cómo funciona la garantía de los productos?
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </div>
