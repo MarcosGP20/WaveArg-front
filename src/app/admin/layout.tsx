@@ -1,4 +1,5 @@
 import React from "react";
+import AdminSideBar from "@/components/admin/AdminSideBar";
 
 export default function AdminLayout({
   children,
@@ -7,9 +8,7 @@ export default function AdminLayout({
 }) {
   return (
     <div className="flex h-screen bg-gray-100">
-      <div className="w-64 bg-gray-800 text-white p-5">
-        Sidebar (Pronto será un componente)
-      </div>
+      <AdminSideBar></AdminSideBar>
 
       {/* Contenido Principal  */}
       <div className="flex-1 flex flex-col overflow-hidden">
