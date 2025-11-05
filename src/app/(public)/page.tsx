@@ -4,9 +4,9 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 
 // componentes
-import CommunitySection from "../components/CommunitySection";
-import FAQSection from "../components/FAQSection";
-import VideoLoader from "../components/VideoLoader";
+import CommunitySection from "../../components/CommunitySection";
+import FAQSection from "../../components/FAQSection";
+import VideoLoader from "../../components/VideoLoader";
 
 // Rutas de recursos
 const ASSET_PATHS = {

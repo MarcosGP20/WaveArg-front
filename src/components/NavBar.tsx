@@ -132,11 +132,11 @@ export default function NavBar() {
         </Link>
         <Link href="/">
           <Image
-            src="iso3.svg"
+            src="/iso3.svg"
             alt="Logo"
             width={40}
             height={40}
-            className="md:hidden "
+            className="md:hidden"
           />
         </Link>
 
