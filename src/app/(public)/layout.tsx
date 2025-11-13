@@ -4,6 +4,7 @@ import { Work_Sans } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { CompareProvider } from "@/context/CompareContext";
 import "../globals.css";
 
@@ -35,15 +36,17 @@ export default function RootLayout({
         <link rel="icon" href="/iso3.svg" />
       </head>
       <body className={`${atkinson.variable} ${workSans.variable}`}>
-        <CartProvider>
-          <CompareProvider>
-            <div className="flex min-h-screen flex-col">
-              <NavBar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </CompareProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <CompareProvider>
+              <div className="flex min-h-screen flex-col">
+                <NavBar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </CompareProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
