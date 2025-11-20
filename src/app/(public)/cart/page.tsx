@@ -29,7 +29,7 @@ export default function CartPage() {
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Carrito</h1>
+      <h1 className="text-4xl text-[#05467D] font-bold mb-4">Carrito</h1>
       <ul className="divide-y divide-gray-200 mb-6">
         {cart.map((item) => (
           <li key={item.id} className="flex items-center py-4 gap-4">
@@ -86,13 +86,13 @@ export default function CartPage() {
       </div>
       <div className="flex gap-2">
         <button
-          className="bg-red-100 text-red-700 px-4 py-2 rounded hover:bg-red-200"
+          className="bg-red-100 text-red-700 px-4 py-2 rounded-full hover:bg-red-200"
           onClick={clearCart}
         >
           Vaciar carrito
         </button>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-[#05467D] text-white px-4 py-2 rounded-full hover:bg-[#063c68]"
           onClick={() => {
             window.location.href = "/checkout";
           }}
