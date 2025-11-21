@@ -1,5 +1,6 @@
 // CAMBIO 1: Importamos los íconos de 'react-icons/fa' (Font Awesome)
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { MdMailOutline } from "react-icons/md";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -36,6 +37,11 @@ const socialLinks = [
     href: "https://wa.me/2233064666", // Poné tu URL de WhatsApp
     icon: FaWhatsapp, // <-- ÍCONO NUEVO
     label: "WhatsApp",
+  },
+  {
+    href: "mailto:soporte@wavearg.com", // Poné tu URL de WhatsApp
+    icon: MdMailOutline, // <-- ÍCONO NUEVO
+    label: "Email",
   },
 ];
 
