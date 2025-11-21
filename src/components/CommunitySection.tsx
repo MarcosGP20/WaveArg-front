@@ -29,8 +29,8 @@ export default function CommunitySection() {
           <Image
             src="/wave-comunidad.jpg"
             alt="Comunidad móvil"
-            fill // Rellena el contenedor padre
-            className="object-cover" // Mantiene el aspect ratio
+            fill
+            className="object-cover"
             loading="lazy"
           />
           <div className="absolute inset-0 bg-black/50" />
@@ -47,7 +47,7 @@ export default function CommunitySection() {
                 href="https://www.instagram.com/wavearg__?igsh=NWNxdXZjbDFkMHc4"
                 target="_blank"
               >
-                <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full transition-colors">
+                <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full transition-colors cursor-pointer">
                   ¡Quiero unirme!
                 </button>
               </a>

@@ -8,7 +8,7 @@ import {
 export default function FAQSection() {
   return (
     <>
-      <h1 className="text-3xl text-[#05467D] font-bold text-center">
+      <h1 className="mt-14 text-3xl text-[#05467D] font-bold text-center">
         Preguntas frecuentes
       </h1>
       <div className="w-full flex justify-center items-center py-10">

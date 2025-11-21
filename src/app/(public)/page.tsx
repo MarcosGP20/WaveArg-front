@@ -82,7 +82,7 @@ export default function HomePage() {
                     </h2>
                     <div className="flex gap-4">
                       <a href="/products">
-                        <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full">
+                        <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full cursor-pointer">
                           Ver más
                         </button>
                       </a>
@@ -130,7 +130,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-[#05467D] text-white px-8 py-4 rounded-full hover:bg-[#043d6b] transition-colors text-lg font-medium">
+                  <button className="bg-[#05467D] text-white px-8 py-4 rounded-full hover:bg-[#043d6b] transition-colors text-lg font-medium cursor-pointer">
                     Ver más
                   </button>
                 </div>
