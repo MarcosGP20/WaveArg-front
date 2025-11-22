@@ -36,7 +36,7 @@ export default function HomePage() {
     target: containerRef,
     offset: ["start end", "end start"],
   });
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 1.1]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.6, 1, 1.2]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   // 5. MODIFICA EL RETURN CON EL CONDICIONAL
@@ -93,11 +93,17 @@ export default function HomePage() {
             </motion.div>
           </section>
 
-          {/* Sección - Guía para creadores */}
-          <section className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20">
+          <section
+            ref={containerRef}
+            className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20 overflow-hidden"
+          >
             <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-              {/* Lado izquierdo - Imágenes circulares (las 2 juntas) */}
-              <div className="relative">
+              {/* --- LADO IZQUIERDO (Imágenes) --- */}
+              {/* Convertimos el div contenedor en motion.div */}
+              <motion.div
+                style={{ scale, opacity }}
+                className="relative origin-left" // origin-left ayuda a que crezca desde la izquierda hacia el centro
+              >
                 <div className="absolute top-0 left-0 w-64 h-64 md:w-80 md:h-80">
                   <img
                     src={ASSET_PATHS.TRIPODE_IMG}
@@ -114,12 +120,16 @@ export default function HomePage() {
                     loading="lazy"
                   />
                 </div>
-                {/* Este div da el espacio para que el texto no se superponga */}
+                {/* Espaciador */}
                 <div className="w-full h-96 md:h-[500px]"></div>
-              </div>
+              </motion.div>
 
-              {/* Lado derecho - Contenido de texto */}
-              <div className="space-y-8">
+              {/* --- LADO DERECHO (Texto) --- */}
+              {/* También lo animamos igual para probar la consistencia */}
+              <motion.div
+                style={{ scale, opacity }}
+                className="space-y-8 origin-right" // origin-right para que crezca desde la derecha hacia el centro
+              >
                 <div>
                   <h2 className="text-4xl md:text-4xl font-bold text-[#05467D] mb-6">
                     Guía para creadores
@@ -134,7 +144,7 @@ export default function HomePage() {
                     Ver más
                   </button>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </section>
           <CommunitySection />
