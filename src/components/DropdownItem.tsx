@@ -47,9 +47,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, children }) => {
       <div className="cursor-pointer ">{title}</div>
 
       {isOpen && (
-        // 1. SIN 'p-4' AQUÍ
         <div className="absolute inset-x-0 top-full w-screen z-30 bg-white shadow-xl border-b">
-          {/* 2. 'p-4' VA AQUÍ (y saqué 'gap-6') */}
           <div className=" mx-auto flex flex-col p-4">{children}</div>
         </div>
       )}

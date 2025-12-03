@@ -7,8 +7,42 @@ import { FaShoppingCart, FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-// ¡Importamos nuestro componente!
 import DropdownItem from "./DropdownItem";
+
+// --- 1. CONFIGURACIÓN DEL MENÚ (DATA DRIVEN) ---
+const menuItems = [
+  {
+    titulo: "iPhone 15",
+    slugFamilia: "iphone-15",
+    variantes: [
+      { nombre: "Base", slugModelo: "base" },
+      { nombre: "Plus", slugModelo: "plus" },
+      { nombre: "Pro", slugModelo: "pro" },
+      { nombre: "Pro Max", slugModelo: "pro-max" },
+    ],
+  },
+  {
+    titulo: "iPhone 14",
+    slugFamilia: "iphone-14",
+    variantes: [
+      { nombre: "Base", slugModelo: "base" },
+      { nombre: "Pro", slugModelo: "pro" },
+    ],
+  },
+  {
+    titulo: "iPhone 13",
+    slugFamilia: "iphone-13",
+    variantes: [{ nombre: "Base", slugModelo: "base" }],
+  },
+  {
+    titulo: "iPhone 12",
+    slugFamilia: "iphone-12",
+    variantes: [
+      { nombre: "Base", slugModelo: "base" },
+      { nombre: "Mini", slugModelo: "mini" },
+    ],
+  },
+];
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -23,11 +57,7 @@ export default function NavBar() {
       pathname === href ? "font-bold " : ""
     }`;
 
-  // -----------------------------------------------------------------
-  // CAMBIO AQUÍ:
-  // Este 'links' ahora es SÓLO para el menú MÓVIL.
-  // Le quité "Productos" porque no queremos el dropdown de hover en móvil.
-  // -----------------------------------------------------------------
+  // --- MENÚ MÓVIL ---
   const mobileLinks = (
     <>
       <Link
@@ -37,11 +67,6 @@ export default function NavBar() {
       >
         Inicio
       </Link>
-
-      {/* Le quitamos el "Productos" de aquí. 
-        En móvil, podemos añadir un link simple a /products, 
-        o en el futuro crear un dropdown de CLICK.
-      */}
       <Link
         href="/products"
         className={linkStyle("/products")}
@@ -49,17 +74,16 @@ export default function NavBar() {
       >
         Productos
       </Link>
-
       <Link
-        href="/creadores "
-        className={linkStyle("/mayorista")} // Ojo, este href parece estar mal copiado
+        href="/creadores"
+        className={linkStyle("/creadores")}
         onClick={() => setMenuOpen(false)}
       >
         Guia creadores
       </Link>
       <Link
-        href="/contacto "
-        className={linkStyle("/mayorista")} // Ojo, este href parece estar mal copiado
+        href="/contacto"
+        className={linkStyle("/contacto")}
         onClick={() => setMenuOpen(false)}
       >
         Contacto
@@ -70,7 +94,6 @@ export default function NavBar() {
         className="relative px-3 py-2"
         onClick={() => setMenuOpen(false)}
       >
-        {/* ... (tu JSX de carrito) ... */}
         <div className="relative inline-block">
           <FaShoppingCart size={24} className="text-[#05467D]" />
           {cartCount > 0 && (
@@ -81,7 +104,6 @@ export default function NavBar() {
         </div>
       </Link>
 
-      {/* ... (todo tu JSX de auth, login, logout, etc.) ... */}
       {isLoggedIn && (
         <Link
           href="/account"
@@ -106,7 +128,7 @@ export default function NavBar() {
             logout();
             setMenuOpen(false);
           }}
-          className="text-sm text-red-600 hover:underline ml-2"
+          className="text-sm text-red-600 hover:underline ml-2 text-left px-3"
         >
           Cerrar sesión
         </button>
@@ -123,9 +145,9 @@ export default function NavBar() {
   );
 
   return (
-    <nav className="p-4 border-b shadow-sm bg-white relative  ">
+    <nav className="p-4 border-b shadow-sm bg-white relative">
       <div className="flex justify-between items-center">
-        {/* ... (Tus logos de Image) ... */}
+        {/* LOGO */}
         <Link href="/">
           <Image
             src="/waves5.svg"
@@ -146,15 +168,13 @@ export default function NavBar() {
           />
         </Link>
 
-        {/* ----------------------------------------------------------------- */}
-        {/* CAMBIO GRANDE AQUÍ: Este es el menú DESKTOP explícito */}
-        {/* Ya no usa la variable 'links', sino que define los suyos. */}
-        {/* ----------------------------------------------------------------- */}
+        {/* --- DESKTOP MENU --- */}
         <div className="hidden md:flex items-center gap-4">
           <Link href="/" className={linkStyle("/")}>
             Inicio
           </Link>
 
+          {/* DROPDOWN DINÁMICO */}
           <DropdownItem
             title={
               <Link href="/products" className={linkStyle("/products")}>
@@ -162,76 +182,71 @@ export default function NavBar() {
               </Link>
             }
           >
-            {/* Título de la sección dentro del dropdown */}
-            <span className="text-sm font-bold text-gray-500 mb-2 px-2 uppercase tracking-wider">
-              Explorar por Modelo
-            </span>
+            {/* AQUÍ ESTÁ EL CAMBIO CLAVE:
+                1. grid grid-cols-2: Divide en dos columnas.
+                2. min-w-[600px]: Fuerza el ancho para ocupar espacio.
+                3. gap-x-12: Separa las columnas horizontalmente.
+            */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 min-w-[300px] lg:min-w-[600px] px-2 py-2">
+              {menuItems.map((familia) => (
+                <div key={familia.slugFamilia} className="group">
+                  <div className="flex flex-wrap items-center gap-x-2 text-sm text-[#05467D]">
+                    {/* 1. Link a la Familia (NEGRITA) */}
+                    <Link
+                      href={`/products?familia=${familia.slugFamilia}`}
+                      className="font-bold uppercase hover:text-blue-600 tracking-wide whitespace-nowrap"
+                    >
+                      {familia.titulo}
+                    </Link>
 
-            {/* CONTENEDOR TIPO GRILLA (Para llenar mejor el espacio) */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {/* Lista de Modelos */}
-              <Link
-                href="/products?category=iphone-15" // O la ruta que uses
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                iPhone 15 Pro Max
-              </Link>
+                    {/* Separador visual inicial */}
+                    {familia.variantes.length > 0 && (
+                      <span className="text-gray-300 font-light">/</span>
+                    )}
 
-              <Link
-                href="/products?category=iphone-15"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                iPhone 15 Pro
-              </Link>
-
-              <Link
-                href="/products?category=iphone-15"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                iPhone 15
-              </Link>
-
-              <Link
-                href="/products?category=iphone-14"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                iPhone 14
-              </Link>
-
-              <Link
-                href="/products?category=iphone-13"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                iPhone 13
-              </Link>
-
-              <Link
-                href="/products?category=iphone-11"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              >
-                iPhone 11 / SE
-              </Link>
+                    {/* 2. Links a Variantes (LIGHT) */}
+                    {familia.variantes.map((variante, idx) => (
+                      <div
+                        key={variante.slugModelo}
+                        className="flex items-center gap-2"
+                      >
+                        <Link
+                          href={`/products?familia=${familia.slugFamilia}&modelo=${variante.slugModelo}`}
+                          className="font-light hover:font-bold hover:text-blue-600 transition-all whitespace-nowrap"
+                        >
+                          {variante.nombre}
+                        </Link>
+                        {/* Separador entre variantes (menos en la última) */}
+                        {idx < familia.variantes.length - 1 && (
+                          <span className="text-gray-300 font-light">/</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Separador y "Ver todos" */}
             <div className="border-t mt-4 pt-3">
               <Link
                 href="/products"
-                // Aquí aplicamos el truco del margen negativo para que el hover ocupe todo el ancho de abajo
-                className="block -mx-4 px-4 py-3 text-center font-semibold text-[#05467D] hover:bg-gray-50 rounded-b-md"
+                className="block -mx-4 px-4 py-1 text-center font-semibold text-[#05467D] hover:bg-gray-50 text-sm"
               >
-                Ver todo el catálogo &rarr;
+                Ver todo el catálogo completo &rarr;
               </Link>
             </div>
           </DropdownItem>
-          {/* --- FIN DEL DROPDOWN --- */}
-          <Link href="/creadores " className={linkStyle("/mayorista")}>
+          {/* --- FIN DROPDOWN --- */}
+
+          <Link href="/creadores" className={linkStyle("/creadores")}>
             Guia creadores
           </Link>
-          <Link href="/contacto " className={linkStyle("/mayorista")}>
+          <Link href="/contacto" className={linkStyle("/contacto")}>
             Contacto
           </Link>
-          {/* Copiamos los otros links de auth/cart aquí también */}
+
+          {/* Links de usuario y carrito */}
           <Link href="/cart" className="relative px-3 py-2">
             <div className="relative inline-block">
               <FaShoppingCart size={24} className="text-[#05467D]" />
@@ -242,6 +257,7 @@ export default function NavBar() {
               )}
             </div>
           </Link>
+
           {isLoggedIn && (
             <Link href="/account" className={linkStyle("/account")}>
               <FaUserCircle className="inline mr-1" /> Mi cuenta
@@ -266,16 +282,17 @@ export default function NavBar() {
           )}
         </div>
 
+        {/* TOGGLE MÓVIL */}
         <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </button>
       </div>
 
-      {/* ----------------------------------------------------------------- */}
-      {/* CAMBIO AQUÍ: El menú móvil ahora usa 'mobileLinks' */}
-      {/* ----------------------------------------------------------------- */}
+      {/* MENÚ MÓVIL DESPLEGABLE */}
       {menuOpen && (
-        <div className="flex flex-col gap-2 mt-3 md:hidden">{mobileLinks}</div>
+        <div className="flex flex-col gap-2 mt-3 md:hidden px-2 pb-2">
+          {mobileLinks}
+        </div>
       )}
     </nav>
   );

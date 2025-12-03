@@ -2,11 +2,17 @@ export const products = [
   {
     id: 1,
     nombre: "Iphone 14 Pro",
+    // --- DATOS PARA EL FILTRO ---
+    familia: "iPhone 14",
+    familiaSlug: "iphone-14",
+    modelo: "Pro",
+    modeloSlug: "pro",
+    // ----------------------------
     color: "Negro espacial",
     memoria: "256 GB",
     precio: 980000,
     image: "/mock/iphone_14_pro.jpg",
-    slug: "iphone-14-pro-max",
+    slug: "iphone-14-pro-max", // Ojo: El nombre dice Pro, el slug Pro Max. Revisalo.
     descripcionCorta: "El iPhone 14 Pro ofrece potencia y diseño premium.",
     descripcionLarga:
       "El iPhone 14 Pro cuenta con pantalla Super Retina XDR, cámara avanzada, batería de larga duración y resistencia al agua y polvo. Ideal para quienes buscan lo mejor de Apple.",
@@ -27,6 +33,12 @@ export const products = [
   {
     id: 2,
     nombre: "Iphone 13",
+    // --- DATOS PARA EL FILTRO ---
+    familia: "iPhone 13",
+    familiaSlug: "iphone-13",
+    modelo: "Base",
+    modeloSlug: "base",
+    // ----------------------------
     color: "Azul",
     memoria: "128 GB",
     precio: 600000,
@@ -52,6 +64,12 @@ export const products = [
   {
     id: 3,
     nombre: "Iphone 15 Pro",
+    // --- DATOS PARA EL FILTRO ---
+    familia: "iPhone 15",
+    familiaSlug: "iphone-15",
+    modelo: "Pro",
+    modeloSlug: "pro",
+    // ----------------------------
     color: "Gris claro",
     memoria: "512 GB",
     precio: 1200000,
@@ -77,6 +95,12 @@ export const products = [
   {
     id: 4,
     nombre: "iPhone 12 Mini",
+    // --- DATOS PARA EL FILTRO ---
+    familia: "iPhone 12",
+    familiaSlug: "iphone-12",
+    modelo: "Mini",
+    modeloSlug: "mini",
+    // ----------------------------
     color: "Blanco",
     memoria: "64 GB",
     precio: 450000,
@@ -102,6 +126,12 @@ export const products = [
   {
     id: 5,
     nombre: "iPhone SE (3ra gen)",
+    // --- DATOS PARA EL FILTRO ---
+    familia: "iPhone SE",
+    familiaSlug: "iphone-se",
+    modelo: "3ra Gen",
+    modeloSlug: "3ra-gen",
+    // ----------------------------
     color: "Rojo",
     memoria: "128 GB",
     precio: 370000,
@@ -127,6 +157,12 @@ export const products = [
   {
     id: 6,
     nombre: "iPhone 15 Pro Max",
+    // --- DATOS PARA EL FILTRO ---
+    familia: "iPhone 15",
+    familiaSlug: "iphone-15",
+    modelo: "Pro Max",
+    modeloSlug: "pro-max",
+    // ----------------------------
     color: "Negro titanio",
     memoria: "1 TB",
     precio: 1500000,
