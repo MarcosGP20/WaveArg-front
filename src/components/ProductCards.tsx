@@ -1,13 +1,11 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image"; // 1. Usamos Next/Image
-// import { useCart } from "@/context/CartContext"; <-- 2. Eliminado
+import Image from "next/image";
 import { useCompare } from "@/context/CompareContext";
-// import { useState } from "react"; <-- 3. Eliminado
-// import Toast from "@/components/ui/Toast"; <-- 4. Eliminado
 import { products } from "@/lib/mock/products";
 
-type Product = (typeof products)[0];
+// Asegúrate de importar el tipo correcto desde tu mock
+type Product = (typeof products)[0] & { estado?: "nuevo" | "usado" };
 
 type ProductCardProps = {
   product: Product;
@@ -17,32 +15,40 @@ type ProductCardProps = {
 const MAX_COMPARE = 3;
 
 export default function ProductCard({ product, className }: ProductCardProps) {
-  const { nombre, color, memoria, precio, image, slug } = product;
-  const { modoComparacion, toggleCompare, compareList } = useCompare();
+  const { nombre, color, memoria, precio, image, slug, estado } = product;
+
+  const { toggleCompare, compareList } = useCompare();
   const seleccionado = compareList.some((p) => p.id === product.id);
   const atLimit = !seleccionado && compareList.length >= MAX_COMPARE;
 
+  const isUsed = estado === "usado";
+
   return (
     <div
-      className={`rounded-2xl max-w-md shadow-sm p-5 hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900 ${className}`}
+      className={`rounded-2xl max-w-md shadow-sm p-5 hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900 group ${className}`}
     >
-      {/* 9. Este Link ahora solo envuelve la parte "clickeable" (imagen y texto) */}
-      <Link href={`/products/${slug}`} className="block flex-1">
+      <Link href={`/products/${slug}`} className="block flex-1 relative">
+        {/* 1. ELIMINADO EL BADGE DE AQUÍ (ZONA IMAGEN) */}
+
         <div className="relative w-full h-48 mb-4">
           <Image
             src={image}
             alt={nombre}
-            fill // 'fill' hace que llene el div padre (w-full h-56)
-            className="object-contain rounded-xl"
+            fill
+            className="object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
-        <h2 className="text-xl text-center font-semibold text-[#05467D] ">
-          {nombre}
-        </h2>
-        <p className="text-sm text-center text-[#999999] mt-1">
+
+        {/* Título y Estado Integrado */}
+        <div className="flex flex-col items-center gap-1">
+          <h2 className="text-xl font-semibold text-[#05467D]">{nombre}</h2>
+        </div>
+
+        <p className="text-sm text-center text-[#999999] mt-2">
           {color} · {memoria}
         </p>
+
         <p className="text-2xl text-center font-semibold text-[#05467D] dark:text-white mt-2">
           ${precio.toLocaleString()}
         </p>
@@ -55,7 +61,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         Más información
       </Link>
 
-      {/* Botón de comparación  */}
+      {/* Botón de comparación */}
       <button
         onClick={() => toggleCompare(product)}
         disabled={atLimit}
@@ -76,8 +82,8 @@ export default function ProductCard({ product, className }: ProductCardProps) {
       </button>
 
       {atLimit && (
-        <span className="mt-1 text-xs text-neutral-500">
-          Máximo {MAX_COMPARE} modelos para comparar
+        <span className="mt-1 text-xs text-center text-neutral-500 block">
+          Máximo {MAX_COMPARE} items
         </span>
       )}
     </div>

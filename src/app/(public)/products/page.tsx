@@ -1,92 +1,108 @@
 "use client";
 
-import { useSearchParams } from "next/navigation"; // 1. Importamos el hook
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import ProductCard from "@/components/ProductCards";
+import ProductCard from "@/components/ProductCards"; // ⚠️ Chequea que el nombre del archivo coincida
+import FilterSidebar from "@/components/FilterSide"; // Usamos el nuevo componente
 import { products } from "@/lib/mock/products";
-import { useCompare } from "@/context/CompareContext";
+// import { useCompare } from "@/context/CompareContext"; // Si no usas variables de esto acá, podes comentarlo
 import CompareBar from "@/components/CompareBar";
 
 export default function ProductsPage() {
-  const { modoComparacion } = useCompare(); // Simplifiqué esto si no usas setModoComparacion acá
-
-  // 2. Leemos los parámetros de la URL
+  // 1. Leemos los parámetros de la URL
   const searchParams = useSearchParams();
-  const familiaFilter = searchParams.get("familia"); // ej: 'iphone-14'
-  const modeloFilter = searchParams.get("modelo"); // ej: 'pro'
 
-  // 3. Lógica de Filtrado
+  // Obtenemos los strings de la URL (ej: "iphone-13,iphone-14")
+  const familiaParam = searchParams.get("familia");
+  const modeloParam = searchParams.get("modelo");
+  const estadoParam = searchParams.get("estado"); // Nuevo filtro
+  const memoriaParam = searchParams.get("memoria"); // Nuevo filtro
+
+  // 2. Lógica de Filtrado "Multi-Select"
   const filteredProducts = products.filter((product) => {
-    // Si hay filtro de familia Y no coincide, lo sacamos
-    if (familiaFilter && product.familiaSlug !== familiaFilter) return false;
+    // Filtro FAMILIA (ej: iPhone 13, iPhone 14)
+    if (familiaParam) {
+      const familias = familiaParam.split(",");
+      if (!familias.includes(product.familiaSlug)) return false;
+    }
 
-    // Si hay filtro de modelo Y no coincide, lo sacamos
-    if (modeloFilter && product.modeloSlug !== modeloFilter) return false;
+    // Filtro MODELO (ej: Pro, Plus, Standard)
+    if (modeloParam) {
+      const modelos = modeloParam.split(",");
+      if (!modelos.includes(product.modeloSlug)) return false;
+    }
 
-    return true; // Si pasa los filtros (o no hay filtros), se queda
+    // Filtro ESTADO (Nuevo vs Usado)
+    if (estadoParam) {
+      const estados = estadoParam.split(",");
+      // Asegúrate que tu mock/products tenga la propiedad `estado`
+      if (!estados.includes(product.condicion)) return false;
+    }
+
+    // Filtro MEMORIA (128GB, 256GB...)
+    if (memoriaParam) {
+      const memorias = memoriaParam.split(",");
+      // Convertimos a minúsculas por seguridad (128GB -> 128gb)
+      if (!memorias.includes(product.memoria.toLowerCase())) return false;
+    }
+
+    return true; // Si pasa todos los checks, se muestra
   });
 
-  // Helper para saber si hay algún filtro activo
-  const hayFiltrosActivos = familiaFilter || modeloFilter;
-
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex flex-col items-center justify-center mb-6 gap-4">
-        <h1 className="text-3xl font-bold text-[#05467D] text-center">
-          {hayFiltrosActivos
-            ? "Resultados de tu búsqueda"
-            : "Conocé nuestros productos"}
+    <div className="container mx-auto px-4 py-8 pb-32">
+      {" "}
+      {/* pb-32 para dar espacio a la CompareBar */}
+      {/* Título Principal */}
+      <div className="mb-8 text-center lg:text-left">
+        <h1 className="text-3xl font-bold text-[#05467D]">
+          {filteredProducts.length === products.length
+            ? "Todos nuestros productos"
+            : "Resultados de tu búsqueda"}
         </h1>
-
-        {/* 4. Botón de Reset (Solo aparece si hay filtros) */}
-        {hayFiltrosActivos && (
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-gray-600 text-sm">
-              Filtro: <span className="font-semibold">{familiaFilter}</span>
-              {modeloFilter && <span> / {modeloFilter}</span>}
-            </p>
-
-            <Link
-              href="/products"
-              className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-full transition-colors flex items-center gap-2"
-            >
-              ✕ Volver al catálogo entero
-            </Link>
-          </div>
-        )}
+        <p className="text-gray-500 mt-2">
+          {filteredProducts.length} productos encontrados
+        </p>
       </div>
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        {/* --- COLUMNA IZQUIERDA: FILTROS --- */}
+        {/* 'hidden lg:block' oculta el sidebar en celular (puedes hacer un botón para mostrarlo en mobile luego) */}
+        <aside className="w-full lg:w-64 flex-shrink-0 lg:sticky lg:top-4">
+          <FilterSidebar />
+        </aside>
 
-      {/* 5. Renderizado Condicional */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              nombre={product.nombre}
-              color={product.color}
-              memoria={product.memoria}
-              precio={product.precio}
-              image={product.image}
-              slug={product.slug}
-              product={product}
-            />
-          ))}
-        </div>
-      ) : (
-        // Estado vacío (Empty State)
-        <div className="text-center py-20">
-          <p className="text-xl text-gray-500">
-            No encontramos productos con esas características.
-          </p>
-          <Link
-            href="/products"
-            className="text-blue-600 hover:underline mt-4 block"
-          >
-            Ver todos los productos
-          </Link>
-        </div>
-      )}
-
+        {/* --- COLUMNA DERECHA: GRILLA DE PRODUCTOS --- */}
+        <main className="flex-1 w-full">
+          {filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product} // Pasamos el objeto entero
+                  // Props individuales por compatibilidad (si tu componente las pide)
+                  className="w-full"
+                />
+              ))}
+            </div>
+          ) : (
+            // Empty State (Sin resultados)
+            <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+              <p className="text-xl text-gray-500 font-medium mb-2">
+                No encontramos productos con esos filtros.
+              </p>
+              <p className="text-sm text-gray-400 mb-6">
+                Prueba desactivando alguna opción del menú lateral.
+              </p>
+              <Link
+                href="/products"
+                className="text-white bg-[#05467D] hover:bg-[#0F3C64] px-6 py-2 rounded-full transition-colors text-sm font-medium"
+              >
+                Limpiar todos los filtros
+              </Link>
+            </div>
+          )}
+        </main>
+      </div>
       <CompareBar />
     </div>
   );

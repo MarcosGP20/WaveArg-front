@@ -7,12 +7,13 @@ export const products = [
     familiaSlug: "iphone-14",
     modelo: "Pro",
     modeloSlug: "pro",
+    estado: "nuevo", // <--- NUEVO CAMPO
     // ----------------------------
     color: "Negro espacial",
-    memoria: "256 GB",
+    memoria: "256GB", // <--- SIN ESPACIO (Para facilitar el filtro)
     precio: 980000,
     image: "/mock/iphone_14_pro.jpg",
-    slug: "iphone-14-pro-max", // Ojo: El nombre dice Pro, el slug Pro Max. Revisalo.
+    slug: "iphone-14-pro", // <--- CORREGIDO (Antes decía max)
     descripcionCorta: "El iPhone 14 Pro ofrece potencia y diseño premium.",
     descripcionLarga:
       "El iPhone 14 Pro cuenta con pantalla Super Retina XDR, cámara avanzada, batería de larga duración y resistencia al agua y polvo. Ideal para quienes buscan lo mejor de Apple.",
@@ -38,9 +39,10 @@ export const products = [
     familiaSlug: "iphone-13",
     modelo: "Base",
     modeloSlug: "base",
+    estado: "usado", // <--- ESTE ES USADO
     // ----------------------------
     color: "Azul",
-    memoria: "128 GB",
+    memoria: "128GB",
     precio: 600000,
     image: "/mock/iPhone-13-128gb-Blue.webp",
     slug: "iphone-13",
@@ -69,9 +71,10 @@ export const products = [
     familiaSlug: "iphone-15",
     modelo: "Pro",
     modeloSlug: "pro",
+    estado: "nuevo", // <--- NUEVO
     // ----------------------------
     color: "Gris claro",
-    memoria: "512 GB",
+    memoria: "512GB",
     precio: 1200000,
     image: "/mock/iphone_15_pro_titanio_negro_Frontback.png",
     slug: "iphone-15-pro",
@@ -100,9 +103,10 @@ export const products = [
     familiaSlug: "iphone-12",
     modelo: "Mini",
     modeloSlug: "mini",
+    estado: "usado", // <--- USADO
     // ----------------------------
     color: "Blanco",
-    memoria: "64 GB",
+    memoria: "64GB",
     precio: 450000,
     image: "/mock/iphone-12-mini.webp",
     slug: "iphone-12-mini",
@@ -131,9 +135,10 @@ export const products = [
     familiaSlug: "iphone-se",
     modelo: "3ra Gen",
     modeloSlug: "3ra-gen",
+    estado: "nuevo", // <--- NUEVO
     // ----------------------------
     color: "Rojo",
-    memoria: "128 GB",
+    memoria: "128GB",
     precio: 370000,
     image: "/mock/iphone-SE.jpg",
     slug: "iphone-se-3ra-gen",
@@ -162,9 +167,10 @@ export const products = [
     familiaSlug: "iphone-15",
     modelo: "Pro Max",
     modeloSlug: "pro-max",
+    estado: "nuevo", // <--- NUEVO
     // ----------------------------
     color: "Negro titanio",
-    memoria: "1 TB",
+    memoria: "1TB",
     precio: 1500000,
     image: "/mock/iphone-15-pro-max.webp",
     slug: "iphone-15-pro-max",
