@@ -7,10 +7,12 @@ import Image from "next/image";
 import CommunitySection from "../../components/CommunitySection";
 import FAQSection from "../../components/FAQSection";
 import VideoLoader from "../../components/VideoLoader";
+import { LazyVideoFacade } from "../../components/VideoPlayer";
 
 // Rutas de recursos
 const ASSET_PATHS = {
   VIDEO: "/wave-video-portada.mp4",
+  VIDEO_TEST: "/wave-testimonios.mp4",
   IPHONE_IMG: "/iphone-div-landing.jpg",
   CREATORS_IMG: "/wave-imagen-web.png",
   MIC_IMG: "mic.jpg",
@@ -148,6 +150,11 @@ export default function HomePage() {
             </div>
           </section>
           <CommunitySection />
+          <LazyVideoFacade
+            posterUrl="/posterURL.webp"
+            videoUrlMp4={ASSET_PATHS.VIDEO_TEST}
+            altText="Video de presentación de Wave"
+          />
           <FAQSection />
         </main>
       )}
