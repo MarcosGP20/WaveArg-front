@@ -39,8 +39,9 @@ export default function CommunitySection() {
               Únete a nuestra comunidad
             </h2>
             <p className="text-gray-200 text-lg mb-10 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore
+              Accedé a oportunidades exclusivas y formá parte de una comunidad
+              que impulsa la creatividad, la tecnología y el contenido auténtico
+              en todo el país.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a

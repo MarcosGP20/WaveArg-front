@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 // componentes
 import CommunitySection from "../../components/CommunitySection";
@@ -137,13 +138,14 @@ export default function HomePage() {
                     Guía para creadores
                   </h2>
                   <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-8">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore
+                    Descubrí qué dispositivos y herramientas te ayudan a crear
+                    contenido de calidad y potenciar tus ideas. Tips prácticos,
+                    recomendaciones reales y asesoría pensada para creadores.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button className="bg-[#05467D] text-white px-8 py-4 rounded-full hover:bg-[#043d6b] transition-colors text-lg font-medium cursor-pointer">
-                    Ver más
+                    <Link href="/creadores">Ver la guía</Link>
                   </button>
                 </div>
               </motion.div>
