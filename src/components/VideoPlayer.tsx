@@ -2,82 +2,90 @@
 
 import { useState, useRef } from "react";
 import type { FC } from "react";
-// Si usas iconos de alguna libreria como lucide-react o heroicons:
-// import { PlayIcon } from 'lucide-react';
+// Importamos los iconos necesarios de Lucide
+import { Play, Volume2, VolumeX } from "lucide-react";
 
 interface LazyVideoProps {
   posterUrl: string;
-  videoUrlWebm?: string;
-  videoUrlMp4?: string;
+  videoUrlMp4: string;
   altText?: string;
+  mode: "testimonial" | "creator";
 }
 
 export const LazyVideoFacade: FC<LazyVideoProps> = ({
   posterUrl,
-  videoUrlWebm,
   videoUrlMp4,
   altText = "",
+  mode,
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(mode === "creator");
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const handlePlay = () => {
-    setIsLoaded(true);
-    // Un pequeño timeout para asegurar que el DOM se actualizó con el video
-    setTimeout(() => {
-      if (videoRef.current) {
-        // el uso de optional chaining y el tipo en useRef evita errores de TS
-        videoRef.current.play();
-      }
-    }, 100);
+  // Función para alternar audio
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evita conflictos con otros eventos de click
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
   };
 
+  const containerClasses =
+    mode === "creator"
+      ? "w-full h-full" // El tamaño lo define el padre en page.tsx
+      : "aspect-video w-full rounded-xl shadow-lg";
+
   return (
-    <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-100">
+    <div className={`relative overflow-hidden bg-gray-200 ${containerClasses}`}>
       {!isLoaded ? (
-        // --- LA FACHADA (IMAGEN) ---
+        /* --- FACHADA PARA TESTIMONIALS --- */
         <button
-          onClick={handlePlay}
-          className="group relative w-full h-full block cursor-pointer"
-          aria-label={`Reproducir video de ${altText}`}
+          onClick={() => setIsLoaded(true)}
+          className="group relative w-full h-full"
         >
-          {/* Imagen Poster optimizada (usa next/image si puedes) */}
           <img
             src={posterUrl}
             alt={altText}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
+            className="w-full h-full object-cover"
           />
-
-          {/* Botón de Play Falso centrado */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-sm group-hover:scale-110 transition-transform">
-              {/* Icono de Play simple SVG */}
-              <svg
-                className="w-8 h-8 text-black ml-1"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-xl transition-transform group-hover:scale-110">
+              {/* Icono Play de Lucide */}
+              <Play className="w-8 h-8 text-black fill-current ml-1" />
             </div>
           </div>
         </button>
       ) : (
-        // --- EL VIDEO REAL (Se monta solo al click) ---
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          controls
-          autoPlay
-          playsInline
-          aria-label={altText || "Video"}
-        >
-          {/* Orden de prioridad: WebM primero (más liviano) */}
-          {videoUrlWebm && <source src={videoUrlWebm} type="video/webm" />}
-          {videoUrlMp4 && <source src={videoUrlMp4} type="video/mp4" />}
-          Tu navegador no soporta videos.
-        </video>
+        <>
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            poster={posterUrl}
+            autoPlay
+            muted={isMuted}
+            loop={mode === "creator"}
+            playsInline
+            controls={mode === "creator"} // Controles habilitados para tips de creadores
+          >
+            <source src={videoUrlMp4} type="video/mp4" />
+            Tu navegador no soporta videos.
+          </video>
+          {/* Botón de estado de Audio (Solo modo creator) */}
+          {mode === "creator" && (
+            <button
+              onClick={toggleMute}
+              className="absolute top-4 right-4 z-20 bg-black/40 hover:bg-black/60 backdrop-blur-md p-2.5 rounded-full transition-all border border-white/20"
+              aria-label={isMuted ? "Activar sonido" : "Desactivar sonido"}
+            >
+              {isMuted ? (
+                <VolumeX className="w-5 h-5 text-white" strokeWidth={2} />
+              ) : (
+                <Volume2 className="w-5 h-5 text-white" strokeWidth={2} />
+              )}
+            </button>
+          )}
+        </>
       )}
     </div>
   );

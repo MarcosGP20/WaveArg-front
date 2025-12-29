@@ -153,9 +153,9 @@ export default function HomePage() {
           </section>
           <CommunitySection />
           <LazyVideoFacade
+            mode="testimonial"
+            videoUrlMp4="/wave-testimonios.mp4"
             posterUrl="/posterURL.webp"
-            videoUrlMp4={ASSET_PATHS.VIDEO_TEST}
-            altText="Video de presentación de Wave"
           />
           <FAQSection />
         </main>
