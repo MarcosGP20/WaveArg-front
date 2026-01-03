@@ -85,7 +85,7 @@ export default function HomePage() {
                     </h2>
                     <div className="flex gap-4">
                       <a href="/products">
-                        <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full cursor-pointer">
+                        <button className="bg-[#05467D] hover:bg-[#043d6b] text-white px-8 py-3 rounded-full cursor-pointer">
                           Ver más
                         </button>
                       </a>

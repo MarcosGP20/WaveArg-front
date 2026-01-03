@@ -48,7 +48,7 @@ export default function CommunitySection() {
                 href="https://www.instagram.com/wavearg__?igsh=NWNxdXZjbDFkMHc4"
                 target="_blank"
               >
-                <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full transition-colors cursor-pointer">
+                <button className="bg-[#05467D] hover:bg-[#043d6b] text-white px-8 py-3 rounded-full transition-colors cursor-pointer">
                   ¡Quiero unirme!
                 </button>
               </a>
