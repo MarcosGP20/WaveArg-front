@@ -66,7 +66,7 @@ export default function CartPage() {
                   +
                 </button>
                 <button
-                  className="ml-4 text-red-500 hover:underline"
+                  className="ml-4 text-gray-500  hover:underline"
                   onClick={() => removeFromCart(item.id)}
                   aria-label="Eliminar"
                 >
@@ -86,7 +86,7 @@ export default function CartPage() {
       </div>
       <div className="flex gap-2">
         <button
-          className="bg-red-100 text-red-700 px-4 py-2 rounded-full hover:bg-red-200"
+          className="bg-gray-100 text-gray-500 px-4 py-2 rounded-full hover:bg-gray-200"
           onClick={clearCart}
         >
           Vaciar carrito

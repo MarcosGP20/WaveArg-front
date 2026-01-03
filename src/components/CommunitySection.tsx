@@ -34,9 +34,9 @@ export default function CommunitySection() {
             loading="lazy"
           />
           <div className="absolute inset-0 bg-black/50" />
-          <div className="relative z-10 max-w-2xl px-8 md:px-12 lg:px-16">
+          <div className="relative z-10 max-w-3xl px-8 md:px-12 lg:px-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
-              Únete a nuestra comunidad
+              Unite a nuestra comunidad
             </h2>
             <p className="text-gray-200 text-lg mb-10 leading-relaxed">
               Accedé a oportunidades exclusivas y formá parte de una comunidad
