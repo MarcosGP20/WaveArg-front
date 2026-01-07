@@ -36,7 +36,7 @@ export default function ProductsPage() {
     if (estadoParam) {
       const estados = estadoParam.split(",");
       // Asegúrate que tu mock/products tenga la propiedad `estado`
-      if (!estados.includes(product.condicion)) return false;
+      if (!estados.includes(product.estado)) return false;
     }
 
     // Filtro MEMORIA (128GB, 256GB...)

@@ -14,7 +14,7 @@ export default function CommunitySection() {
     offset: ["start end", "end start"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.7, 0.9, 1.2]);
+  const scale = useTransform(scrollYProgress, [0, 0.2, 1], [0.7, 0.9, 1.2]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
@@ -24,7 +24,7 @@ export default function CommunitySection() {
         {/* 4. Aplicamos la animación al div que contiene la imagen y el texto */}
         <motion.div
           style={{ scale, opacity }}
-          className="relative rounded-3xl overflow-hidden shadow-2xl min-h-[600px] flex items-center"
+          className="relative rounded-3xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
         >
           <Image
             src="/celu-wave-perfil-ig.png"

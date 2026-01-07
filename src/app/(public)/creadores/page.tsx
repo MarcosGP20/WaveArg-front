@@ -72,7 +72,7 @@ export default function Creadores() {
             que usan estos equipos todos los dias para
             <span className="font-bold"> grabar, editar y trabajar.</span>
           </h3>
-          <button className="bg-[#4276a4] text-white px-8 py-3 rounded-full hover:bg-[#355f85] transition-colors">
+          <button className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#043d6b] transition-colors">
             Ver equipos recomendados
           </button>
         </div>
@@ -134,14 +134,14 @@ export default function Creadores() {
                   <Button
                     variant="contained"
                     sx={{
-                      backgroundColor: "#4276a4",
-                      borderRadius: "12px",
+                      backgroundColor: "#05467D",
+                      borderRadius: " calc(infinity * 1px)",
                       padding: "10px 24px",
                       textTransform: "none",
                       fontSize: "1rem",
                       fontWeight: "500",
                       "&:hover": {
-                        backgroundColor: "#355f85",
+                        backgroundColor: "#043d6b",
                       },
                     }}
                   >

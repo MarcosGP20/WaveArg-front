@@ -242,6 +242,9 @@ export default function NavBar() {
           <Link href="/creadores" className={linkStyle("/creadores")}>
             Guia creadores
           </Link>
+          <Link href="/nosotros" className={linkStyle("/nosotros")}>
+            Nosotros
+          </Link>
           <Link href="/contacto" className={linkStyle("/contacto")}>
             Contacto
           </Link>
