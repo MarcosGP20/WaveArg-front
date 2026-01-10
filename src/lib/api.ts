@@ -1,4 +1,8 @@
 // lib/api.ts
+import { Producto, Variante } from '@/interfaces/producto';
+
+// Re-export for convenience
+export type { Producto, Variante };
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
@@ -92,6 +96,12 @@ export async function loginUser(data: object) {
 export async function getProductos() {
   // Según tu Swagger es /api/Productos?soloDisponibles=true
   return fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
+    method: "GET",
+  });
+}
+
+export async function getProductoById(id: number | string) {
+  return fetchFromApi<Producto>(`/Productos/${id}`, {
     method: "GET",
   });
 }
