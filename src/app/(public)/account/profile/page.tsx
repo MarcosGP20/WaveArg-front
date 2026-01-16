@@ -34,9 +34,7 @@ export default function ProfilePage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <p className="text-gray-500 mb-4">No hay sesión activa</p>
-          <Button onClick={() => router.push("/login")}>
-            Ir a Login
-          </Button>
+          <Button onClick={() => router.push("/login")}>Ir a Login</Button>
         </div>
       </div>
     );

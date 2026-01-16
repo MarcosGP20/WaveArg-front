@@ -11,7 +11,12 @@ import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore"; // Importamos tu nuevo Store
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema"; // Importamos el esquema centralizado
-import { decodeJWT, getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt"; // Para extraer datos del JWT
+import {
+  decodeJWT,
+  getUserIdFromJWT,
+  getEmailFromJWT,
+  getRoleFromJWT,
+} from "@/lib/jwt"; // Para extraer datos del JWT
 
 export function LoginForm() {
   const [serverError, setServerError] = useState("");
@@ -45,22 +50,22 @@ export function LoginForm() {
       // 2. Si hay éxito, guardamos en el Estado Global (Zustand)
       if (response && response.token) {
         console.log("✅ Token recibido, guardando en store...");
-        
+
         // Si el backend no devuelve user, lo extraemos del JWT
         let user = response.user;
         if (!user) {
           const userId = getUserIdFromJWT(response.token);
           const email = getEmailFromJWT(response.token);
           const rol = getRoleFromJWT(response.token);
-          
+
           user = {
             id: userId || "unknown",
             email: email || data.email,
-            rol: rol || "User"
+            rol: rol || "User",
           };
           console.log("📄 Usuario extraído del JWT:", user);
         }
-        
+
         setAuth(response.token, user);
         console.log("✅ Auth guardado en store");
 

@@ -3,7 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { FaShoppingCart, FaUserCircle, FaBars, FaTimes, FaSignOutAlt, FaCog } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaUserCircle,
+  FaBars,
+  FaTimes,
+  FaSignOutAlt,
+  FaCog,
+} from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -281,10 +288,17 @@ export default function NavBar() {
               {userDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                   <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Cuenta</p>
-                    <p className="font-semibold text-gray-900 text-sm truncate">{user.email}</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                      Cuenta
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm truncate">
+                      {user.email}
+                    </p>
                     <p className="text-xs text-gray-600 mt-1">
-                      Rol: <span className="font-medium uppercase">{user.rol || "Usuario"}</span>
+                      Rol:{" "}
+                      <span className="font-medium uppercase">
+                        {user.rol || "Usuario"}
+                      </span>
                     </p>
                   </div>
 

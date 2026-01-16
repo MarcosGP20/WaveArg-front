@@ -51,12 +51,12 @@ export async function fetchFromApi<T>(
     if (!res.ok) {
       // Intentamos parsear el JSON de error del backend .NET
       const errorData = await res.json().catch(() => ({}));
-      
+
       // Mensaje personalizado para error 500 de duplicado
       if (res.status === 500 && errorData.message?.includes("UNIQUE KEY")) {
         throw new Error("Este email ya está registrado. Usa otro email.");
       }
-      
+
       throw new Error(
         errorData.message || `Error ${res.status}: ${res.statusText}`
       );
@@ -96,11 +96,14 @@ export async function registerUser(data: RegisterDTO) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      
-      if (response.status === 500 && errorData.message?.includes("UNIQUE KEY")) {
+
+      if (
+        response.status === 500 &&
+        errorData.message?.includes("UNIQUE KEY")
+      ) {
         throw new Error("Este email ya está registrado. Usa otro email.");
       }
-      
+
       throw new Error(
         errorData.message || `Error ${response.status}: ${response.statusText}`
       );
