@@ -4,16 +4,16 @@
  */
 export function decodeJWT(token: string) {
   try {
-    const parts = token.split('.');
-    if (parts.length !== 3) throw new Error('JWT inválido');
+    const parts = token.split(".");
+    if (parts.length !== 3) throw new Error("JWT inválido");
 
-    const payloadB64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    let json = '';
-    if (typeof window !== 'undefined' && typeof atob === 'function') {
+    const payloadB64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    let json = "";
+    if (typeof window !== "undefined" && typeof atob === "function") {
       json = atob(payloadB64);
     } else {
       // Node.js environment
-      json = Buffer.from(payloadB64, 'base64').toString('utf8');
+      json = Buffer.from(payloadB64, "base64").toString("utf8");
     }
     const payload = JSON.parse(json);
     return payload;

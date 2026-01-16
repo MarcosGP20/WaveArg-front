@@ -49,7 +49,9 @@ export function middleware(request: NextRequest) {
   const decodedToken = isAuthenticated ? decodeToken(token!) : null;
 
   console.log(
-    `🔐 [Middleware] ${pathname} | Auth: ${isAuthenticated} | Rol: ${decodedToken?.rol || "N/A"}`
+    `🔐 [Middleware] ${pathname} | Auth: ${isAuthenticated} | Rol: ${
+      decodedToken?.rol || "N/A"
+    }`
   );
 
   // 1. Permitir rutas públicas
@@ -59,15 +61,22 @@ export function middleware(request: NextRequest) {
 
   if (isPublic) {
     // Si está logueado e intenta login/register, redirigir
-    if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
-      console.log(`✅ [Redirect] Logueado intenta ${pathname} → /account/profile`);
+    if (
+      isAuthenticated &&
+      (pathname === "/login" || pathname === "/register")
+    ) {
+      console.log(
+        `✅ [Redirect] Logueado intenta ${pathname} → /account/profile`
+      );
       return NextResponse.redirect(new URL("/account/profile", request.url));
     }
     return NextResponse.next();
   }
 
   // 2. Proteger rutas que requieren autenticación
-  const isProtected = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+  const isProtected = PROTECTED_ROUTES.some((route) =>
+    pathname.startsWith(route)
+  );
 
   if (isProtected) {
     // Si no está autenticado
@@ -79,9 +88,7 @@ export function middleware(request: NextRequest) {
     // 3. Validar acceso por rol
     if (pathname.startsWith("/admin")) {
       if (decodedToken?.rol !== "Admin") {
-        console.log(
-          `❌ [Redirect] No-Admin intenta /admin → /account/profile`
-        );
+        console.log(`❌ [Redirect] No-Admin intenta /admin → /account/profile`);
         return NextResponse.redirect(new URL("/account/profile", request.url));
       }
       console.log(`✅ [Allow] Admin en /admin`);
