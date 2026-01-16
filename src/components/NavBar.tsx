@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { FaShoppingCart, FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { FaShoppingCart, FaUserCircle, FaBars, FaTimes, FaSignOutAlt, FaCog } from "react-icons/fa";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/store/useAuthStore";
 import DropdownItem from "./DropdownItem";
 
 // --- 1. CONFIGURACIÓN DEL MENÚ (DATA DRIVEN) ---
@@ -46,11 +46,25 @@ const menuItems = [
 
 export default function NavBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { cart } = useCart();
-  const { isLoggedIn, role, logout } = useAuth();
+  const { user, token, logout, isLoggedIn } = useAuthStore();
+
+  useEffect(() => {
+    // Espera a que el estado se hidrate
+    setIsLoading(false);
+  }, []);
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  const handleLogout = () => {
+    logout();
+    setUserDropdownOpen(false);
+    router.push("/");
+  };
 
   const linkStyle = (href: string) =>
     `px-3 py-2 rounded-md hover:bg-gray-200 transition text-[#05467D] ${
@@ -104,35 +118,26 @@ export default function NavBar() {
         </div>
       </Link>
 
-      {isLoggedIn && (
+      {!isLoading && isLoggedIn && user ? (
         <Link
-          href="/account"
-          className={linkStyle("/account")}
+          href="/account/profile"
+          className={linkStyle("/account/profile")}
           onClick={() => setMenuOpen(false)}
         >
           <FaUserCircle className="inline mr-1" /> Mi cuenta
         </Link>
-      )}
-      {role === "admin" && (
-        <Link
-          href="/admin"
-          className={linkStyle("/admin")}
-          onClick={() => setMenuOpen(false)}
-        >
-          Panel Admin
-        </Link>
-      )}
-      {isLoggedIn ? (
+      ) : null}
+      {!isLoading && isLoggedIn ? (
         <button
           onClick={() => {
-            logout();
+            handleLogout();
             setMenuOpen(false);
           }}
           className="text-sm text-red-600 hover:underline ml-2 text-left px-3"
         >
           Cerrar sesión
         </button>
-      ) : (
+      ) : !isLoading ? (
         <Link
           href="/login"
           className={linkStyle("/login")}
@@ -140,7 +145,7 @@ export default function NavBar() {
         >
           Iniciar sesión
         </Link>
-      )}
+      ) : null}
     </>
   );
 
@@ -261,28 +266,63 @@ export default function NavBar() {
             </div>
           </Link>
 
-          {isLoggedIn && (
-            <Link href="/account" className={linkStyle("/account")}>
-              <FaUserCircle className="inline mr-1" /> Mi cuenta
-            </Link>
-          )}
-          {role === "admin" && (
-            <Link href="/admin" className={linkStyle("/admin")}>
-              Panel Admin
-            </Link>
-          )}
-          {isLoggedIn ? (
-            <button
-              onClick={() => logout()}
-              className="text-sm text-red-600 hover:underline ml-2"
-            >
-              Cerrar sesión
-            </button>
-          ) : (
+          {/* USER DROPDOWN */}
+          {!isLoading && isLoggedIn && user ? (
+            <div className="relative">
+              <button
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition text-[#05467D] font-medium"
+              >
+                <FaUserCircle size={20} />
+                <span className="text-sm">{user.email?.split("@")[0]}</span>
+              </button>
+
+              {/* DROPDOWN MENU */}
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Cuenta</p>
+                    <p className="font-semibold text-gray-900 text-sm truncate">{user.email}</p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Rol: <span className="font-medium uppercase">{user.rol || "Usuario"}</span>
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/account/profile"
+                    className="block px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
+                    onClick={() => setUserDropdownOpen(false)}
+                  >
+                    <FaUserCircle size={16} /> Mi Perfil
+                  </Link>
+
+                  {user.rol === "Admin" && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
+                      onClick={() => setUserDropdownOpen(false)}
+                    >
+                      <FaCog size={16} /> Panel Admin
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setUserDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-sm text-red-600 transition flex items-center gap-2"
+                  >
+                    <FaSignOutAlt size={16} /> Cerrar Sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : !isLoading ? (
             <Link href="/login" className={linkStyle("/login")}>
               Iniciar sesión
             </Link>
-          )}
+          ) : null}
         </div>
 
         {/* TOGGLE MÓVIL */}

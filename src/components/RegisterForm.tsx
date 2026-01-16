@@ -1,171 +1,130 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, RegisterFormValues } from "@/schemas/auth.schema";
 import { registerUser } from "@/lib/api";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2, User, Mail, Lock, LogIn, ShieldCheck } from "lucide-react";
-
-// 📌 Validaciones con zod
-const registerSchema = z
-  .object({
-    name: z.string().min(2, { message: "Nombre muy corto" }),
-    email: z.string().email({ message: "Email inválido" }),
-    password: z.string().min(6, { message: "Mínimo 6 caracteres" }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirmPassword"],
-  });
-
-type RegisterData = z.infer<typeof registerSchema>;
+import { Loader2, User, Mail, Lock, UserPlus, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
+  const [serverError, setServerError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterData>({
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      rolId: 0,
+    },
   });
 
-  const [serverError, setServerError] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
-
-  const onSubmit = async (data: RegisterData) => {
+  const onSubmit = async (data: RegisterFormValues) => {
     setServerError("");
-    setStatusMessage("Registrando...");
+    setStatusMessage("Creando tu cuenta...");
+
     try {
-      // Llama a tu backend real
+      // Enviamos los datos exactos que espera el controlador de .NET
       await registerUser({
-        name: data.name,
         email: data.email,
-        Contraseña: data.password,
+        contraseña: data.contraseña,
+        rolId: data.rolId || 0,
       });
-      setStatusMessage("Registro exitoso. Redirigiendo...");
+
+      setStatusMessage(
+        "¡Registro exitoso! Redirigiendo al inicio de sesión..."
+      );
+
+      // Usamos router.push para una navegación fluida (SPA)
       setTimeout(() => {
-        window.location.href = "/login";
+        router.push("/login");
       }, 1500);
     } catch (error: any) {
       setStatusMessage("");
-      setServerError(error?.message || "Error al registrarse");
+      // Capturamos el mensaje de error que definimos en fetchFromApi
+      setServerError(error?.message || "Hubo un problema al crear la cuenta.");
     }
-  };
-
-  const handleGoogleRegister = () => {
-    window.location.href = "https://tu-api.com/api/auth/google";
   };
 
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
-      <h2 className="text-2xl font-bold text-center">Crear cuenta</h2>
+      <div className="space-y-2 text-center">
+        <h2 className="text-3xl font-bold text-[#05467D]">Unite a Wave Arg</h2>
+        <p className="text-sm text-gray-500">
+          Crea tu cuenta y surfeá al próximo nivel
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        <div>
-          <Label htmlFor="name">Nombre</Label>
-          <div className="flex items-center gap-2 py-2">
-            <User size={16} />
-            <Input
-              id="name"
-              type="text"
-              placeholder="Tu nombre"
-              {...register("name")}
-              aria-invalid={!!errors.name}
-            />
-          </div>
-          {errors.name && (
-            <p className="text-sm text-red-500" role="alert">
-              {errors.name.message}
-            </p>
-          )}
-        </div>
-
-        <div>
+        {/* Email */}
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <div className="flex items-center gap-2 py-2">
-            <Mail size={16} />
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
             <Input
               id="email"
               type="email"
               placeholder="tu@correo.com"
+              className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
               {...register("email")}
-              aria-invalid={!!errors.email}
             />
           </div>
           {errors.email && (
-            <p className="text-sm text-red-500" role="alert">
-              {errors.email.message}
-            </p>
+            <p className="text-xs text-red-500">{errors.email.message}</p>
           )}
         </div>
 
-        <div>
+        {/* Password */}
+        <div className="space-y-2">
           <Label htmlFor="password">Contraseña</Label>
-          <div className="flex items-center gap-2 py-2">
-            <Lock size={16} />
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
             <Input
               id="password"
               type="password"
               placeholder="••••••••"
-              {...register("password")}
-              aria-invalid={!!errors.password}
+              className={`pl-10 ${errors.contraseña ? "border-red-500" : ""}`}
+              {...register("contraseña")}
             />
           </div>
-          {errors.password && (
-            <p className="text-sm text-red-500" role="alert">
-              {errors.password.message}
-            </p>
+          {errors.contraseña && (
+            <p className="text-xs text-red-500">{errors.contraseña.message}</p>
           )}
         </div>
 
-        <div>
-          <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-          <div className="flex items-center gap-2 py-2">
-            <Lock size={16} />
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              {...register("confirmPassword")}
-              aria-invalid={!!errors.confirmPassword}
-            />
-          </div>
-          {errors.confirmPassword && (
-            <p className="text-sm text-red-500" role="alert">
-              {errors.confirmPassword.message}
-            </p>
-          )}
-        </div>
-
+        {/* Feedback al usuario */}
         {serverError && (
-          <p className="text-sm text-red-500 text-center" role="alert">
-            {serverError}
-          </p>
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600 text-center">{serverError}</p>
+          </div>
         )}
 
         {statusMessage && (
-          <p className="text-sm text-blue-500 text-center" role="status">
+          <p className="text-sm text-blue-600 text-center animate-pulse">
             {statusMessage}
           </p>
         )}
 
         <Button
           type="submit"
-          className="w-full bg-[#05467D] hover:bg-[#0F3C64] text-white font-bold py-3 rounded-xl shadow transition"
+          className="w-full bg-[#05467D] hover:bg-[#0F3C64] text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="animate-spin mr-2" size={16} /> Registrando...
+              <Loader2 className="animate-spin mr-2" size={18} /> Procesando...
             </>
           ) : (
             <>
-              <LogIn className="mr-2" size={16} /> Registrarse
+              <UserPlus className="mr-2" size={18} /> Crear cuenta
             </>
           )}
         </Button>
@@ -173,30 +132,25 @@ export function RegisterForm() {
 
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-gray-200" />
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="bg-background px-2 text-muted-foreground">
-            o con Google
-          </span>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white px-2 text-gray-400">O también</span>
         </div>
       </div>
 
       <Button
         variant="outline"
-        className="w-full flex items-center justify-center gap-2"
-        onClick={handleGoogleRegister}
-        aria-label="Registrarse con Google"
+        className="w-full py-6 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 transition-colors"
+        onClick={() => alert("Función próximamente disponible")}
       >
-        <ShieldCheck size={16} /> Registrarse con Google
+        <ShieldCheck className="text-blue-500" size={18} /> Registrarse con
+        Google
       </Button>
 
-      <p className="text-sm text-center mt-4 text-muted-foreground">
+      <p className="text-sm text-center mt-4 text-gray-500">
         ¿Ya tenés cuenta?{" "}
-        <a
-          href="/login"
-          className="text-blue-600 font-semibold hover:underline transition"
-        >
+        <a href="/login" className="text-[#05467D] font-bold hover:underline">
           Iniciá sesión
         </a>
       </p>

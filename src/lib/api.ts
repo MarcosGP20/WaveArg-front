@@ -1,5 +1,6 @@
 // lib/api.ts
-import { Producto, Variante } from '@/interfaces/producto';
+import { Producto, Variante } from "@/interfaces/producto";
+import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
 
 // Re-export for convenience
 export type { Producto, Variante };
@@ -50,6 +51,12 @@ export async function fetchFromApi<T>(
     if (!res.ok) {
       // Intentamos parsear el JSON de error del backend .NET
       const errorData = await res.json().catch(() => ({}));
+      
+      // Mensaje personalizado para error 500 de duplicado
+      if (res.status === 500 && errorData.message?.includes("UNIQUE KEY")) {
+        throw new Error("Este email ya está registrado. Usa otro email.");
+      }
+      
       throw new Error(
         errorData.message || `Error ${res.status}: ${res.statusText}`
       );
@@ -67,28 +74,45 @@ export async function fetchFromApi<T>(
 
 // --- Endpoints ---
 
-// Definimos interfaces para tener autocompletado total
-export interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    nombre: string;
-  };
-}
-
-export async function registerUser(data: Record<string, any>) {
-  return fetchFromApi<AuthResponse>("/auth/register", {
+export async function loginUser(data: LoginDTO) {
+  return fetchFromApi<AuthResponse>("/Auth/login", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(data), // Enviará { email, contraseña }
   });
 }
 
-export async function loginUser(data: object) {
-  return fetchFromApi<AuthResponse>("/auth/login", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+export async function registerUser(data: RegisterDTO) {
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
+
+  try {
+    const response = await fetch(`${API_BASE}/Auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 500 && errorData.message?.includes("UNIQUE KEY")) {
+        throw new Error("Este email ya está registrado. Usa otro email.");
+      }
+      
+      throw new Error(
+        errorData.message || `Error ${response.status}: ${response.statusText}`
+      );
+    }
+
+    // El backend devuelve texto plano, no JSON
+    const text = await response.text();
+    return { message: text };
+  } catch (error) {
+    console.error("[API Error - /Auth/register]:", error);
+    throw error;
+  }
 }
 
 // Ejemplo de lo que necesitas para el catálogo
