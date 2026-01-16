@@ -19,12 +19,30 @@ export const useAuthStore = create<AuthState>()(
       isLoggedIn: false,
       setAuth: (token: string, user: User) => {
         console.log("💾 Guardando en Zustand:", { token, user });
+        
+        // Guardar token en cookie para que el middleware lo lea
+        if (typeof document !== "undefined") {
+          const sevenDaysInSeconds = 7 * 24 * 60 * 60;
+          document.cookie = `auth-token=${token}; path=/; max-age=${sevenDaysInSeconds}; SameSite=Strict`;
+          console.log("🍪 Cookie auth-token guardada");
+        }
+        
         return set({ token, user, isLoggedIn: true });
       },
-      logout: () => set({ token: null, user: null, isLoggedIn: false }),
+      logout: () => {
+        console.log("🚪 Cerrando sesión");
+        
+        // Eliminar cookie
+        if (typeof document !== "undefined") {
+          document.cookie = "auth-token=; path=/; max-age=0; SameSite=Strict";
+          console.log("🍪 Cookie auth-token eliminada");
+        }
+        
+        return set({ token: null, user: null, isLoggedIn: false });
+      },
     }),
     {
-      name: "auth-storage", // nombre de la key en localStorage
+      name: "auth-storage",
     }
   )
 );

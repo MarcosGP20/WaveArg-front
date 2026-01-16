@@ -4,10 +4,18 @@
  */
 export function decodeJWT(token: string) {
   try {
-    const parts = token.split(".");
-    if (parts.length !== 3) throw new Error("JWT inválido");
+    const parts = token.split('.');
+    if (parts.length !== 3) throw new Error('JWT inválido');
 
-    const payload = JSON.parse(atob(parts[1]));
+    const payloadB64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    let json = '';
+    if (typeof window !== 'undefined' && typeof atob === 'function') {
+      json = atob(payloadB64);
+    } else {
+      // Node.js environment
+      json = Buffer.from(payloadB64, 'base64').toString('utf8');
+    }
+    const payload = JSON.parse(json);
     return payload;
   } catch (error) {
     console.error("Error decodificando JWT:", error);
