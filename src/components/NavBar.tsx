@@ -304,7 +304,7 @@ export default function NavBar() {
 
                   <Link
                     href="/account/profile"
-                    className="block px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
+                    className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
                     onClick={() => setUserDropdownOpen(false)}
                   >
                     <FaUserCircle size={16} /> Mi Perfil
@@ -313,7 +313,7 @@ export default function NavBar() {
                   {user.rol === "Admin" && (
                     <Link
                       href="/admin"
-                      className="block px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
+                      className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
                       onClick={() => setUserDropdownOpen(false)}
                     >
                       <FaCog size={16} /> Panel Admin

@@ -16,6 +16,8 @@ export function decodeJWT(token: string) {
       json = Buffer.from(payloadB64, "base64").toString("utf8");
     }
     const payload = JSON.parse(json);
+    console.log("🔍 JWT Payload completo:", payload);
+    console.log("🔍 Keys disponibles:", Object.keys(payload));
     return payload;
   } catch (error) {
     console.error("Error decodificando JWT:", error);
