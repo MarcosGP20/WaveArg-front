@@ -1,10 +1,6 @@
 import MetricCard from "./MetridCard";
 import DataGrid from "./DataGrid";
-import {
-  dashboardMetrics,
-  topProducts,
-  recentOrders,
-} from "../../app/admin/lib/mockData";
+import { dashboardMetrics, topProducts, recentOrders } from "../lib/mockData";
 import { DollarSign, ShoppingCart, Users, Package } from "lucide-react";
 export default function Dashboard() {
   // ============================================

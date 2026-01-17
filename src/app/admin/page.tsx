@@ -8,7 +8,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import Dashboard from "@/components/admin/Dashboard";
+import Dashboard from "@/app/admin/components/Dashboard";
 
 const statsData = [
   {

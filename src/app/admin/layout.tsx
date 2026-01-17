@@ -1,5 +1,5 @@
-import AdminSideBar from "@/components/admin/AdminSideBar";
-import AdminHeader from "@/components/admin/AdminHeader";
+import AdminSideBar from "@/app/admin/components/AdminSideBar";
+import AdminHeader from "@/app/admin/components/AdminHeader";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { decodeJWT } from "@/lib/jwt";
