@@ -16,7 +16,8 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   // Server-side protection: validar cookie antes de renderizar
-  const tokenCookie = await cookies().get("auth-token");
+  const cookieStore = await cookies();
+  const tokenCookie = cookieStore.get("auth-token");
   const token = tokenCookie?.value;
 
   if (!token) {

@@ -51,8 +51,12 @@ export function middleware(request: NextRequest) {
   console.log(
     `🔐 [Middleware] ${pathname} | Auth: ${isAuthenticated} | Rol: ${
       decodedToken?.rol || "N/A"
-    }`
+    } | Token existe: ${!!token}`
   );
+
+  if (!token && pathname.startsWith("/admin")) {
+    console.log("⚠️ [Warning] No hay token en cookie para ruta /admin");
+  }
 
   // 1. Permitir rutas públicas
   const isPublic = PUBLIC_ROUTES.some(
@@ -87,11 +91,17 @@ export function middleware(request: NextRequest) {
 
     // 3. Validar acceso por rol
     if (pathname.startsWith("/admin")) {
-      if (decodedToken?.rol !== "Admin") {
-        console.log(`❌ [Redirect] No-Admin intenta /admin → /account/profile`);
+      // Verificar múltiples variantes del rol (case-insensitive)
+      const userRol = decodedToken?.rol?.toLowerCase() || "";
+      const isAdmin = userRol === "admin" || userRol === "administrador";
+      
+      if (!isAdmin) {
+        console.log(
+          `❌ [Redirect] No-Admin (rol: ${decodedToken?.rol}) intenta /admin → /account/profile`
+        );
         return NextResponse.redirect(new URL("/account/profile", request.url));
       }
-      console.log(`✅ [Allow] Admin en /admin`);
+      console.log(`✅ [Allow] Admin en /admin (rol: ${decodedToken?.rol})`);
     }
 
     if (pathname.startsWith("/account")) {

@@ -17,3 +17,10 @@ export interface Producto {
   imagenes: string[];
   variantes: Variante[];
 }
+
+export type CreateProductoDTO = Omit<
+  Producto,
+  "id" | "stockTotal" | "variantes"
+> & {
+  variantes: Omit<Variante, "id">[];
+};

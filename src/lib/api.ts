@@ -65,7 +65,15 @@ export async function fetchFromApi<T>(
     // Para endpoints que devuelven 204 No Content (como un DELETE exitoso)
     if (res.status === 204) return {} as T;
 
-    return (await res.json()) as T;
+    // El backend podría devolver texto plano en lugar de JSON
+    const contentType = res.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      return (await res.json()) as T;
+    } else {
+      // Si es texto plano, lo convertimos a objeto con message
+      const text = await res.text();
+      return { message: text } as T;
+    }
   } catch (error) {
     console.error(`[API Error - ${endpoint}]:`, error);
     throw error;
@@ -73,6 +81,34 @@ export async function fetchFromApi<T>(
 }
 
 // --- Endpoints ---
+
+export const ProductService = {
+  getAll: (soloDisponibles = false) =>
+    fetchFromApi<Producto[]>(
+      `/Productos${soloDisponibles ? "?soloDisponibles=true" : ""}`
+    ),
+
+  getById: (id: number | string) => fetchFromApi<Producto>(`/Productos/${id}`),
+
+  create: (
+    data: any // Usamos any o CreateProductoDTO
+  ) =>
+    fetchFromApi<Producto>("/Productos", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  update: (id: number, data: Partial<Producto>) =>
+    fetchFromApi<Producto>(`/Productos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id: number) =>
+    fetchFromApi<void>(`/Productos/${id}`, {
+      method: "DELETE",
+    }),
+};
 
 export async function loginUser(data: LoginDTO) {
   return fetchFromApi<AuthResponse>("/Auth/login", {
@@ -82,40 +118,11 @@ export async function loginUser(data: LoginDTO) {
 }
 
 export async function registerUser(data: RegisterDTO) {
-  const API_BASE =
-    process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
-
-  try {
-    const response = await fetch(`${API_BASE}/Auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-
-      if (
-        response.status === 500 &&
-        errorData.message?.includes("UNIQUE KEY")
-      ) {
-        throw new Error("Este email ya está registrado. Usa otro email.");
-      }
-
-      throw new Error(
-        errorData.message || `Error ${response.status}: ${response.statusText}`
-      );
-    }
-
-    // El backend devuelve texto plano, no JSON
-    const text = await response.text();
-    return { message: text };
-  } catch (error) {
-    console.error("[API Error - /Auth/register]:", error);
-    throw error;
-  }
+  // Ahora usamos fetchFromApi para ser consistentes
+  return fetchFromApi<{ message: string }>("/Auth/register", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
 
 // Ejemplo de lo que necesitas para el catálogo

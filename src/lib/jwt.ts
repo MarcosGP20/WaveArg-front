@@ -48,5 +48,7 @@ export function getEmailFromJWT(token: string): string | null {
 export function getRoleFromJWT(token: string): string | null {
   const payload = decodeJWT(token);
   // El claim puede ser "role", "roles", "rol", etc.
-  return payload?.role || payload?.roles || payload?.rol || null;
+  const rol = payload?.role || payload?.roles || payload?.rol || null;
+  console.log("🔑 Rol extraído del JWT:", rol);
+  return rol;
 }
