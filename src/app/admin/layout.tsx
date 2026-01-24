@@ -3,6 +3,7 @@ import AdminHeader from "@/app/admin/components/AdminHeader";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { decodeJWT } from "@/lib/jwt";
+import { Toaster } from "@/components/ui/sonner";
 
 interface DecodedToken {
   rol?: string;
@@ -52,6 +53,7 @@ export default async function AdminLayout({
           <AdminHeader />
         </header>
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <Toaster />
       </div>
     </div>
   );

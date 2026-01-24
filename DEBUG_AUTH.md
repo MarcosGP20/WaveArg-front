@@ -1,15 +1,18 @@
 # 🔍 Debug de Autenticación - /admin/productos
 
 ## ⚠️ Problema Reportado
+
 No puedes acceder a `/admin/productos` aunque estés logueado como Admin.
 
 ## ✅ Cambios Realizados
 
 ### 1. `src/lib/jwt.ts`
+
 - ✅ Añadido log para ver exactamente qué rol se extrae del JWT
 
 ### 2. `middleware.ts`
-- ✅ Validación de rol ahora es **case-insensitive** 
+
+- ✅ Validación de rol ahora es **case-insensitive**
 - ✅ Acepta "admin" o "administrador" (no solo "Admin")
 - ✅ Mejorados los logs para debug
 
@@ -26,6 +29,7 @@ No puedes acceder a `/admin/productos` aunque estés logueado como Admin.
    - `❌ [Redirect]` - si te redirige
 
 ### Opción 2: Reproducir el Login
+
 1. Logout (Ctrl+Shift+Delete borrar cookies si es necesario)
 2. Login nuevamente como Admin
 3. Intenta acceder a `/admin/productos`

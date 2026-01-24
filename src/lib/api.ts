@@ -20,7 +20,7 @@ const getAuthToken = () => {
 
 export async function fetchFromApi<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
   const token = getAuthToken();
 
@@ -58,7 +58,7 @@ export async function fetchFromApi<T>(
       }
 
       throw new Error(
-        errorData.message || `Error ${res.status}: ${res.statusText}`
+        errorData.message || `Error ${res.status}: ${res.statusText}`,
       );
     }
 
@@ -85,13 +85,13 @@ export async function fetchFromApi<T>(
 export const ProductService = {
   getAll: (soloDisponibles = false) =>
     fetchFromApi<Producto[]>(
-      `/Productos${soloDisponibles ? "?soloDisponibles=true" : ""}`
+      `/Productos${soloDisponibles ? "?soloDisponibles=true" : ""}`,
     ),
 
   getById: (id: number | string) => fetchFromApi<Producto>(`/Productos/${id}`),
 
   create: (
-    data: any // Usamos any o CreateProductoDTO
+    data: any, // Usamos any o CreateProductoDTO
   ) =>
     fetchFromApi<Producto>("/Productos", {
       method: "POST",
@@ -110,6 +110,13 @@ export const ProductService = {
     }),
 };
 
+export const VariantesService = {
+  create: (data: any) =>
+    fetchFromApi<Variante[]>("/Variantes", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+};
 export async function loginUser(data: LoginDTO) {
   return fetchFromApi<AuthResponse>("/Auth/login", {
     method: "POST",

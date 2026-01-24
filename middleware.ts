@@ -51,7 +51,7 @@ export function middleware(request: NextRequest) {
   console.log(
     `🔐 [Middleware] ${pathname} | Auth: ${isAuthenticated} | Rol: ${
       decodedToken?.rol || "N/A"
-    } | Token existe: ${!!token}`
+    } | Token existe: ${!!token}`,
   );
 
   if (!token && pathname.startsWith("/admin")) {
@@ -60,7 +60,7 @@ export function middleware(request: NextRequest) {
 
   // 1. Permitir rutas públicas
   const isPublic = PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
+    (route) => pathname === route || pathname.startsWith(route + "/"),
   );
 
   if (isPublic) {
@@ -70,7 +70,7 @@ export function middleware(request: NextRequest) {
       (pathname === "/login" || pathname === "/register")
     ) {
       console.log(
-        `✅ [Redirect] Logueado intenta ${pathname} → /account/profile`
+        `✅ [Redirect] Logueado intenta ${pathname} → /account/profile`,
       );
       return NextResponse.redirect(new URL("/account/profile", request.url));
     }
@@ -79,7 +79,7 @@ export function middleware(request: NextRequest) {
 
   // 2. Proteger rutas que requieren autenticación
   const isProtected = PROTECTED_ROUTES.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   if (isProtected) {
@@ -94,10 +94,10 @@ export function middleware(request: NextRequest) {
       // Verificar múltiples variantes del rol (case-insensitive)
       const userRol = decodedToken?.rol?.toLowerCase() || "";
       const isAdmin = userRol === "admin" || userRol === "administrador";
-      
+
       if (!isAdmin) {
         console.log(
-          `❌ [Redirect] No-Admin (rol: ${decodedToken?.rol}) intenta /admin → /account/profile`
+          `❌ [Redirect] No-Admin (rol: ${decodedToken?.rol}) intenta /admin → /account/profile`,
         );
         return NextResponse.redirect(new URL("/account/profile", request.url));
       }
