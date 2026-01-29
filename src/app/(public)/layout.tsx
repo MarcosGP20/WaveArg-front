@@ -23,6 +23,9 @@ const workSans = Work_Sans({
 export const metadata: Metadata = {
   title: "Wave ARG",
   description: "E-commerce demo built with Next.js and .NET backend",
+  icons: {
+    icon: "/iso3.svg",
+  },
 };
 
 export default function RootLayout({
@@ -31,11 +34,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/iso3.svg" />
-      </head>
-      <body className={`${atkinson.variable} ${workSans.variable}`}>
+    <html lang="es" className={`${atkinson.variable} ${workSans.variable}`}>
+      <head></head>
+      <body>
         <AuthProvider>
           <CartProvider>
             <CompareProvider>

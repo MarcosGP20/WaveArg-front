@@ -14,6 +14,7 @@ import { VariantesService, ProductService, Producto } from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { TableVariants } from "@/app/admin/components/TableVariants";
 
 export default function GestionVariantesPage() {
   const { id } = useParams();
@@ -22,6 +23,24 @@ export default function GestionVariantesPage() {
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loadingProducto, setLoadingProducto] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const cargarInformacion = async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      const data = await ProductService.getById(Number(id));
+      setProducto(data);
+    } catch (error) {
+      toast.error("Error al cargar la información del producto");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   cargarInformacion();
+  // }, [id]);
 
   const { register, control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
@@ -45,15 +64,18 @@ export default function GestionVariantesPage() {
   });
 
   useEffect(() => {
-    if (id) {
-      setLoadingProducto(true);
-      ProductService.getById(Number(id))
-        .then((data) => setProducto(data))
-        .catch(() =>
-          toast.error("No se pudo cargar la información del producto"),
-        )
-        .finally(() => setLoadingProducto(false));
-    }
+    if (!id) return;
+
+    setLoadingProducto(true);
+    setLoading(true);
+
+    ProductService.getById(Number(id))
+      .then(setProducto)
+      .catch(() => toast.error("No se pudo cargar la información del producto"))
+      .finally(() => {
+        setLoadingProducto(false);
+        setLoading(false);
+      });
   }, [id]);
 
   const onSubmit = async (data: any) => {
@@ -169,13 +191,11 @@ export default function GestionVariantesPage() {
                     </td>
                     <td className="p-3">
                       <select
+                        {...register(`variantes.${index}.esUsado`, {
+                          setValueAs: (v) => v === "true",
+                        })}
+                        defaultValue="false"
                         className="w-full p-2 border rounded text-sm"
-                        onChange={(e) =>
-                          setValue(
-                            `variantes.${index}.esUsado`,
-                            e.target.value === "true",
-                          )
-                        }
                       >
                         <option value="false">Nuevo</option>
                         <option value="true">Usado</option>
@@ -274,6 +294,16 @@ export default function GestionVariantesPage() {
           )}
         </button>
       </form>
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold text-gray-700">Stock Actual</h2>
+        <TableVariants
+          variantes={producto?.variantes || []}
+          loading={loading}
+          onDelete={(varId) =>
+            toast.info(`Eliminar variante ${varId} (Pendiente endpoint)`)
+          }
+        />
+      </section>
     </div>
   );
 }

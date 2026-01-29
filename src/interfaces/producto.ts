@@ -5,6 +5,7 @@ export interface Variante {
   precio: number;
   stock: number;
   esUsado: boolean;
+  detalleEstado: string;
   fotoEstadoUrl: string | null;
 }
 
