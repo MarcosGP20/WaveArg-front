@@ -14,7 +14,7 @@ export default function CommunitySection() {
     offset: ["start end", "end start"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 1.1]);
+  const scale = useTransform(scrollYProgress, [0, 0.2, 1], [0.7, 0.9, 1.2]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
@@ -24,30 +24,31 @@ export default function CommunitySection() {
         {/* 4. Aplicamos la animación al div que contiene la imagen y el texto */}
         <motion.div
           style={{ scale, opacity }}
-          className="relative rounded-3xl overflow-hidden shadow-2xl min-h-[600px] flex items-center"
+          className="relative rounded-3xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
         >
           <Image
-            src="/wave-comunidad.jpg"
+            src="/celu-wave-perfil-ig.png"
             alt="Comunidad móvil"
-            fill // Rellena el contenedor padre
-            className="object-cover" // Mantiene el aspect ratio
+            fill
+            className="object-cover"
             loading="lazy"
           />
           <div className="absolute inset-0 bg-black/50" />
-          <div className="relative z-10 max-w-2xl px-8 md:px-12 lg:px-16">
+          <div className="relative z-10 max-w-3xl px-8 md:px-12 lg:px-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
-              Únete a nuestra comunidad
+              Unite a nuestra comunidad
             </h2>
             <p className="text-gray-200 text-lg mb-10 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore
+              Accedé a oportunidades exclusivas y formá parte de una comunidad
+              que impulsa la creatividad, la tecnología y el contenido auténtico
+              en todo el país.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="https://www.instagram.com/wavearg__?igsh=NWNxdXZjbDFkMHc4"
                 target="_blank"
               >
-                <button className="bg-[#05467D] hover:bg-gray-500 text-white px-8 py-3 rounded-full transition-colors">
+                <button className="bg-[#05467D] hover:bg-[#043d6b] text-white px-8 py-3 rounded-full transition-colors cursor-pointer">
                   ¡Quiero unirme!
                 </button>
               </a>

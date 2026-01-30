@@ -1,8 +1,8 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
-import { products } from "@/lib/mock/products";
+import { Producto } from "@/lib/api";
 
-export type Product = (typeof products)[0];
+export type Product = Producto;
 
 type CompareContextType = {
   compareList: Product[];
