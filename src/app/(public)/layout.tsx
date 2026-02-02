@@ -1,54 +1,25 @@
-import type { Metadata } from "next";
-import { Atkinson_Hyperlegible } from "next/font/google";
-import { Work_Sans } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CompareProvider } from "@/context/CompareContext";
-import "../globals.css";
 
-const atkinson = Atkinson_Hyperlegible({
-  subsets: ["latin"],
-  variable: "--font-atkinson",
-  weight: ["400", "700"],
-});
-
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  variable: "--font-work-sans",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
-
-export const metadata: Metadata = {
-  title: "Wave ARG",
-  description: "E-commerce demo built with Next.js and .NET backend",
-  icons: {
-    icon: "/iso3.svg",
-  },
-};
-
-export default function RootLayout({
+export default function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${atkinson.variable} ${workSans.variable}`}>
-      <head></head>
-      <body>
-        <AuthProvider>
-          <CartProvider>
-            <CompareProvider>
-              <div className="flex min-h-screen flex-col">
-                <NavBar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </CompareProvider>
-          </CartProvider>
-        </AuthProvider>
-      </body>
-    </html>
+    <AuthProvider>
+      <CartProvider>
+        <CompareProvider>
+          <div className="flex min-h-screen flex-col">
+            <NavBar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </CompareProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
