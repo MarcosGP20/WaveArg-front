@@ -1,6 +1,7 @@
 // lib/api.ts
 import { Producto, Variante } from "@/interfaces/producto";
 import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // Re-export for convenience
 export type { Producto, Variante };
@@ -9,14 +10,14 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
 
 /**
- * Helper para obtener el token de forma segura en Next.js
+ * Lee el token desde la cookie auth-token (misma que usa el middleware y Zustand).
+ * Una sola fuente de verdad para autenticación.
  */
-const getAuthToken = () => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("token");
-  }
-  return null;
-};
+function getAuthToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/auth-token=([^;]+)/);
+  return match ? decodeURIComponent(match[1].trim()) : null;
+}
 
 export async function fetchFromApi<T>(
   endpoint: string,
@@ -39,11 +40,10 @@ export async function fetchFromApi<T>(
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, config);
 
-    // Si el backend responde 401, el token probablemente expiró
+    // Si el backend responde 401, el token probablemente expiró → limpiar auth (Zustand + cookie)
     if (res.status === 401) {
       if (typeof window !== "undefined") {
-        localStorage.removeItem("token");
-        // Opcional: window.location.href = '/login';
+        useAuthStore.getState().logout();
       }
       throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
     }

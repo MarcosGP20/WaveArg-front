@@ -75,7 +75,7 @@ export function LoginForm() {
         const isAdmin = user?.rol === "Admin";
 
         setTimeout(() => {
-          router.push(isAdmin ? "/admin/dashboard" : "/account/profile");
+          router.push(isAdmin ? "/admin" : "/account/profile");
         }, 1000);
       }
     } catch (error: any) {

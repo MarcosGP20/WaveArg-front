@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       // Si tienes otros dominios como los de SQL Server o Firebase, agregalos igual:
       {
         protocol: "https",
-        hostname: "tu-dominio-de-imagenes.com",
+        hostname: "http2.mlstatic.com",
       },
     ],
   },

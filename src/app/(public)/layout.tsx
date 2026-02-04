@@ -1,7 +1,6 @@
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
-import { AuthProvider } from "@/context/AuthContext";
 import { CompareProvider } from "@/context/CompareContext";
 
 export default function PublicLayout({
@@ -10,16 +9,14 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <CompareProvider>
-          <div className="flex min-h-screen flex-col">
-            <NavBar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </CompareProvider>
-      </CartProvider>
-    </AuthProvider>
+    <CartProvider>
+      <CompareProvider>
+        <div className="flex min-h-screen flex-col">
+          <NavBar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
+      </CompareProvider>
+    </CartProvider>
   );
 }
