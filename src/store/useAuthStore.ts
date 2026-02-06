@@ -21,7 +21,8 @@ export const useAuthStore = create<AuthState>()(
         // Cookie para que el middleware y la API lean el mismo token
         if (typeof document !== "undefined") {
           const sevenDaysInSeconds = 7 * 24 * 60 * 60;
-          document.cookie = `auth-token=${encodeURIComponent(token)}; path=/; max-age=${sevenDaysInSeconds}; SameSite=Strict`;
+          // JWT es seguro en cookie tal cual (no encodear) para que el middleware lo pueda decodificar.
+          document.cookie = `auth-token=${token}; path=/; max-age=${sevenDaysInSeconds}; SameSite=Strict`;
         }
         return set({ token, user, isLoggedIn: true });
       },

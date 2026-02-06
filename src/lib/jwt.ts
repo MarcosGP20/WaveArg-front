@@ -7,20 +7,30 @@ export function decodeJWT(token: string) {
     const parts = token.split(".");
     if (parts.length !== 3) throw new Error("JWT inválido");
 
-    const payloadB64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    // Base64URL → Base64 + padding
+    const payloadB64Url = parts[1];
+    const payloadB64 = payloadB64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padded =
+      payloadB64 + "=".repeat((4 - (payloadB64.length % 4)) % 4);
+
     let json = "";
-    if (typeof window !== "undefined" && typeof atob === "function") {
-      json = atob(payloadB64);
-    } else {
+    // Edge runtime (middleware) NO tiene window/Buffer siempre, pero sí suele tener atob en globalThis
+    const atobFn =
+      typeof globalThis !== "undefined" && typeof globalThis.atob === "function"
+        ? globalThis.atob
+        : null;
+
+    if (atobFn) {
+      json = atobFn(padded);
+    } else if (typeof Buffer !== "undefined") {
       // Node.js environment
-      json = Buffer.from(payloadB64, "base64").toString("utf8");
+      json = Buffer.from(padded, "base64").toString("utf8");
+    } else {
+      throw new Error("No hay decoder Base64 disponible");
     }
     const payload = JSON.parse(json);
-    console.log("🔍 JWT Payload completo:", payload);
-    console.log("🔍 Keys disponibles:", Object.keys(payload));
     return payload;
   } catch (error) {
-    console.error("Error decodificando JWT:", error);
     return null;
   }
 }
@@ -49,6 +59,5 @@ export function getRoleFromJWT(token: string): string | null {
   const payload = decodeJWT(token);
   // El claim puede ser "role", "roles", "rol", etc.
   const rol = payload?.role || payload?.roles || payload?.rol || null;
-  console.log("🔑 Rol extraído del JWT:", rol);
   return rol;
 }
