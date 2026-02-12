@@ -14,6 +14,21 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "http2.mlstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.sagitariodigital.com.ar",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.apple.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.sagitariodigital.com.ar",
+        pathname: "**",
+      },
     ],
   },
 };

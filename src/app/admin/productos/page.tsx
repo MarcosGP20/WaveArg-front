@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { ProductService, Producto } from "@/lib/api";
 import Link from "next/link";
-import { Plus, Settings2 } from "lucide-react";
+import Image from "next/image"; // Importante para optimización
+import { Plus, Settings2, Image as ImageIcon } from "lucide-react";
 
 export default function InventarioPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -14,6 +15,13 @@ export default function InventarioPage() {
       .then(setProductos)
       .finally(() => setLoading(false));
   }, []);
+
+  if (loading)
+    return (
+      <div className="p-6 text-center text-gray-500">
+        Cargando inventario...
+      </div>
+    );
 
   return (
     <div className="p-6">
@@ -33,6 +41,7 @@ export default function InventarioPage() {
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-50 text-[#05467d] uppercase text-xs font-semibold">
             <tr>
+              <th className="px-6 py-4 w-20 text-center">Foto</th>
               <th className="px-6 py-4">Producto</th>
               <th className="px-6 py-4">Modelo</th>
               <th className="px-6 py-4">Stock Total</th>
@@ -42,13 +51,27 @@ export default function InventarioPage() {
           <tbody className="divide-y divide-gray-100">
             {productos.map((p) => (
               <tr key={p.id} className="hover:bg-blue-50/30 transition-colors">
+                <td className="px-6 py-4">
+                  <div className="w-12 h-12 relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+                    {p.imagenes && p.imagenes.length > 0 ? (
+                      <Image
+                        src={p.imagenes[0]} // Mostrar la primera imagen del producto
+                        alt={p.nombre}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <ImageIcon className="text-gray-300" size={20} />
+                    )}
+                  </div>
+                </td>
                 <td className="px-6 py-4 font-medium text-gray-900">
                   {p.nombre}
                 </td>
                 <td className="px-6 py-4 text-gray-600">{p.modelo}</td>
                 <td className="px-6 py-4 text-gray-600">
                   <span
-                    className={`px-2 py-1 rounded text-xs ${
+                    className={`px-2 py-1 rounded text-xs font-medium ${
                       p.stockTotal > 0
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-700"
@@ -62,9 +85,8 @@ export default function InventarioPage() {
                     <Link
                       href={`/admin/productos/${p.id}/variantes`}
                       className="flex items-center gap-1 text-sm text-[#05467d] hover:underline font-semibold"
-                      title="Gestionar Variantes"
                     >
-                      <i data-lucide="layers-plus"></i> + Variante
+                      + Variante
                     </Link>
                     <button className="text-gray-400 hover:text-gray-600">
                       <Settings2 size={18} />
