@@ -7,7 +7,8 @@ import {
   PackageOpen,
   ExternalLink,
 } from "lucide-react";
-import { Variante } from "@/lib/api";
+import { Variante, VariantesService } from "@/lib/api";
+import { toast } from "sonner";
 
 interface TableVariantsProps {
   variantes: Variante[];
@@ -93,9 +94,38 @@ export const TableVariants = ({
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
-                    <button className="p-1.5 text-gray-400 hover:text-blue-600">
+                    <button
+                      onClick={() => {
+                        const nuevoPrecio = prompt(
+                          "Nuevo Precio (USD):",
+                          v.precio.toString(),
+                        );
+                        const nuevoStock = prompt(
+                          "Nuevo Stock:",
+                          v.stock.toString(),
+                        );
+
+                        if (nuevoPrecio && nuevoStock) {
+                          const updatePromise = VariantesService.update(v.id, {
+                            precio: Number(nuevoPrecio),
+                            stock: Number(nuevoStock),
+                          });
+
+                          toast.promise(updatePromise, {
+                            loading: "Actualizando...",
+                            success: () => {
+                              window.location.reload(); // Recarga simple para ver los cambios
+                              return "Actualizado correctamente";
+                            },
+                            error: "Error al actualizar",
+                          });
+                        }
+                      }}
+                      className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                    >
                       <Edit3 size={16} />
                     </button>
+
                     <button
                       disabled={!onDelete}
                       onClick={() => onDelete?.(v.id)}

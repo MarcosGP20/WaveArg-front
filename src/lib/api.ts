@@ -116,6 +116,17 @@ export const VariantesService = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  update: (id: number, data: Partial<Variante>) =>
+    fetchFromApi<Variante>(`/Variantes/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id: number) =>
+    fetchFromApi<void>(`/Variantes/${id}`, {
+      method: "DELETE",
+    }),
 };
 export async function loginUser(data: LoginDTO) {
   return fetchFromApi<AuthResponse>("/Auth/login", {

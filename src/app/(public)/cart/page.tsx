@@ -3,9 +3,11 @@ import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const router = useRouter();
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -93,9 +95,7 @@ export default function CartPage() {
         </button>
         <button
           className="bg-[#05467D] text-white px-4 py-2 rounded-full hover:bg-[#063c68]"
-          onClick={() => {
-            window.location.href = "/checkout";
-          }}
+          onClick={() => router.push("/checkout")}
         >
           Ir a pagar
         </button>

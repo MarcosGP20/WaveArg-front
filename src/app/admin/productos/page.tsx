@@ -23,6 +23,29 @@ export default function InventarioPage() {
       </div>
     );
 
+  // Lógica de agrupación
+  const productosAgrupados = productos.reduce((acc: Producto[], current) => {
+    const key = `${current.nombre}-${current.modelo}`.toLowerCase();
+
+    const existente = acc.find(
+      (p) => `${p.nombre}-${p.modelo}`.toLowerCase() === key, // Corregido p.p.modelo -> p.modelo
+    );
+
+    if (existente) {
+      existente.variantes = [
+        ...(existente.variantes || []),
+        ...(current.variantes || []),
+      ];
+      existente.imagenes = [
+        ...(existente.imagenes || []),
+        ...(current.imagenes || []),
+      ];
+    } else {
+      acc.push({ ...current });
+    }
+    return acc;
+  }, []);
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
@@ -40,7 +63,6 @@ export default function InventarioPage() {
       <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-50 text-[#05467d] uppercase text-xs font-semibold">
-            {/* Sin espacios entre etiquetas para evitar errores de hidratación */}
             <tr>
               <th className="px-6 py-4 w-20 text-center">Foto</th>
               <th className="px-6 py-4">Producto</th>
@@ -50,8 +72,8 @@ export default function InventarioPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {productos.map((p) => {
-              // EL CÁLCULO VA AQUÍ ADENTRO
+            {/* AQUÍ CAMBIAMOS productos por productosAgrupados */}
+            {productosAgrupados.map((p) => {
               const stockCalculado =
                 p.variantes?.reduce((acc, v) => acc + v.stock, 0) || 0;
 
