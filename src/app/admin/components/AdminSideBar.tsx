@@ -13,7 +13,7 @@ const navLinks = [
   },
   {
     name: "Productos",
-    href: "/admin/products",
+    href: "/admin/productos",
     icon: ShoppingBag,
   },
   {
