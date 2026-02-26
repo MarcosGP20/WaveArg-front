@@ -2,6 +2,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
+import CompareBar from "@/components/CompareBar";
 
 export default function PublicLayout({
   children,
@@ -14,6 +15,7 @@ export default function PublicLayout({
         <div className="flex min-h-screen flex-col">
           <NavBar />
           <main className="flex-1">{children}</main>
+          <CompareBar />
           <Footer />
         </div>
       </CompareProvider>

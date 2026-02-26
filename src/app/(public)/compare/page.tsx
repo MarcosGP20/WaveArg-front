@@ -3,20 +3,12 @@
 import { useCompare } from "@/context/CompareContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Toast from "@/components/ui/Toast";
 
-type Spec = { label: string; value: string };
-type Producto = {
-  id: number | string;
-  nombre: string;
-  precio: number;
-  color: string;
-  memoria: string;
-  image: string;
-  specs: Spec[];
-};
+import { Producto } from "@/interfaces/producto";
 
 export default function ComparePage() {
   const { compareList, clearCompare, setModoComparacion } = useCompare();
@@ -33,26 +25,27 @@ export default function ComparePage() {
     };
   }, [setModoComparacion]);
 
-  // Etiquetas de specs que vienen en p.specs
-  const specsLabels = ["Pantalla", "Cámara", "Chip", "Batería", "Resistencia"];
 
   const getValue = (p: Producto, label: string): string => {
+    const v = p.variantes?.[0];
     switch (label) {
       case "Modelo":
-        return p.nombre;
+        return p.nombre ?? "-";
       case "Precio":
-        return `$${Number(p.precio).toLocaleString()}`;
+        return v?.precio != null ? `$${Number(v.precio).toLocaleString()}` : "-";
       case "Color":
-        return p.color;
+        return v?.color ?? "-";
       case "Memoria":
-        return p.memoria;
+        return v?.memoria ?? "-";
+      case "Estado":
+        return v?.esUsado ? "Usado" : "Nuevo";
       default:
-        return p.specs.find((s) => s.label === label)?.value ?? "-";
+        return "-";
     }
   };
 
   const rowLabels: string[] = useMemo(
-    () => ["Modelo", "Precio", "Color", "Memoria", ...specsLabels],
+    () => ["Modelo", "Precio", "Color", "Memoria", "Estado"],
     []
   );
 
@@ -85,11 +78,25 @@ export default function ComparePage() {
   // Empty state (ya no rompe hooks porque TODOS los hooks se ejecutaron antes)
   if (compareList.length < 2) {
     return (
-      <div className="p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">Comparar modelos</h1>
-        <p className="text-gray-500">
-          Seleccioná al menos 2 productos para comparar.
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+        <div className="text-6xl mb-4">⚖️</div>
+        <h1 className="text-3xl font-bold mb-2 text-[#05467D]">Comparar modelos</h1>
+        <p className="text-gray-500 mb-8 max-w-sm">
+          Seleccioná al menos 2 productos desde el catálogo para ver una
+          comparación detallada.
         </p>
+        <Link
+          href="/products"
+          className="bg-[#05467D] text-white px-8 py-3 rounded-full font-medium hover:bg-[#0F3C64] transition-colors shadow-md"
+        >
+          Ver productos
+        </Link>
+        <button
+          onClick={() => router.back()}
+          className="mt-4 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          ← Volver atrás
+        </button>
         <Toast
           message="Comparación vaciada"
           show={showToast}
@@ -117,7 +124,7 @@ export default function ComparePage() {
             <header className="flex items-center gap-3 mb-3">
               <div className="relative w-14 h-14 shrink-0">
                 <Image
-                  src={p.image}
+                  src={p.imagenes?.[0] || "/placeholder.png"}
                   alt={p.nombre}
                   fill
                   className="object-contain"
@@ -128,7 +135,7 @@ export default function ComparePage() {
                   {p.nombre}
                 </h2>
                 <p className="text-sm font-bold text-[#0F3C64]">
-                  ${Number(p.precio).toLocaleString()}
+                  {getValue(p, "Precio")}
                 </p>
               </div>
             </header>
@@ -169,7 +176,7 @@ export default function ComparePage() {
                   >
                     <div className="mx-auto h-24 w-full relative mb-2">
                       <img
-                        src={p.image}
+                        src={p.imagenes?.[0] || "/placeholder.png"}
                         alt={p.nombre}
                         className="h-24 mx-auto object-contain"
                       />

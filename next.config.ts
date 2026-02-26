@@ -9,25 +9,20 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-      // Si tienes otros dominios como los de SQL Server o Firebase, agregalos igual:
       {
         protocol: "https",
         hostname: "http2.mlstatic.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "www.sagitariodigital.com.ar",
-        pathname: "**",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "www.apple.com",
-        pathname: "**",
-      },
-      {
-        protocol: "https",
-        hostname: "www.sagitariodigital.com.ar",
-        pathname: "**",
+        pathname: "/**",
       },
     ],
   },

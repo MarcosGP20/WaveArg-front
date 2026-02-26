@@ -45,12 +45,8 @@ export function LoginForm() {
         contraseña: data.contraseña, // Usamos 'contraseña' como definimos en el DTO
       });
 
-      console.log("🔍 Respuesta del login:", response);
-
       // 2. Si hay éxito, guardamos en el Estado Global (Zustand)
       if (response && response.token) {
-        console.log("✅ Token recibido, guardando en store...");
-
         // Si el backend no devuelve user, lo extraemos del JWT
         let user = response.user;
         if (!user) {
@@ -63,12 +59,9 @@ export function LoginForm() {
             email: email || data.email,
             rol: rol || "User",
           };
-          console.log("📄 Usuario extraído del JWT:", user);
         }
 
         setAuth(response.token, user);
-        console.log("✅ Auth guardado en store");
-
         setStatusMessage("Sesión iniciada con éxito. Redirigiendo...");
 
         // 3. Redirección basada en Rol (con validación)

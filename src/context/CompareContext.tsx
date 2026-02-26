@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Producto } from "@/lib/api";
+import { Producto } from "@/interfaces/producto";
 
 export type Product = Producto;
 

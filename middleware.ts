@@ -42,20 +42,24 @@ function isTokenExpired(token: string): boolean {
   return decoded.exp < currentTime;
 }
 
+const isDev = process.env.NODE_ENV === "development";
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = request.cookies.get("auth-token")?.value;
   const isAuthenticated = token && !isTokenExpired(token);
   const decodedToken = isAuthenticated ? decodeToken(token!) : null;
 
-  console.log(
-    `🔐 [Middleware] ${pathname} | Auth: ${isAuthenticated} | Rol: ${
-      decodedToken?.rol || "N/A"
-    } | Token existe: ${!!token}`,
-  );
+  if (isDev) {
+    console.log(
+      `🔐 [Middleware] ${pathname} | Auth: ${isAuthenticated} | Rol: ${
+        decodedToken?.rol || "N/A"
+      } | Token existe: ${!!token}`,
+    );
+  }
 
   if (!token && pathname.startsWith("/admin")) {
-    console.log("⚠️ [Warning] No hay token en cookie para ruta /admin");
+    if (isDev) console.log("⚠️ [Warning] No hay token en cookie para ruta /admin");
   }
 
   // 1. Permitir rutas públicas
@@ -69,9 +73,11 @@ export function middleware(request: NextRequest) {
       isAuthenticated &&
       (pathname === "/login" || pathname === "/register")
     ) {
-      console.log(
-        `✅ [Redirect] Logueado intenta ${pathname} → /account/profile`,
-      );
+      if (isDev) {
+        console.log(
+          `✅ [Redirect] Logueado intenta ${pathname} → /account/profile`,
+        );
+      }
       return NextResponse.redirect(new URL("/account/profile", request.url));
     }
     return NextResponse.next();
@@ -85,7 +91,7 @@ export function middleware(request: NextRequest) {
   if (isProtected) {
     // Si no está autenticado
     if (!isAuthenticated) {
-      console.log(`❌ [Redirect] No autenticado intenta ${pathname} → /login`);
+      if (isDev) console.log(`❌ [Redirect] No autenticado intenta ${pathname} → /login`);
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
@@ -96,16 +102,18 @@ export function middleware(request: NextRequest) {
       const isAdmin = userRol === "admin" || userRol === "administrador";
 
       if (!isAdmin) {
-        console.log(
-          `❌ [Redirect] No-Admin (rol: ${decodedToken?.rol}) intenta /admin → /account/profile`,
-        );
+        if (isDev) {
+          console.log(
+            `❌ [Redirect] No-Admin (rol: ${decodedToken?.rol}) intenta /admin → /account/profile`,
+          );
+        }
         return NextResponse.redirect(new URL("/account/profile", request.url));
       }
-      console.log(`✅ [Allow] Admin en /admin (rol: ${decodedToken?.rol})`);
+      if (isDev) console.log(`✅ [Allow] Admin en /admin (rol: ${decodedToken?.rol})`);
     }
 
     if (pathname.startsWith("/account")) {
-      console.log(`✅ [Allow] Usuario en /account`);
+      if (isDev) console.log(`✅ [Allow] Usuario en /account`);
     }
   }
 
