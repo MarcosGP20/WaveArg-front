@@ -21,16 +21,16 @@ const ASSET_PATHS = {
 };
 
 export default function HomePage() {
-  // 2. CREA EL ESTADO DE CARGA
-  const [isLoading, setIsLoading] = useState(true);
+  // Loader solo se muestra la primera vez por sesión de navegador.
+  // La función inicializadora corre solo en el cliente (no en SSR).
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window === "undefined") return false; // SSR: nunca mostrar
+    return !sessionStorage.getItem("hasVisited"); // false si ya visitó
+  });
 
-  // 3. USA useEffect PARA VERIFICAR LA SESIÓN
-  // Esto hace que el loader solo aparezca 1 VEZ por sesión de navegador.
-
-  // 4. CREA LA FUNCIÓN QUE SE LLAMARÁ CUANDO EL VIDEO TERMINE
   const handleVideoLoaded = () => {
-    setIsLoading(false); // Oculta el loader
-    sessionStorage.setItem("hasVisited", "true"); // Marca la sesión como "visitada"
+    setIsLoading(false);
+    sessionStorage.setItem("hasVisited", "true");
   };
 
   // --- Tu código de animaciones (sin cambios) ---
