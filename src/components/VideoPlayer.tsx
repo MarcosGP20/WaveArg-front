@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import type { FC } from "react";
-// Importamos los iconos necesarios de Lucide
-import { Play, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
 interface LazyVideoProps {
   posterUrl: string;
@@ -20,11 +19,35 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(mode === "creator");
   const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(true); // autoPlay arranca en true
+  const [showIcon, setShowIcon] = useState(false);   // controla la animación del ícono central
 
-  // Función para alternar audio
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const iconTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Muestra el ícono central brevemente (estilo YouTube)
+  const flashIcon = useCallback(() => {
+    setShowIcon(true);
+    if (iconTimeoutRef.current) clearTimeout(iconTimeoutRef.current);
+    iconTimeoutRef.current = setTimeout(() => setShowIcon(false), 700);
+  }, []);
+
+  // Toggle play/pause al hacer click en el video (solo modo testimonial)
+  const handleVideoClick = useCallback(() => {
+    if (!videoRef.current || mode !== "testimonial") return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+    flashIcon();
+  }, [mode, flashIcon]);
+
+  // Toggle mute (solo modo creator)
   const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita conflictos con otros eventos de click
+    e.stopPropagation();
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
       setIsMuted(videoRef.current.muted);
@@ -33,13 +56,13 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
 
   const containerClasses =
     mode === "creator"
-      ? "w-full h-full" // El tamaño lo define el padre en page.tsx
+      ? "w-full h-full"
       : "aspect-video w-full rounded-xl shadow-lg";
 
   return (
     <div className={`relative overflow-hidden bg-gray-200 ${containerClasses}`}>
       {!isLoaded ? (
-        /* --- FACHADA PARA TESTIMONIALS --- */
+        /* --- FACHADA: poster + botón play --- */
         <button
           onClick={() => setIsLoaded(true)}
           className="group relative w-full h-full"
@@ -51,27 +74,60 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black/20">
             <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-xl transition-transform group-hover:scale-110">
-              {/* Icono Play de Lucide */}
               <Play className="w-8 h-8 text-black fill-current ml-1" />
             </div>
           </div>
         </button>
       ) : (
         <>
+          {/* Video */}
           <video
             ref={videoRef}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${mode === "testimonial" ? "cursor-pointer" : ""}`}
             poster={posterUrl}
             autoPlay
             muted={isMuted}
             loop={mode === "creator"}
             playsInline
-            controls={mode === "creator"} // Controles habilitados para tips de creadores
+            controls={mode === "creator"}
+            onClick={handleVideoClick}
           >
             <source src={videoUrlMp4} type="video/mp4" />
             Tu navegador no soporta videos.
           </video>
-          {/* Botón de estado de Audio (Solo modo creator) */}
+
+          {/* Overlay Play/Pause (solo modo testimonial) */}
+          {mode === "testimonial" && (
+            <>
+              {/* Ícono central animado — aparece brevemente al hacer click */}
+              <div
+                className={`
+                  pointer-events-none absolute inset-0 flex items-center justify-center
+                  transition-opacity duration-300
+                  ${showIcon ? "opacity-100" : "opacity-0"}
+                `}
+              >
+                <div className="bg-black/50 rounded-full p-4 backdrop-blur-sm">
+                  {isPlaying ? (
+                    <Pause className="w-8 h-8 text-white fill-current" />
+                  ) : (
+                    <Play className="w-8 h-8 text-white fill-current ml-0.5" />
+                  )}
+                </div>
+              </div>
+
+              {/* Hint de click — visible solo cuando el video está pausado */}
+              {!isPlaying && !showIcon && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="bg-white/90 rounded-full p-4 shadow-xl">
+                    <Play className="w-8 h-8 text-black fill-current ml-0.5" />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Botón de mute (solo modo creator) */}
           {mode === "creator" && (
             <button
               onClick={toggleMute}
