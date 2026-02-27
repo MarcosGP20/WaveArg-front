@@ -1,25 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ProductService, Producto } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Settings2, Image as ImageIcon } from "lucide-react";
+import { Plus, Settings2, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 
 export default function InventarioPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const cargarProductos = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await ProductService.getAll();
+      setProductos(data);
+    } catch (err: any) {
+      setError(err.message ?? "No se pudo cargar el inventario.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    ProductService.getAll()
-      .then(setProductos)
-      .finally(() => setLoading(false));
-  }, []);
+    cargarProductos();
+  }, [cargarProductos]);
 
   if (loading)
     return (
       <div className="p-6 text-center text-gray-500 font-medium">
         Cargando inventario...
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="p-6">
+        <div className="flex flex-col items-center justify-center gap-4 bg-red-50 border border-red-200 rounded-2xl p-10 text-center">
+          <AlertTriangle size={40} className="text-red-400" />
+          <p className="text-red-700 font-semibold text-lg">Error al cargar el inventario</p>
+          <p className="text-red-500 text-sm max-w-sm">{error}</p>
+          <button
+            onClick={cargarProductos}
+            className="flex items-center gap-2 bg-[#05467d] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors"
+          >
+            <RefreshCw size={15} />
+            Reintentar
+          </button>
+        </div>
       </div>
     );
 

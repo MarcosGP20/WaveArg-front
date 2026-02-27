@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ProductService } from "@/lib/api";
 import { Plus, Trash2, Image as ImageIcon, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ProductForm {
   nombre: string;
@@ -37,6 +38,7 @@ export default function NuevoProductoPage() {
 
   const onSubmit = async (data: ProductForm) => {
     setLoading(true);
+    setError(null);
     try {
       const payload = {
         nombre: data.nombre,
@@ -47,22 +49,12 @@ export default function NuevoProductoPage() {
           .filter((url) => url !== ""),
       };
 
-      const response = await ProductService.create(payload);
+      await ProductService.create(payload);
 
-      // IMPORTANTE: Verifica cómo viene el ID en la respuesta
-      console.log("Respuesta del servidor:", response);
-
-      // Intentamos obtener el ID de varias formas comunes en .NET
-      const productoId = (response as any).id || (response as any).Id;
-
-      if (productoId) {
-        router.push(`/admin/productos`);
-      } else {
-        console.error("No se encontró el ID en la respuesta:", response);
-        alert("Error: El producto se creó pero el servidor no devolvió el ID.");
-      }
+      toast.success("Producto creado correctamente");
+      router.push("/admin/productos");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message ?? "Error al crear el producto. Intentá de nuevo.");
     } finally {
       setLoading(false);
     }
