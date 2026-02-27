@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
+import { GoogleProvider } from "@/components/GoogleProvider";
 
 const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
@@ -35,7 +36,9 @@ export default function RootLayout({
         <link rel="icon" href="/iso3.svg" />
       </head>
       <body className={`${atkinson.variable} ${workSans.variable}`}>
-        {children}
+        <GoogleProvider>
+          {children}
+        </GoogleProvider>
       </body>
     </html>
   );

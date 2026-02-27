@@ -141,7 +141,14 @@ export const VariantesService = {
 export async function loginUser(data: LoginDTO) {
   return fetchFromApi<AuthResponse>("/Auth/login", {
     method: "POST",
-    body: JSON.stringify(data), // Enviará { email, contraseña }
+    body: JSON.stringify(data),
+  });
+}
+
+export async function loginWithGoogle(idToken: string) {
+  return fetchFromApi<AuthResponse>("/Auth/google", {
+    method: "POST",
+    body: JSON.stringify({ idToken }),
   });
 }
 

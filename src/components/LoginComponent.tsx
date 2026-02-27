@@ -6,17 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Loader2, LogIn, Mail, Lock, ShieldCheck } from "lucide-react";
+import { Loader2, LogIn, Mail, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/lib/api";
-import { useAuthStore } from "@/store/useAuthStore"; // Importamos tu nuevo Store
-import { loginSchema, LoginFormValues } from "@/schemas/auth.schema"; // Importamos el esquema centralizado
-import {
-  decodeJWT,
-  getUserIdFromJWT,
-  getEmailFromJWT,
-  getRoleFromJWT,
-} from "@/lib/jwt"; // Para extraer datos del JWT
+import { loginUser, loginWithGoogle } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
+import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
+import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
+import { GoogleLogin } from "@react-oauth/google";
 
 export function LoginForm() {
   const [serverError, setServerError] = useState("");
@@ -75,6 +71,33 @@ export function LoginForm() {
       setStatusMessage("");
       // El error viene del throw que configuramos en api.ts
       setServerError(error.message || "Credenciales incorrectas.");
+    }
+  };
+
+  // Login con Google — maneja el credential (idToken) retornado por Google
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    if (!credentialResponse.credential) return;
+    setServerError("");
+    setStatusMessage("Verificando cuenta de Google...");
+    try {
+      const response = await loginWithGoogle(credentialResponse.credential);
+      if (response?.token) {
+        let user = response.user;
+        if (!user) {
+          user = {
+            id: getUserIdFromJWT(response.token) || "unknown",
+            email: getEmailFromJWT(response.token) || "",
+            rol: getRoleFromJWT(response.token) || "User",
+          };
+        }
+        setAuth(response.token, user);
+        setStatusMessage("Sesión iniciada con Google. Redirigiendo...");
+        const isAdmin = user?.rol === "Admin";
+        setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
+      }
+    } catch (error: any) {
+      setStatusMessage("");
+      setServerError(error.message || "Error al iniciar sesión con Google.");
     }
   };
 
@@ -162,13 +185,17 @@ export function LoginForm() {
         </div>
       </div>
 
-      <Button
-        variant="outline"
-        className="w-full py-6 rounded-xl flex items-center justify-center gap-3 border-gray-200 hover:bg-gray-50"
-        onClick={() => alert("Próximamente...")}
-      >
-        <ShieldCheck size={18} className="text-blue-500" /> Google
-      </Button>
+      <div className="flex justify-center">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => setServerError("Error al conectar con Google. Intentá de nuevo.")}
+          text="continue_with"
+          shape="rectangular"
+          theme="outline"
+          size="large"
+          width="350"
+        />
+      </div>
 
       <p className="text-sm text-center mt-6 text-gray-500">
         ¿Aún no eres parte?{" "}
