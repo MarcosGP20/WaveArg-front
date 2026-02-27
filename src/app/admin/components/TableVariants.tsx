@@ -24,21 +24,22 @@ export const TableVariants = ({
   loading,
   onDelete,
 }: TableVariantsProps) => {
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingVariant, setEditingVariant] = useState<Variante | null>(null);
   const [editValues, setEditValues] = useState({ precio: "", stock: "" });
   const [isSaving, setIsSaving] = useState(false);
 
   const startEdit = (v: Variante) => {
-    setEditingId(v.id);
+    setEditingVariant(v);
     setEditValues({ precio: v.precio.toString(), stock: v.stock.toString() });
   };
 
   const cancelEdit = () => {
-    setEditingId(null);
+    setEditingVariant(null);
     setEditValues({ precio: "", stock: "" });
   };
 
-  const saveEdit = async (id: number) => {
+  const saveEdit = async () => {
+    if (!editingVariant) return;
     const precio = Number(editValues.precio);
     const stock = Number(editValues.stock);
 
@@ -49,7 +50,13 @@ export const TableVariants = ({
 
     setIsSaving(true);
     try {
-      await VariantesService.update(id, { precio, stock });
+      // color y memoria son required en el DTO — los mandamos con sus valores actuales
+      await VariantesService.update(editingVariant.id, {
+        precio,
+        stock,
+        color: editingVariant.color,
+        memoria: editingVariant.memoria,
+      });
       toast.success("Variante actualizada correctamente");
       cancelEdit();
       window.location.reload();
@@ -105,7 +112,9 @@ export const TableVariants = ({
               <>
                 <tr
                   key={v.id}
-                  className="hover:bg-blue-50/20 transition-colors group"
+                  className={`hover:bg-blue-50/20 transition-colors group ${
+                    editingVariant?.id === v.id ? "bg-blue-50/30" : ""
+                  }`}
                 >
                   <td className="px-6 py-4 font-medium text-gray-900">
                     {v.color}
@@ -154,7 +163,7 @@ export const TableVariants = ({
                 </tr>
 
                 {/* Fila de edición inline */}
-                {editingId === v.id && (
+                {editingVariant?.id === v.id && (
                   <tr key={`edit-${v.id}`} className="bg-blue-50/40">
                     <td colSpan={6} className="px-6 py-4">
                       <div className="flex flex-wrap items-end gap-4">
@@ -194,7 +203,7 @@ export const TableVariants = ({
                         </div>
                         <div className="flex gap-2 pb-0.5">
                           <button
-                            onClick={() => saveEdit(v.id)}
+                            onClick={() => saveEdit()}
                             disabled={isSaving}
                             className="flex items-center gap-1.5 bg-[#05467d] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
                           >

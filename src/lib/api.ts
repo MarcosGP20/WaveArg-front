@@ -57,9 +57,19 @@ export async function fetchFromApi<T>(
         throw new Error("Este email ya está registrado. Usa otro email.");
       }
 
-      throw new Error(
-        errorData.message || `Error ${res.status}: ${res.statusText}`,
-      );
+      // .NET ProblemDetails: { title, errors: { campo: ["msg"] } }
+      // .NET custom: { message: "..." }
+      let errorMessage = errorData.message || errorData.title || `Error ${res.status}: ${res.statusText}`;
+
+      // Si hay errores de validación de campo, los concatenamos
+      if (errorData.errors && typeof errorData.errors === "object") {
+        const detalles = Object.entries(errorData.errors)
+          .map(([campo, msgs]) => `${campo}: ${(msgs as string[]).join(", ")}`)
+          .join(" | ");
+        errorMessage = `${errorMessage} → ${detalles}`;
+      }
+
+      throw new Error(errorMessage);
     }
 
     // Para endpoints que devuelven 204 No Content (como un DELETE exitoso)
@@ -99,9 +109,9 @@ export const ProductService = {
     }),
 
   update: (id: number, data: Partial<Producto>) =>
-    fetchFromApi<Producto>(`/Productos/${id}`, {
+    fetchFromApi<Producto>(`/Productos`, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify({ id, ...data }),
     }),
 
   delete: (id: number) =>
@@ -118,9 +128,9 @@ export const VariantesService = {
     }),
 
   update: (id: number, data: Partial<Variante>) =>
-    fetchFromApi<Variante>(`/Variantes/${id}`, {
+    fetchFromApi<Variante>(`/Variantes`, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify({ id, ...data }),
     }),
 
   delete: (id: number) =>

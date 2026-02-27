@@ -4,12 +4,15 @@ import { useEffect, useState, useCallback } from "react";
 import { ProductService, Producto } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Settings2, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Edit3, Image as ImageIcon, RefreshCw, AlertTriangle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function InventarioPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const cargarProductos = useCallback(async () => {
     setLoading(true);
@@ -23,6 +26,20 @@ export default function InventarioPage() {
       setLoading(false);
     }
   }, []);
+
+  const handleDelete = async (id: number) => {
+    setIsDeleting(true);
+    try {
+      await ProductService.delete(id);
+      toast.success("Producto eliminado correctamente");
+      setDeletingId(null);
+      await cargarProductos();
+    } catch (err: any) {
+      toast.error(err.message ?? "Error al eliminar el producto");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
     cargarProductos();
@@ -108,6 +125,7 @@ export default function InventarioPage() {
                 p.variantes?.reduce((acc, v) => acc + v.stock, 0) || 0;
 
               return (
+                <>
                 <tr
                   key={p.id}
                   className="hover:bg-blue-50/30 transition-colors"
@@ -145,19 +163,83 @@ export default function InventarioPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex justify-center gap-3">
+                    <div className="flex justify-center gap-2">
                       <Link
                         href={`/admin/productos/${p.id}/variantes`}
                         className="flex items-center gap-1 text-sm text-[#05467d] hover:text-blue-800 font-bold transition-colors"
                       >
                         + Variante
                       </Link>
-                      <button className="text-gray-400 hover:text-gray-600">
-                        <Settings2 size={18} />
+                      <Link
+                        href={`/admin/productos/${p.id}/editar`}
+                        className="p-1.5 text-gray-400 hover:text-[#05467d] transition-colors"
+                        title="Editar producto"
+                      >
+                        <Edit3 size={16} />
+                      </Link>
+                      <button
+                        onClick={() => setDeletingId(p.id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                        title="Eliminar producto"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
                 </tr>
+
+                {/* Fila de confirmación de eliminación inline */}
+                {deletingId === p.id && (
+                  <tr key={`delete-${p.id}`} className="bg-red-50/60">
+                    <td colSpan={5} className="px-6 py-3">
+                      {p.variantes && p.variantes.length > 0 ? (
+                        // Tiene variantes → bloquear y guiar al admin
+                        <div className="flex items-center gap-4">
+                          <p className="text-sm font-medium text-orange-700">
+                            ⚠️ <span className="font-bold">{p.nombre}</span> tiene{" "}
+                            <span className="font-bold">{p.variantes.length} variante(s)</span>.
+                            Eliminá primero las variantes para poder borrar el producto.
+                          </p>
+                          <Link
+                            href={`/admin/productos/${p.id}/variantes`}
+                            className="text-sm bg-orange-500 text-white px-4 py-1.5 rounded-lg font-medium hover:bg-orange-600 transition-colors whitespace-nowrap"
+                          >
+                            Ir a variantes
+                          </Link>
+                          <button
+                            onClick={() => setDeletingId(null)}
+                            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      ) : (
+                        // Sin variantes → confirmar eliminación normal
+                        <div className="flex items-center gap-4">
+                          <p className="text-sm font-medium text-red-700">
+                            ¿Eliminar <span className="font-bold">{p.nombre}</span>? Esta acción no se puede deshacer.
+                          </p>
+                          <button
+                            onClick={() => handleDelete(p.id)}
+                            disabled={isDeleting}
+                            className="flex items-center gap-1.5 bg-red-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                          >
+                            {isDeleting ? <Loader2 size={13} className="animate-spin" /> : null}
+                            Sí, eliminar
+                          </button>
+                          <button
+                            onClick={() => setDeletingId(null)}
+                            disabled={isDeleting}
+                            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                )}
+                </>
               );
             })}
           </tbody>
