@@ -3,18 +3,22 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormValues } from "@/schemas/auth.schema";
-import { registerUser } from "@/lib/api";
+import { registerUser, loginWithGoogle } from "@/lib/api";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2, User, Mail, Lock, UserPlus, ShieldCheck } from "lucide-react";
+import { Loader2, Mail, Lock, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuthStore } from "@/store/useAuthStore";
+import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 
 export function RegisterForm() {
   const [serverError, setServerError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
 
   const {
     register,
@@ -51,6 +55,34 @@ export function RegisterForm() {
       setStatusMessage("");
       // Capturamos el mensaje de error que definimos en fetchFromApi
       setServerError(error?.message || "Hubo un problema al crear la cuenta.");
+    }
+  };
+
+  // Registro/Login con Google — mismo endpoint que el login.
+  // El backend crea el usuario si no existe, o lo autentica si ya existe.
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    if (!credentialResponse.credential) return;
+    setServerError("");
+    setStatusMessage("Verificando cuenta de Google...");
+    try {
+      const response = await loginWithGoogle(credentialResponse.credential);
+      if (response?.token) {
+        let user = response.user;
+        if (!user) {
+          user = {
+            id: getUserIdFromJWT(response.token) || "unknown",
+            email: getEmailFromJWT(response.token) || "",
+            rol: getRoleFromJWT(response.token) || "User",
+          };
+        }
+        setAuth(response.token, user);
+        setStatusMessage("¡Cuenta lista! Redirigiendo...");
+        const isAdmin = user?.rol === "Admin";
+        setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
+      }
+    } catch (error: any) {
+      setStatusMessage("");
+      setServerError(error.message || "Error al registrarse con Google.");
     }
   };
 
@@ -139,14 +171,17 @@ export function RegisterForm() {
         </div>
       </div>
 
-      <Button
-        variant="outline"
-        className="w-full py-6 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 transition-colors"
-        onClick={() => alert("Función próximamente disponible")}
-      >
-        <ShieldCheck className="text-blue-500" size={18} /> Registrarse con
-        Google
-      </Button>
+      <div className="flex justify-center">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => setServerError("Error al conectar con Google. Intentá de nuevo.")}
+          text="signup_with"
+          shape="rectangular"
+          theme="outline"
+          size="large"
+          width="350"
+        />
+      </div>
 
       <p className="text-sm text-center mt-4 text-gray-500">
         ¿Ya tenés cuenta?{" "}
