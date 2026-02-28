@@ -8,9 +8,9 @@ import {
 export default function FAQSection() {
   return (
     <>
-      <h1 className="mt-14 text-3xl text-[#05467D] font-bold text-center">
+      <h2 className="mt-14 text-3xl text-[#05467D] font-bold text-center">
         Preguntas frecuentes
-      </h1>
+      </h2>
       <div className="w-full flex justify-center items-center py-10">
         <Accordion
           type="single"
@@ -143,15 +143,19 @@ export default function FAQSection() {
             <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               🧾 ¿Tienen garantía?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-[#05467D] text-lg text-center">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-[#05467D] text-lg">
               <p>
-                Podés pagar con tarjeta de crédito o débito, transferencia
-                bancaria (con descuento) o Mercado Pago.
+                Sí. Todos nuestros equipos incluyen{" "}
+                <span className="font-semibold">garantía de 3 meses</span> contra
+                fallas de fábrica. Los iPhones nuevos sellados cuentan además con
+                la{" "}
+                <span className="font-semibold">garantía oficial de Apple</span>.
               </p>
               <p>
-                En cuotas, el interés depende del banco o la promoción vigente.
-                También aceptamos plan canje, donde entregás tu iPhone usado
-                como parte de pago.
+                En caso de cualquier inconveniente técnico, nos contactás
+                directamente y lo resolvemos. No desaparecemos después de la
+                venta:{" "}
+                <span className="font-semibold">damos la cara siempre.</span>
               </p>
             </AccordionContent>
           </AccordionItem>
