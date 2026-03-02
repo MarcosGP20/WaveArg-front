@@ -133,8 +133,8 @@ export default function ContactPage() {
                     <h3 className="font-medium text-gray-900">
                       Correo electrónico
                     </h3>
-                    <p className="text-gray-600">ventas@wavelength.com</p>
-                    <p className="text-gray-600">soporte@wavelength.com</p>
+                    <p className="text-gray-600">ventas@wavearg.com</p>
+                    <p className="text-gray-600">soporte@wavearg.com</p>
                   </div>
                 </div>
 

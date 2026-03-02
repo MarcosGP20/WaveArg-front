@@ -56,7 +56,7 @@ export default function Creadores() {
       </section>
 
       {/* Video Section */}
-      <section className="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center gap-12 mt-30">
+      <section className="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center gap-12 mt-10 md:mt-20">
         <div className="w-full md:w-1/2 flex justify-center">
           <div className="relative w-full max-w-[320px] aspect-[9/16] rounded-[3rem] overflow-hidden shadow-2xl bg-gray-200">
             <LazyVideoFacade

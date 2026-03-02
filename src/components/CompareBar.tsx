@@ -85,7 +85,7 @@ export default function CompareBar() {
         title="Cancelar selección"
       >
         <X size={18} />
-        <span className="hidden xs:inline">Cancelar</span>
+        <span className="hidden sm:inline">Cancelar</span>
       </button>
     </div>
   );
