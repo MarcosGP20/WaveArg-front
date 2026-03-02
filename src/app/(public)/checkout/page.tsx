@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const isFormValid = isNombreValid && isEmailValid && isTelefonoValid;
 
   return (
-    <div className="max-w-2xl mx-auto my-8 p-8 bg-white rounded-lg shadow">
+    <div className="max-w-2xl mx-auto my-4 sm:my-8 p-4 sm:p-8 bg-white rounded-lg shadow">
       <h1 className="text-2xl font-bold mb-6">Pago</h1>
 
       {/* Resumen del pedido */}

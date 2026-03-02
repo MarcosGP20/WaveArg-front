@@ -42,6 +42,15 @@ export default function HomePage() {
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.6, 1, 1.2]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
+  // Ref independiente para la segunda sección animada (creadores)
+  const containerRef2 = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: scrollYProgress2 } = useScroll({
+    target: containerRef2,
+    offset: ["start end", "end start"],
+  });
+  const scale2 = useTransform(scrollYProgress2, [0, 0.5, 1], [0.6, 1, 1.2]);
+  const opacity2 = useTransform(scrollYProgress2, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
   // 5. MODIFICA EL RETURN CON EL CONDICIONAL
   return (
     <>
@@ -97,15 +106,14 @@ export default function HomePage() {
           </section>
 
           <section
-            ref={containerRef}
+            ref={containerRef2}
             className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20 overflow-hidden"
           >
             <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
               {/* --- LADO IZQUIERDO (Imágenes) --- */}
-              {/* Convertimos el div contenedor en motion.div */}
               <motion.div
-                style={{ scale, opacity }}
-                className="relative origin-left" // origin-left ayuda a que crezca desde la izquierda hacia el centro
+                style={{ scale: scale2, opacity: opacity2 }}
+                className="relative origin-left"
               >
                 <div className="absolute top-0 left-0 w-64 h-64 md:w-80 md:h-80">
                   <img
@@ -128,10 +136,9 @@ export default function HomePage() {
               </motion.div>
 
               {/* --- LADO DERECHO (Texto) --- */}
-              {/* También lo animamos igual para probar la consistencia */}
               <motion.div
-                style={{ scale, opacity }}
-                className="space-y-8 origin-right" // origin-right para que crezca desde la derecha hacia el centro
+                style={{ scale: scale2, opacity: opacity2 }}
+                className="space-y-8 origin-right"
               >
                 <div>
                   <h2 className="text-4xl md:text-4xl font-bold text-[#05467D] mb-6">

@@ -1,8 +1,11 @@
+"use client";
+
 // CAMBIO 1: Importamos los íconos de 'react-icons/fa' (Font Awesome)
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { MdMailOutline } from "react-icons/md";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // --- Data para los links ---
 const navLinks = [
@@ -58,6 +61,8 @@ const outlineButtonStyles = `${baseButtonStyles} border border-white text-white 
 const solidButtonStyles = `${baseButtonStyles} bg-white text-[#05467D] hover:bg-gray-200`;
 
 export default function Footer() {
+  const { isLoggedIn } = useAuthStore();
+
   return (
     <footer className="bg-[#05467D] text-white py-10 mt-20">
       <div className="max-w-6xl mx-auto px-6">
@@ -117,14 +122,22 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 5. Botones de Autenticación */}
+          {/* 5. Botones de Autenticación / Link a cuenta */}
           <div className="flex flex-col space-y-3">
-            <Link href="/login" className={outlineButtonStyles}>
-              Iniciar sesión
-            </Link>
-            <Link href="/register" className={solidButtonStyles}>
-              Registrarse
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/account/profile" className={solidButtonStyles}>
+                Mi cuenta
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" className={outlineButtonStyles}>
+                  Iniciar sesión
+                </Link>
+                <Link href="/register" className={solidButtonStyles}>
+                  Registrarse
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
