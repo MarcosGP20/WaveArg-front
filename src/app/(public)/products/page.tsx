@@ -6,6 +6,7 @@ import { getProductos } from "@/lib/api";
 import { Producto } from "@/interfaces/producto";
 import ProductCard from "@/components/ProductCards";
 import FilterSidebar from "@/components/FilterSide";
+import { SlidersHorizontal, X } from "lucide-react";
 
 /** Convierte "iPhone 15 Pro" → "iphone-15-pro" para coincidir con la URL */
 function toSlug(name: string): string {
@@ -26,6 +27,16 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Cuenta cuántos filtros están activos para el badge del botón
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    for (const key of ["estado", "memoria", "modelo", "familia"]) {
+      if (searchParams.get(key)) count++;
+    }
+    return count;
+  }, [searchParams]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -94,17 +105,46 @@ export default function ProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-32">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#05467D]">Nuestro Catálogo</h1>
-        <p className="text-gray-500">
-          {filteredProducts.length === products.length
-            ? `${products.length} productos disponibles`
-            : `${filteredProducts.length} de ${products.length} productos`}
-        </p>
+      {/* Cabecera: título + botón filtros (mobile) */}
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold text-[#05467D]">Nuestro Catálogo</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {filteredProducts.length === products.length
+              ? `${products.length} productos disponibles`
+              : `${filteredProducts.length} de ${products.length} productos`}
+          </p>
+        </div>
+
+        {/* Botón toggle — solo visible en mobile (< lg) */}
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-[#05467D] hover:text-[#05467D] transition-colors"
+          aria-expanded={showFilters}
+          aria-controls="filter-sidebar"
+        >
+          {showFilters ? (
+            <X size={16} />
+          ) : (
+            <SlidersHorizontal size={16} />
+          )}
+          Filtros
+          {activeFilterCount > 0 && (
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#05467D] text-white text-[10px] font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        <aside className="w-full lg:w-64">
+        {/* Sidebar: oculto en mobile por defecto, visible con toggle o siempre en lg+ */}
+        <aside
+          id="filter-sidebar"
+          className={`w-full lg:w-64 lg:block ${
+            showFilters ? "block" : "hidden"
+          }`}
+        >
           <FilterSidebar />
         </aside>
 

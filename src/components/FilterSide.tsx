@@ -41,7 +41,7 @@ export default function FilterSidebar() {
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4">
+    <aside className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4">
       <div className="mb-6 flex justify-between items-center">
         <h2 className="font-bold text-xl text-[#05467D] dark:text-white">
           Filtros
