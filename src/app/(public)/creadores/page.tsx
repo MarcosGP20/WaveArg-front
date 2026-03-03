@@ -1,4 +1,6 @@
 import { LazyVideoFacade } from "@/components/VideoPlayer";
+import IPhoneCarousel from "@/components/IPhoneCarousel";
+import Link from "next/link";
 import Image from "next/image";
 
 const creatorTools = [
@@ -48,9 +50,12 @@ export default function Creadores() {
             Todo lo que necesitas para crear contenido de calidad, elegir el
             equipo correcto y sacarle máximo provecho a tu iPhone o Mac
           </p>
-          <button className="mt-4 bg-[#05467D] text-white font-medium py-3 px-8 rounded-full transition-colors cursor-pointer hover:bg-[#03305a]">
+          <Link
+            href="/contacto"
+            className="mt-4 inline-block bg-[#05467D] text-white font-medium py-3 px-8 rounded-full transition-colors cursor-pointer hover:bg-[#03305a]"
+          >
             Quiero una asesoria!
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -71,9 +76,12 @@ export default function Creadores() {
             que usan estos equipos todos los dias para
             <span className="font-bold"> grabar, editar y trabajar.</span>
           </h3>
-          <button className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#043d6b] transition-colors">
+          <a
+            href="#equipos"
+            className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#043d6b] transition-colors inline-block"
+          >
             Ver equipos recomendados
-          </button>
+          </a>
         </div>
       </section>
 
@@ -82,14 +90,11 @@ export default function Creadores() {
         <h3 className="text-[#05467D] text-3xl font-bold mb-10">
           ¿Qué iPhone elegir para crear contenido?
         </h3>
-        {/* Aquí irá el carrusel cuando esté listo */}
-        <div className="w-full h-40 bg-gray-50 rounded-xl flex items-center justify-center border-dashed border-2 border-gray-200 text-gray-400">
-          Espacio para el carrusel de iPhones
-        </div>
+        <IPhoneCarousel />
       </section>
 
       {/* Zig-Zag Section: ¿Con qué editar? */}
-      <section className="max-w-5xl mx-auto px-6 py-20">
+      <section id="equipos" className="max-w-5xl mx-auto px-6 py-20">
         <h3 className="text-[#05467D] text-3xl font-bold text-center mb-16">
           ¿Con qué editar tu contenido?
         </h3>
