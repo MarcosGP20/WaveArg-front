@@ -203,54 +203,49 @@ export default function AboutPage() {
           Nuestros objetivos
         </h2>
 
-        <div className="flex flex-col  gap-8 md:gap-0">
+        <div className="flex flex-col gap-8 md:gap-0">
           {objectives.map((text, index) => {
             const number = index + 1;
-            const isEven = number % 2 === 0; // Para saber si es el 2 o el 4
+            const isEven = number % 2 === 0;
 
             return (
-              // CONTENEDOR FILA
-              <div
-                key={index}
-                className="flex flex-col py-4 items-center text-center md:grid md:grid-cols-[1fr_auto_1fr] md:gap-x-12 md:text-left"
-              >
-                {/* --- COLUMNA IZQUIERDA --- */}
-                {/* Si es PAR (2,4), mostramos el texto aquí. Si no, div vacío para ocupar espacio */}
-                <div
-                  className={`order-2 md:order-1 ${
-                    isEven ? "md:text-right" : ""
-                  }`}
-                >
-                  {isEven && (
-                    <p className="text-[#05467D] font-medium text-lg leading-relaxed max-w-md ml-auto">
-                      {text}
-                    </p>
-                  )}
-                </div>
-
-                {/* --- COLUMNA CENTRAL (NÚMERO) --- */}
-                {/* El número siempre va en el medio en desktop */}
-                <div className="order-1 md:order-2 flex justify-center items-center">
+              <div key={index} className="py-2">
+                {/* --- MOBILE: número + texto apilados (simple, sin duplicación) --- */}
+                <div className="md:hidden flex flex-col items-center text-center gap-3 py-4">
                   <span className="text-6xl font-bold text-[#05467D]">
                     {number}.
                   </span>
-                </div>
-
-                {/* --- COLUMNA DERECHA --- */}
-                {/* Si es IMPAR (1,3,5), mostramos el texto aquí. Si no, div vacío */}
-                <div className="order-3 md:order-3">
-                  {!isEven && ( // Si NO es par (es impar)
-                    <p className="text-[#05467D] font-medium text-lg leading-relaxed max-w-md mr-auto">
-                      {text}
-                    </p>
-                  )}
-                  {/* En MÓVIL, si es PAR, necesitamos mostrar el texto acá abajo también porque ocultamos la columna izquierda arriba?
-                      NO, en móvil usamos Flex-col, así que simplemente renderizamos el texto debajo del número siempre.
-                      Para lograr eso, hacemos un pequeño truco visual en móvil:
-                  */}
-                  <p className="md:hidden mt-4 text-[#05467D] font-medium text-lg leading-relaxed px-4">
+                  <p className="text-[#05467D] font-medium text-lg leading-relaxed px-4 max-w-sm">
                     {text}
                   </p>
+                </div>
+
+                {/* --- DESKTOP: grid zigzag (izq / número / der) --- */}
+                <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:gap-x-12 md:text-left py-4">
+                  {/* Columna izquierda: solo pares */}
+                  <div className={isEven ? "md:text-right flex items-center justify-end" : ""}>
+                    {isEven && (
+                      <p className="text-[#05467D] font-medium text-lg leading-relaxed max-w-md ml-auto">
+                        {text}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Columna central: número */}
+                  <div className="flex justify-center items-center">
+                    <span className="text-6xl font-bold text-[#05467D]">
+                      {number}.
+                    </span>
+                  </div>
+
+                  {/* Columna derecha: solo impares */}
+                  <div className="flex items-center">
+                    {!isEven && (
+                      <p className="text-[#05467D] font-medium text-lg leading-relaxed max-w-md mr-auto">
+                        {text}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             );

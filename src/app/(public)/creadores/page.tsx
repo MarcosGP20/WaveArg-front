@@ -1,6 +1,5 @@
 import { LazyVideoFacade } from "@/components/VideoPlayer";
-import Button from "@mui/material/Button";
-import Image from "next/image"; // Recomendado para Next.js
+import Image from "next/image";
 
 const creatorTools = [
   {
@@ -131,22 +130,9 @@ export default function Creadores() {
                 </ul>
 
                 {item.button && (
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#05467D",
-                      borderRadius: " calc(infinity * 1px)",
-                      padding: "10px 24px",
-                      textTransform: "none",
-                      fontSize: "1rem",
-                      fontWeight: "500",
-                      "&:hover": {
-                        backgroundColor: "#043d6b",
-                      },
-                    }}
-                  >
+                  <button className="bg-[#05467D] hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors cursor-pointer">
                     {item.buttonText}
-                  </Button>
+                  </button>
                 )}
               </div>
             </div>
@@ -176,23 +162,9 @@ export default function Creadores() {
               contenido al siguiente nivel.
             </p>
 
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                color: "#05467D",
-                borderRadius: "50px",
-                padding: "10px 30px",
-                textTransform: "none",
-                fontSize: "1rem",
-                fontWeight: "600",
-                "&:hover": {
-                  backgroundColor: "#ffffff",
-                },
-              }}
-            >
+            <button className="bg-white/90 hover:bg-white text-[#05467D] rounded-full px-8 py-2.5 text-base font-semibold transition-colors cursor-pointer">
               Ver accesorios
-            </Button>
+            </button>
           </div>
         </div>
       </section>
