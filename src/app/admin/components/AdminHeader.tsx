@@ -2,7 +2,8 @@
 
 "use client";
 
-import React from "react";
+import { Menu as MenuIcon } from "lucide-react";
+
 import { Menu, Transition } from "@headlessui/react";
 import {
   UserCircle,
@@ -26,11 +27,13 @@ interface AdminHeaderProps {
     avatar?: string;
   };
   onLogout?: () => void;
+  onMenuToggle?: () => void;
 }
 
 export default function AdminHeader({
   user = { name: "Marcos", email: "marcos@admin.com", role: "Administrador" },
   onLogout,
+  onMenuToggle,
 }: AdminHeaderProps) {
   const handleLogout = () => {
     if (onLogout) {
@@ -44,8 +47,17 @@ export default function AdminHeader({
 
   return (
     <header className="flex h-16 items-center justify-between bg-white px-6 shadow-md">
-      {/* Lado Izquierdo */}
-      <div className="flex items-center gap-4">
+      {/* Lado Izquierdo: hamburguesa (mobile) + logo */}
+      <div className="flex items-center gap-3">
+        {/* Botón hamburguesa — solo en mobile */}
+        <button
+          onClick={onMenuToggle}
+          className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          aria-label="Abrir menú"
+        >
+          <MenuIcon size={22} />
+        </button>
+
         <Link href="/admin" className="flex items-center gap-2">
           <Image src="/iso3.svg" alt="Admin Logo" width={40} height={40} />
           <span className="font-semibold text-gray-900 hidden sm:block">
