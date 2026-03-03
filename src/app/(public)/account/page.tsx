@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, UserCircle, ShoppingBag, Settings } from "lucide-react";
+import Link from "next/link";
 
 export default function AccountPage() {
   const { token, user } = useAuthStore();
@@ -53,15 +54,23 @@ export default function AccountPage() {
       <h1 className="text-3xl font-semibold mb-6">Mi cuenta</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition cursor-pointer">
-          <UserCircle className="w-8 h-8 text-blue-600 mb-3" />
+        {/* Tarjeta 1: Información personal */}
+        <Link
+          href="/account/profile"
+          className="bg-white shadow-md rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer block group"
+        >
+          <UserCircle className="w-8 h-8 text-blue-600 mb-3 group-hover:text-blue-700 transition-colors" />
           <h2 className="text-lg font-medium mb-1">Información personal</h2>
           <p className="text-sm text-gray-500">
             Editá tu nombre, email o contraseña.
           </p>
-        </div>
+        </Link>
 
-        <div className="bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition cursor-pointer">
+        {/* Tarjeta 2: Historial de compras (próximamente) */}
+        <div className="relative bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition cursor-not-allowed opacity-70">
+          <span className="absolute top-3 right-3 text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wide">
+            Próximamente
+          </span>
           <ShoppingBag className="w-8 h-8 text-green-600 mb-3" />
           <h2 className="text-lg font-medium mb-1">Historial de compras</h2>
           <p className="text-sm text-gray-500">
@@ -69,13 +78,17 @@ export default function AccountPage() {
           </p>
         </div>
 
-        <div className="bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition cursor-pointer">
-          <Settings className="w-8 h-8 text-gray-700 mb-3" />
+        {/* Tarjeta 3: Ajustes */}
+        <Link
+          href="/account/settings"
+          className="bg-white shadow-md rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer block group"
+        >
+          <Settings className="w-8 h-8 text-gray-700 mb-3 group-hover:text-gray-900 transition-colors" />
           <h2 className="text-lg font-medium mb-1">Ajustes</h2>
           <p className="text-sm text-gray-500">
             Configurá notificaciones y preferencias.
           </p>
-        </div>
+        </Link>
       </div>
     </div>
   );

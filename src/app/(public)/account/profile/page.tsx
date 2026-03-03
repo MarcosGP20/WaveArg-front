@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   Bell,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -62,8 +63,11 @@ export default function ProfilePage() {
               <Button
                 variant="outline"
                 className="w-full justify-start gap-3 rounded-xl"
+                asChild
               >
-                <Settings size={16} /> Ajustes
+                <Link href="/account/settings">
+                  <Settings size={16} /> Ajustes
+                </Link>
               </Button>
               <Button
                 onClick={handleLogout}
