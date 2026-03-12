@@ -45,21 +45,34 @@ export async function fetchFromApi<T>(
       if (typeof window !== "undefined") {
         useAuthStore.getState().logout();
       }
-      throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
+      throw new Error("Es necesario que tengas una sesión iniciada. Por favor, iniciá sesión para continuar.");
     }
 
     if (!res.ok) {
-      // Intentamos parsear el JSON de error del backend .NET
-      const errorData = await res.json().catch(() => ({}));
+      // Intentamos leer el body como texto primero para no perder info
+      const rawText = await res.text().catch(() => "");
+      console.error(`[API ${res.status}] ${endpoint} →`, rawText);
+
+      // Luego intentamos parsearlo como JSON
+      let errorData: Record<string, unknown> = {};
+      try {
+        if (rawText) errorData = JSON.parse(rawText);
+      } catch {
+        // No era JSON — usamos el texto crudo como mensaje
+      }
 
       // Mensaje personalizado para error 500 de duplicado
-      if (res.status === 500 && errorData.message?.includes("UNIQUE KEY")) {
+      if (res.status === 500 && (errorData.message as string)?.includes("UNIQUE KEY")) {
         throw new Error("Este email ya está registrado. Usa otro email.");
       }
 
       // .NET ProblemDetails: { title, errors: { campo: ["msg"] } }
       // .NET custom: { message: "..." }
-      let errorMessage = errorData.message || errorData.title || `Error ${res.status}: ${res.statusText}`;
+      let errorMessage =
+        (errorData.message as string) ||
+        (errorData.title as string) ||
+        rawText ||
+        `Error ${res.status}: ${res.statusText}`;
 
       // Si hay errores de validación de campo, los concatenamos
       if (errorData.errors && typeof errorData.errors === "object") {
@@ -174,3 +187,39 @@ export async function getProductoById(id: number | string) {
     method: "GET",
   });
 }
+
+// --- MercadoPago ---
+
+export interface MPPreferenciaItem {
+  productoId: number;
+  nombre: string;
+  cantidad: number;
+  precio: number;
+}
+
+export interface MPPreferenciaResponse {
+  url_real?: string;    // URL de pago producción
+  url_prueba?: string;  // URL de pago sandbox
+  [key: string]: unknown;
+}
+
+export const MercadoPagoService = {
+  /**
+   * Crea una preferencia de pago en MercadoPago a través del backend.
+   * Devuelve la URL de pago (initPoint o sandboxInitPoint).
+   */
+  crearPreferencia: (items: MPPreferenciaItem[]) =>
+    fetchFromApi<MPPreferenciaResponse>("/MercadoPago/crear-preferencia", {
+      method: "POST",
+      body: JSON.stringify(items),
+    }),
+
+  /**
+   * Reenvía una notificación de webhook de MercadoPago al backend.
+   */
+  procesarWebhook: (type: string, dataId: string) =>
+    fetchFromApi<unknown>(
+      `/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`,
+      { method: "POST" },
+    ),
+};

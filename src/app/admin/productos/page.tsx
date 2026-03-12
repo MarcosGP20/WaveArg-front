@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { ProductService, Producto } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Trash2, Edit3, Image as ImageIcon, RefreshCw, AlertTriangle, Loader2 } from "lucide-react";
+import { Plus, Trash2, Edit3, Image as ImageIcon, RefreshCw, AlertTriangle, Loader2, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export default function InventarioPage() {
@@ -95,6 +95,15 @@ export default function InventarioPage() {
 
   return (
     <div className="p-6">
+      {/* Breadcrumb / Volver */}
+      <Link
+        href="/admin"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#05467d] transition-colors mb-6 group"
+      >
+        <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+        Volver al Dashboard
+      </Link>
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-[#05467d]">
           Inventario de Productos
