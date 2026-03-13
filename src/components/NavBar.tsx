@@ -56,8 +56,9 @@ export default function NavBar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [cartHoverOpen, setCartHoverOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { cart } = useCart();
+  const { cart, removeFromCart } = useCart();
   const { user, token, logout, isLoggedIn } = useAuthStore();
 
   useEffect(() => {
@@ -261,17 +262,103 @@ export default function NavBar() {
             Contacto
           </Link>
 
-          {/* Links de usuario y carrito */}
-          <Link href="/cart" className="relative px-3 py-2">
-            <div className="relative inline-block">
+          {/* Links de usuario y carrito — con hover dropdown */}
+          <div
+            className="relative px-3 py-2"
+            onMouseEnter={() => setCartHoverOpen(true)}
+            onMouseLeave={() => setCartHoverOpen(false)}
+          >
+            <Link href="/cart" className="relative inline-block">
               <FaShoppingCart size={24} className="text-[#05467D]" />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
-            </div>
-          </Link>
+            </Link>
+
+            {/* CART HOVER DROPDOWN */}
+            {cartHoverOpen && (
+              <div className="absolute right-0 top-full mt-1 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeDown">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 bg-[#05467D]">
+                  <span className="text-white font-semibold text-sm tracking-wide">
+                    🛒 Mi Carrito
+                  </span>
+                  <span className="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {cartCount} {cartCount === 1 ? "item" : "items"}
+                  </span>
+                </div>
+
+                {/* Product list */}
+                {cart.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-gray-400 text-sm">
+                    <FaShoppingCart size={28} className="mx-auto mb-2 opacity-30" />
+                    Tu carrito está vacío
+                  </div>
+                ) : (
+                  <>
+                    <ul className="max-h-64 overflow-y-auto divide-y divide-gray-50">
+                      {cart.map((item) => (
+                        <li key={item.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                          {/* Imagen o placeholder */}
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-11 h-11 rounded-lg object-cover border border-gray-100 flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-11 h-11 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                              <FaShoppingCart size={16} className="text-[#05467D] opacity-50" />
+                            </div>
+                          )}
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              Cant: <span className="font-semibold text-gray-600">{item.quantity}</span>
+                            </p>
+                          </div>
+
+                          {/* Precio */}
+                          <span className="text-sm font-bold text-[#05467D] whitespace-nowrap">
+                            ${(item.price * item.quantity).toLocaleString("es-AR")}
+                          </span>
+
+                          {/* Botón eliminar */}
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            title="Eliminar del carrito"
+                            className="ml-1 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:bg-red-100 hover:text-red-500 transition-colors text-base leading-none"
+                          >
+                            ×
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Footer con subtotal + botón */}
+                    <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">Subtotal</span>
+                        <span className="text-base font-bold text-gray-900">
+                          ${cart.reduce((sum, i) => sum + i.price * i.quantity, 0).toLocaleString("es-AR")}
+                        </span>
+                      </div>
+                      <Link
+                        href="/cart"
+                        className="block w-full text-center bg-[#05467D] hover:bg-[#0a6db5] text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+                      >
+                        Ver carrito completo →
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* USER DROPDOWN */}
           {!isLoading && isLoggedIn && user ? (
