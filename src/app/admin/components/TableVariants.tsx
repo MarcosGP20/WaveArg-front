@@ -129,7 +129,18 @@ export const TableVariants = ({
                     {v.stock}
                   </td>
                   <td className="px-6 py-4">
-                    {v.fotoEstadoUrl ? (
+                    {v.imagenes && v.imagenes.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs text-gray-500">{v.imagenes.length} foto(s)</span>
+                        <a
+                          href={v.imagenes[0]}
+                          target="_blank"
+                          className="text-blue-500 hover:underline flex items-center gap-1 text-[11px]"
+                        >
+                          <ExternalLink size={10} /> Ver primera
+                        </a>
+                      </div>
+                    ) : v.fotoEstadoUrl ? (
                       <a
                         href={v.fotoEstadoUrl}
                         target="_blank"

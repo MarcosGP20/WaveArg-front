@@ -7,6 +7,7 @@ export interface Variante {
   esUsado: boolean;
   detalleEstado: string;
   fotoEstadoUrl: string | null;
+  imagenes?: string[];
 }
 
 export interface Producto {

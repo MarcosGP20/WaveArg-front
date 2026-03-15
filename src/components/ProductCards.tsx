@@ -1,8 +1,10 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { useCompare } from "@/context/CompareContext";
-import { Producto } from "@/lib/api"; // Importamos la interfaz real
+import { Producto, Variante } from "@/lib/api";
 
 type ProductCardProps = {
   product: Producto;
@@ -11,104 +13,178 @@ type ProductCardProps = {
 
 const MAX_COMPARE = 3;
 
+function mapColorToHex(color: string): string {
+  const map: Record<string, string> = {
+    Negro: "#1a1a1a",
+    Blanco: "#f5f5f7",
+    Azul: "#1e40af",
+    "Azul Oscuro": "#1e3a5f",
+    Rojo: "#be1b1b",
+    Medianoche: "#0f172a",
+    Estelar: "#e8e3d5",
+    Púrpura: "#6b21a8",
+    Verde: "#15803d",
+    Amarillo: "#ca8a04",
+    Rosa: "#db2777",
+    Titanio: "#8a8a8e",
+    "Titanio Natural": "#c8b89a",
+    "Titanio Negro": "#2c2c2e",
+    "Titanio Blanco": "#f2f2f2",
+    "Titanio Desierto": "#c9a96e",
+    Grafito: "#374151",
+    Plata: "#d1d5db",
+    Dorado: "#b8962e",
+  };
+  return map[color] ?? "#9ca3af";
+}
+
+function needsDarkBorder(color: string): boolean {
+  return ["Blanco", "Estelar", "Plata", "Titanio Blanco", "Titanio Natural", "Dorado", "Titanio Desierto", "Titanio"].includes(color);
+}
+
 export default function ProductCard({ product, className }: ProductCardProps) {
   const { toggleCompare, compareList } = useCompare();
 
-  // --- LÓGICA DE EXTRACCIÓN SEGURA (BACKEND MAPPING) ---
-  // Tomamos la primera variante para mostrar en la card
-  const variantePrincipal =
-    product.variantes && product.variantes.length > 0
-      ? product.variantes[0]
-      : null;
+  // Una variante representante por cada color único
+  const coloresUnicos: Variante[] = Array.from(
+    new Map(product.variantes?.map((v) => [v.color, v]) ?? []).values()
+  );
 
-  // Tomamos la primera imagen o un placeholder si el array viene vacío
-  const imagenPrincipal =
-    product.imagenes && product.imagenes.length > 0
-      ? product.imagenes[0]
-      : "/placeholder.png";
+  const [varianteActiva, setVarianteActiva] = useState<Variante>(
+    coloresUnicos[0] ?? product.variantes?.[0]
+  );
 
-  // Verificamos si el producto es usado (basado en la variante)
-  const isUsed = variantePrincipal?.esUsado ?? false;
+  // Imagen: en el futuro vendrá de variante.imagenes[0].
+  // Hoy usamos el producto.imagenes[] indexado por posición de color.
+  const colorIdx = coloresUnicos.findIndex((v) => v.color === varianteActiva.color);
+  const imagenActiva =
+    (varianteActiva as any).imagenes?.[0] ??
+    product.imagenes?.[Math.max(colorIdx, 0)] ??
+    product.imagenes?.[0] ??
+    "/placeholder.png";
 
-  // Estado de comparación
   const seleccionado = compareList.some((p) => p.id === product.id);
   const atLimit = !seleccionado && compareList.length >= MAX_COMPARE;
 
+  const handleColorClick = (cv: Variante, e: React.MouseEvent) => {
+    e.preventDefault(); // No navegar al clickear el color
+    const match =
+      product.variantes.find(
+        (v) => v.color === cv.color && v.memoria === varianteActiva.memoria
+      ) ?? cv;
+    setVarianteActiva(match);
+  };
+
   return (
     <div
-      className={`rounded-2xl max-w-md shadow-sm p-5 hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900 group ${className}`}
+      className={`rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900 group overflow-hidden ${className}`}
     >
-      {/* Usamos el ID para el link ya que el backend no devuelve slugs por ahora */}
-      <Link href={`/products/${product.id}`} className="block flex-1 relative">
-        <div className="relative w-full h-48 mb-4">
+      {/* ── ZONA DE IMAGEN ── */}
+      <Link href={`/products/${product.id}`} className="block relative">
+        <div className="relative w-full h-52 bg-gray-50">
           <Image
-            src={imagenPrincipal}
-            alt={product.nombre}
+            key={imagenActiva}
+            src={imagenActiva}
+            alt={`${product.nombre} – ${varianteActiva.color}`}
             fill
-            className="object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
+            className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          {/* Badge de estado (Solo si es usado) */}
-          {isUsed && (
-            <div className="absolute top-0 right-0 bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg rounded-tr-xl uppercase">
+          {varianteActiva.esUsado && (
+            <span className="absolute top-2 right-2 bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
               Usado
-            </div>
+            </span>
           )}
         </div>
+      </Link>
 
-        {/* Título y Modelo */}
-        <div className="flex flex-col items-center gap-1">
-          <h2 className="text-xl font-semibold text-[#05467D] dark:text-white text-center">
+      {/* ── INFO + SELECTORES ── */}
+      <div className="flex flex-col flex-1 px-5 pt-4 pb-5 gap-3">
+
+        {/* Nombre y modelo */}
+        <Link href={`/products/${product.id}`} className="block text-center">
+          <h2 className="text-[17px] font-semibold text-[#05467D] dark:text-white leading-snug">
             {product.nombre}
           </h2>
           <span className="text-[10px] text-gray-400 uppercase tracking-widest">
             {product.modelo}
           </span>
+        </Link>
+
+        {/* Selector de colores */}
+        {coloresUnicos.length > 1 && (
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              {coloresUnicos.map((cv) => (
+                <button
+                  key={cv.color}
+                  onClick={(e) => handleColorClick(cv, e)}
+                  title={cv.color}
+                  aria-label={`Color ${cv.color}`}
+                  className={`w-6 h-6 rounded-full transition-all duration-200 focus:outline-none ${
+                    varianteActiva.color === cv.color
+                      ? "ring-2 ring-[#05467D] ring-offset-2 scale-125 shadow-sm"
+                      : `ring-1 hover:scale-110 ${
+                          needsDarkBorder(cv.color) ? "ring-gray-300" : "ring-transparent"
+                        }`
+                  }`}
+                  style={{ backgroundColor: mapColorToHex(cv.color) }}
+                />
+              ))}
+            </div>
+            <span className="text-[11px] text-gray-400 font-medium">
+              {varianteActiva.color}
+            </span>
+          </div>
+        )}
+
+        {/* Memoria + batería (si aplica) */}
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full font-medium">
+            {varianteActiva.memoria}
+          </span>
+          {varianteActiva.esUsado && varianteActiva.detalleEstado && (
+            <span className="text-xs bg-amber-50 text-amber-600 px-2.5 py-0.5 rounded-full font-medium">
+              🔋 {varianteActiva.detalleEstado}
+            </span>
+          )}
         </div>
 
-        {/* Características de la variante principal */}
-        <p className="text-sm text-center text-[#999999] mt-2">
-          {variantePrincipal?.color ?? "Color estándar"} ·{" "}
-          {variantePrincipal?.memoria ?? "Base"}
-        </p>
-
-        {/* Precio con formato seguro */}
-        <p className="text-2xl text-center font-semibold text-[#05467D] dark:text-white mt-2">
-          {variantePrincipal?.precio
-            ? `$${variantePrincipal.precio.toLocaleString()}`
+        {/* Precio */}
+        <p className="text-2xl font-bold text-center text-[#05467D] dark:text-white">
+          {varianteActiva.precio
+            ? `$${varianteActiva.precio.toLocaleString("es-AR")}`
             : "Consultar precio"}
         </p>
-      </Link>
 
-      <Link
-        href={`/products/${product.id}`}
-        className="mt-4 bg-[#05467D] text-white py-2 rounded-full font-medium hover:bg-[#0F3C64] transition-colors text-center self-center px-16"
-      >
-        Más información
-      </Link>
+        {/* Botón principal */}
+        <Link
+          href={`/products/${product.id}`}
+          className="mt-1 bg-[#05467D] text-white py-2.5 rounded-full font-semibold hover:bg-[#0F3C64] transition-colors text-center text-sm"
+        >
+          Más información
+        </Link>
 
-      {/* Botón de comparación */}
-      <button
-        onClick={() => toggleCompare(product)}
-        disabled={atLimit}
-        aria-disabled={atLimit}
-        className={`mt-2 py-2 rounded-full font-medium text-sm border transition-colors self-center px-9
-          ${
+        {/* Comparar */}
+        <button
+          onClick={() => toggleCompare(product)}
+          disabled={atLimit}
+          aria-disabled={atLimit}
+          className={`py-2 rounded-full font-medium text-sm border transition-colors ${
             seleccionado
               ? "bg-[#0F3C64] text-white border-transparent"
-              : "bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
-          }
-          ${atLimit ? "opacity-50 cursor-not-allowed" : ""}
-        `}
-      >
-        {seleccionado ? "Quitar de comparación" : "Seleccionar para comparar"}
-      </button>
+              : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
+          } ${atLimit ? "opacity-40 cursor-not-allowed" : ""}`}
+        >
+          {seleccionado ? "✓ En comparación" : "Comparar"}
+        </button>
 
-      {atLimit && (
-        <span className="mt-1 text-xs text-center text-neutral-500 block">
-          Máximo {MAX_COMPARE} modelos
-        </span>
-      )}
+        {atLimit && (
+          <span className="text-xs text-center text-neutral-400">
+            Máximo {MAX_COMPARE} modelos
+          </span>
+        )}
+      </div>
     </div>
   );
 }
