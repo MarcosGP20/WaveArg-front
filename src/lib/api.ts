@@ -2,6 +2,7 @@
 import { Producto, Variante } from "@/interfaces/producto";
 import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { MOCK_PRODUCTS } from "./mockProducts";
 
 // Re-export for convenience
 export type { Producto, Variante };
@@ -106,12 +107,15 @@ export async function fetchFromApi<T>(
 // --- Endpoints ---
 
 export const ProductService = {
-  getAll: (soloDisponibles = false) =>
-    fetchFromApi<Producto[]>(
-      `/Productos${soloDisponibles ? "?soloDisponibles=true" : ""}`,
-    ),
+  getAll: async (soloDisponibles = false) => {
+    return MOCK_PRODUCTS;
+  },
 
-  getById: (id: number | string) => fetchFromApi<Producto>(`/Productos/${id}`),
+  getById: async (id: number | string) => {
+    const product = MOCK_PRODUCTS.find((p) => p.id === Number(id));
+    if (!product) throw new Error("Producto no encontrado");
+    return product;
+  },
 
   create: (
     data: any, // Usamos any o CreateProductoDTO
@@ -176,16 +180,13 @@ export async function registerUser(data: RegisterDTO) {
 // Ejemplo de lo que necesitas para el catálogo
 // lib/api.ts
 export async function getProductos() {
-  // Según tu Swagger es /api/Productos?soloDisponibles=true
-  return fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
-    method: "GET",
-  });
+  return MOCK_PRODUCTS;
 }
 
 export async function getProductoById(id: number | string) {
-  return fetchFromApi<Producto>(`/Productos/${id}`, {
-    method: "GET",
-  });
+  const product = MOCK_PRODUCTS.find((p) => p.id === Number(id));
+  if (!product) throw new Error("Producto no encontrado");
+  return product;
 }
 
 // --- MercadoPago ---

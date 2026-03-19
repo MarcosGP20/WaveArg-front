@@ -226,7 +226,7 @@ export default function ProductDetail({
                 src={activeImage || "/placeholder.png"}
                 alt={`${product.nombre} – ${selectedVariante.color}`}
                 fill
-                className={`object-contain p-8 transition-opacity duration-150 ${fading ? "opacity-0" : "opacity-100"}`}
+                className={`object-contain p-4 transition-opacity duration-150 ${fading ? "opacity-0" : "opacity-100"}`}
                 priority
               />
             </div>
