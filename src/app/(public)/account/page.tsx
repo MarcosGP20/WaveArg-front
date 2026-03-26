@@ -66,17 +66,17 @@ export default function AccountPage() {
           </p>
         </Link>
 
-        {/* Tarjeta 2: Historial de compras (próximamente) */}
-        <div className="relative bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition cursor-not-allowed opacity-70">
-          <span className="absolute top-3 right-3 text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wide">
-            Próximamente
-          </span>
-          <ShoppingBag className="w-8 h-8 text-green-600 mb-3" />
+        {/* Tarjeta 2: Historial de compras */}
+        <Link
+          href="/account/orders"
+          className="bg-white shadow-md rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer block group"
+        >
+          <ShoppingBag className="w-8 h-8 text-green-600 mb-3 group-hover:text-green-700 transition-colors" />
           <h2 className="text-lg font-medium mb-1">Historial de compras</h2>
           <p className="text-sm text-gray-500">
             Revisá tus pedidos anteriores y su estado.
           </p>
-        </div>
+        </Link>
 
         {/* Tarjeta 3: Ajustes */}
         <Link

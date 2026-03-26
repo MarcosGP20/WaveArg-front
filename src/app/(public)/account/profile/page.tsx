@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { PedidosService } from "@/lib/api";
 import {
   LogOut,
   User,
@@ -19,10 +20,24 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, token, logout } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [pedidosActivos, setPedidosActivos] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Carga el conteo de pedidos activos una vez que hay sesión
+  useEffect(() => {
+    if (!mounted || !token) return;
+    PedidosService.getMisPedidos()
+      .then((pedidos) => {
+        const activos = pedidos.filter((p) =>
+          ["procesando", "pendiente", "enviado"].includes(p.estado.toLowerCase())
+        ).length;
+        setPedidosActivos(activos);
+      })
+      .catch(() => setPedidosActivos(0));
+  }, [mounted, token]);
 
   const handleLogout = () => {
     logout();
@@ -102,15 +117,24 @@ export default function ProfilePage() {
 
           {/* DASHBOARD DE COMPRAS (PLACEHOLDER PROFESIONAL) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 flex items-center gap-4">
-              <div className="p-3 bg-blue-50 text-[#05467D] rounded-2xl">
+            <Link
+              href="/account/orders"
+              className="bg-white p-6 rounded-3xl border border-gray-100 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+            >
+              <div className="p-3 bg-blue-50 text-[#05467D] rounded-2xl group-hover:bg-blue-100 transition-colors">
                 <ShoppingBag size={24} />
               </div>
               <div>
-                <p className="text-2xl font-bold">0</p>
+                <p className="text-2xl font-bold">
+                  {pedidosActivos === null ? (
+                    <span className="inline-block w-6 h-6 bg-gray-200 rounded animate-pulse" />
+                  ) : (
+                    pedidosActivos
+                  )}
+                </p>
                 <p className="text-xs text-gray-500">Pedidos activos</p>
               </div>
-            </div>
+            </Link>
             <div className="bg-white p-6 rounded-3xl border border-gray-100 flex items-center gap-4">
               <div className="p-3 bg-blue-50 text-[#05467D] rounded-2xl">
                 <Bell size={24} />

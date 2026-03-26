@@ -246,6 +246,9 @@ export const PedidosService = {
       method: "PATCH",
       body: JSON.stringify({ estado }),
     }),
+
+  /** Pedidos del usuario autenticado — el backend lee el userId del JWT */
+  getMisPedidos: () => fetchFromApi<Pedido[]>("/Pedidos/mis-pedidos"),
 };
 
 // --- Usuarios ---
