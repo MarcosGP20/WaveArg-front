@@ -188,6 +188,80 @@ export async function getProductoById(id: number | string) {
   });
 }
 
+// --- Admin ---
+
+export interface DashboardMetrics {
+  totalVentas: number;
+  pedidosNuevos: number;
+  usuariosRegistrados: number;
+  stockTotal: number;
+}
+
+export const AdminService = {
+  getDashboard: () => fetchFromApi<DashboardMetrics>("/Admin/dashboard"),
+};
+
+// --- Pedidos ---
+
+// Estados tal como los devuelve el backend
+export type EstadoPedido = string;
+
+export interface PedidoUsuario {
+  id: number;
+  nombre: string | null;
+  email: string;
+}
+
+export interface PedidoItem {
+  id: number;
+  productoId: number;
+  productoVarianteId: number;
+  cantidad: number;
+  precioUnitario: number;
+  nombreProducto: string;
+  color: string;
+  memoria: string;
+}
+
+export interface Pedido {
+  id: number;
+  direccionEnvio: string;
+  estado: EstadoPedido;
+  fecha: string;
+  items: PedidoItem[];
+  mercadoPagoId?: string;
+  total: number;
+  usuario: PedidoUsuario;
+  usuarioId: number;
+}
+
+export const PedidosService = {
+  getAll: (estado?: string) =>
+    fetchFromApi<Pedido[]>(`/Pedidos${estado ? `?estado=${estado}` : ""}`),
+
+  getById: (id: number) => fetchFromApi<Pedido>(`/Pedidos/${id}`),
+
+  updateEstado: (id: number, estado: string) =>
+    fetchFromApi<Pedido>(`/Pedidos/${id}/estado`, {
+      method: "PATCH",
+      body: JSON.stringify({ estado }),
+    }),
+};
+
+// --- Usuarios ---
+
+export interface Usuario {
+  id: number | string;
+  nombre: string | null;
+  email: string;
+  rol: string;
+  fechaRegistro?: string;
+}
+
+export const UsuariosService = {
+  getAll: () => fetchFromApi<Usuario[]>("/Usuarios"),
+};
+
 // --- MercadoPago ---
 
 export interface MPPreferenciaItem {
