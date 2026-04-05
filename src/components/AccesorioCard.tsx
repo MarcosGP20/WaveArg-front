@@ -62,15 +62,6 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
     varianteMasBarata?.fotoEstadoUrl ??
     null;
 
-  // Debug: imprime la forma real del objeto en consola del browser
-  if (typeof window !== "undefined") {
-    console.log(`[AccesorioCard] id=${accesorio.id}`, {
-      imagenes: accesorio.imagenes,
-      varianteImagenes: (varianteMasBarata as any)?.imagenes,
-      fotoEstadoUrl: varianteMasBarata?.fotoEstadoUrl,
-      imagenResuelta: imagen,
-    });
-  }
 
   // Colores únicos disponibles
   const coloresUnicos: AccesorioVariante[] = Array.from(
