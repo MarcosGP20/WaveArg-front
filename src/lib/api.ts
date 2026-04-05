@@ -169,7 +169,7 @@ export const AccesoriosService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Partial<Accesorio>) =>
+  update: (id: number, data: any) =>
     fetchFromApi<Accesorio>(`/Accesorios`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),

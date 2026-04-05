@@ -66,7 +66,7 @@ export default function EditarAccesorioPage() {
         nombre: data.nombre,
         modelo: data.modelo,
         descripcion: data.descripcion,
-        imagenes: data.imagenesUrls
+        imagenesUrls: data.imagenesUrls
           .map((img) => img.url)
           .filter((url) => url.trim() !== ""),
       });

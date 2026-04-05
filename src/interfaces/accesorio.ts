@@ -34,7 +34,7 @@ export interface Accesorio {
   nombre: string;
   modelo: string;
   descripcion: string;
-  categoria: CategoriaAccesorio;
+  categoria: number; // Valor numérico del enum: 0=Cases, 1=Chargers, 2=Laptops...
   stockTotal: number;
   imagenes: string[];
   variantes: AccesorioVariante[];
