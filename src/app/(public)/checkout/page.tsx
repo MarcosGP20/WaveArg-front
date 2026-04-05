@@ -46,11 +46,7 @@ export default function CheckoutPage() {
         };
       });
 
-      console.log("[Checkout] Enviando a crear-preferencia:", JSON.stringify(items, null, 2));
-
       const preferencia = await MercadoPagoService.crearPreferencia(items);
-
-      console.log("[Checkout] Respuesta de MP:", preferencia);
 
       // El backend devuelve: url_real (producción) y url_prueba (sandbox)
       const raw = preferencia as Record<string, unknown>;
@@ -59,7 +55,6 @@ export default function CheckoutPage() {
         (raw.url_prueba as string);      // sandbox (fallback)
 
       if (!urlPago) {
-        console.error("[Checkout] Respuesta completa sin URL de pago:", JSON.stringify(raw, null, 2));
         throw new Error(
           "No se recibió la URL de pago de MercadoPago. Revisá la consola para ver la respuesta del backend."
         );

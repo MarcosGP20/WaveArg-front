@@ -167,6 +167,7 @@ export default function ProductDetail({
       price: selectedVariante.precio,
       quantity,
       image: activeImage ?? product.imagenes?.[0] ?? undefined,
+      type: "producto",
     });
     setShowToast(true);
     setAdded(true);
