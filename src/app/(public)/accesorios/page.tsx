@@ -145,7 +145,7 @@ function AccesoriosContent() {
             showFilters ? "block" : "hidden"
           }`}
         >
-          <FilterSidebar />
+          <FilterSidebar mode="accesorios" />
         </aside>
 
         <main className="flex-1">
