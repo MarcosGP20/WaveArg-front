@@ -14,6 +14,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   image?: string;
+  type?: "producto" | "accesorio";
 };
 
 type CartContextType = {

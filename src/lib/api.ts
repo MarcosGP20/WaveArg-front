@@ -2,9 +2,12 @@
 import { Producto, Variante } from "@/interfaces/producto";
 import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Accesorio, AccesorioVariante, CategoriaAccesorio, CATEGORIA_LABELS } from "@/interfaces/accesorio";
 
 // Re-export for convenience
 export type { Producto, Variante };
+export type { Accesorio, AccesorioVariante };
+export { CategoriaAccesorio, CATEGORIA_LABELS };
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
@@ -151,6 +154,51 @@ export const VariantesService = {
       method: "DELETE",
     }),
 };
+
+export const AccesoriosService = {
+  getAll: (soloDisponibles = false) =>
+    fetchFromApi<Accesorio[]>(
+      `/Accesorios${soloDisponibles ? "?soloDisponibles=true" : ""}`,
+    ),
+
+  getById: (id: number | string) => fetchFromApi<Accesorio>(`/Accesorios/${id}`),
+
+  create: (data: any) =>
+    fetchFromApi<Accesorio>("/Accesorios", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  update: (id: number, data: Partial<Accesorio>) =>
+    fetchFromApi<Accesorio>(`/Accesorios`, {
+      method: "PUT",
+      body: JSON.stringify({ id, ...data }),
+    }),
+
+  delete: (id: number) =>
+    fetchFromApi<void>(`/Accesorios/${id}`, {
+      method: "DELETE",
+    }),
+};
+
+export const AccesorioVariantesService = {
+  create: (data: any) =>
+    fetchFromApi<AccesorioVariante[]>("/AccesorioVariantes", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  update: (id: number, data: Partial<AccesorioVariante>) =>
+    fetchFromApi<AccesorioVariante>(`/AccesorioVariantes`, {
+      method: "PUT",
+      body: JSON.stringify({ id, ...data }),
+    }),
+
+  delete: (id: number) =>
+    fetchFromApi<void>(`/AccesorioVariantes/${id}`, {
+      method: "DELETE",
+    }),
+};
 export async function loginUser(data: LoginDTO) {
   return fetchFromApi<AuthResponse>("/Auth/login", {
     method: "POST",
@@ -268,10 +316,13 @@ export const UsuariosService = {
 // --- MercadoPago ---
 
 export interface MPPreferenciaItem {
+  /** ID de la Variante (tanto para productos como accesorios) */
   productoId: number;
   nombre: string;
   cantidad: number;
   precio: number;
+  /** true si el ítem es un AccesorioVariante, false si es una Variante de Producto */
+  esAccesorio: boolean;
 }
 
 export interface MPPreferenciaResponse {

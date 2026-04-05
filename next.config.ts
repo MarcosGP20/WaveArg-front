@@ -24,6 +24,26 @@ const nextConfig: NextConfig = {
         hostname: "www.apple.com",
         pathname: "/**",
       },
+      {
+        protocol: "http",
+        hostname: "m3.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "m3.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "w.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "w.com",
+        pathname: "/**",
+      },
     ],
   },
 };

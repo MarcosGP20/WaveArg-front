@@ -25,18 +25,24 @@ export default function CheckoutPage() {
     setAuthError(false);
 
     try {
-      // El id del CartItem tiene formato "productoId-varianteId" (ej: "5-3")
-      // Extraemos solo la primera parte numérica para enviársela al backend
+      // CartItem.id tiene formato "entityId-varianteId" (ej: "5-14")
+      // El backend ahora quiere:
+      //   productoId = ID de la Variante (segunda parte del id)
+      //   esAccesorio = true si es accesorio, false si es iPhone/producto
       const items = cart.map((item) => {
-        const productoId = parseInt(item.id.split("-")[0], 10);
-        if (isNaN(productoId)) {
-          throw new Error(`ID de producto inválido: "${item.id}". Vaciá el carrito y volvé a agregar los productos.`);
+        const parts = item.id.split("-");
+        const varianteId = parseInt(parts[1] ?? parts[0], 10);
+        if (isNaN(varianteId)) {
+          throw new Error(
+            `ID de variante inválido: "${item.id}". Vaciá el carrito y volvé a agregar los productos.`
+          );
         }
         return {
-          productoId,
+          productoId: varianteId,
           nombre: item.name,
           cantidad: item.quantity,
           precio: item.price,
+          esAccesorio: item.type === "accesorio",
         };
       });
 

@@ -8,6 +8,7 @@ import { Home, ShoppingBag, Package, Users, X } from "lucide-react";
 const navLinks = [
   { name: "Dashboard", href: "/admin", icon: Home },
   { name: "Productos", href: "/admin/productos", icon: ShoppingBag },
+  { name: "Accesorios", href: "/admin/accesorios", icon: Package },
   { name: "Pedidos", href: "/admin/orders", icon: Package },
   { name: "Usuarios", href: "/admin/users", icon: Users },
 ];

@@ -10,35 +10,33 @@ import {
   X,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { VariantesService, ProductService, Producto } from "@/lib/api";
+import { AccesorioVariantesService, AccesoriosService, Accesorio } from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { TableVariants } from "@/app/admin/components/TableVariants";
+import { TableAccesorioVariants } from "@/app/admin/components/TableAccesorioVariants";
 
 // ─── tipos ────────────────────────────────────────────────────────────────────
 
-type VarianteForm = {
+type AccesorioVarianteForm = {
   color: string;
-  memoria: string;
+  especificacion: string;  // ej: "Compatible iPhone 14", "Tipo-C 65W"
   precio: number;
   stock: number;
   esUsado: boolean;
   detalleEstado: string;
-  imagenesStock: string[];   // renders/fotos de marketing del color
-  imagenesReales: string[];  // fotos del equipo físico (solo usados)
+  imagenesStock: string[];
+  imagenesReales: string[];
 };
 
-const MEMORIAS = ["64GB", "128GB", "256GB", "512GB", "1TB"];
-
-const VARIANTE_DEFAULT: VarianteForm = {
+const VARIANTE_DEFAULT: AccesorioVarianteForm = {
   color: "",
-  memoria: "128GB",
+  especificacion: "",
   precio: 0,
   stock: 1,
   esUsado: false,
-  detalleEstado: "100%",
+  detalleEstado: "",
   imagenesStock: [],
   imagenesReales: [],
 };
@@ -144,13 +142,8 @@ function VarianteCard({
   onRemove: () => void;
 }) {
   const esUsado: boolean = useWatch({ control, name: `variantes.${index}.esUsado` });
-  const [imagenesStock = [], imagenesReales = []] = useWatch({
-    control,
-    name: [
-      `variantes.${index}.imagenesStock`,
-      `variantes.${index}.imagenesReales`,
-    ] as readonly string[],
-  }) as [string[], string[]];
+  const imagenesStock = (useWatch({ control, name: `variantes.${index}.imagenesStock` as any }) as string[]) ?? [];
+  const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` as any }) as string[]) ?? [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -168,30 +161,30 @@ function VarianteCard({
       </div>
 
       <div className="p-5 space-y-5">
-        {/* Fila de campos base */}
+        {/* Fila color + especificacion + condición + bateria */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Color *</label>
             <input
               {...register(`variantes.${index}.color`)}
-              placeholder="ej: Negro Titanio"
+              placeholder="ej: Negro"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] focus:ring-2 focus:ring-[#05467d]/20 outline-none"
+              required
+            />
+          </div>
+
+          <div className="space-y-1 lg:col-span-2">
+            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Especificación *</label>
+            <input
+              {...register(`variantes.${index}.especificacion`)}
+              placeholder="ej: Compatible iPhone 14/15, Tipo-C, 65W..."
               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] focus:ring-2 focus:ring-[#05467d]/20 outline-none"
               required
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Memoria *</label>
-            <select
-              {...register(`variantes.${index}.memoria`)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] outline-none"
-            >
-              {MEMORIAS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Condición *</label>
+            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Condición</label>
             <select
               {...register(`variantes.${index}.esUsado`, {
                 setValueAs: (v: string) => v === "true",
@@ -201,16 +194,6 @@ function VarianteCard({
               <option value="false">🆕 Nuevo</option>
               <option value="true">📦 Usado</option>
             </select>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Batería %</label>
-            <input
-              {...register(`variantes.${index}.detalleEstado`)}
-              placeholder="ej: 87"
-              disabled={!esUsado}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] outline-none disabled:bg-gray-50 disabled:text-gray-300 transition-colors"
-            />
           </div>
         </div>
 
@@ -244,22 +227,22 @@ function VarianteCard({
 
         <hr className="border-gray-100" />
 
-        {/* 📸 Fotos de stock del color */}
+        {/* Fotos de stock */}
         <UrlListField
-          label="📸 Fotos de stock del color"
-          hint="Renders o fotos oficiales de este color (ej: imagen de Apple del iPhone Negro Titanio). La primera foto se usa como imagen principal en la tienda."
+          label="📸 Fotos del accesorio"
+          hint="Imágenes oficiales o de marketing del producto. La primera se usa como foto principal."
           urls={imagenesStock}
           onChange={(next) => setValue(`variantes.${index}.imagenesStock`, next)}
           theme="blue"
         />
 
-        {/* 📷 Fotos reales — solo si es usado */}
+        {/* Fotos reales — solo si es usado */}
         {esUsado && (
           <>
             <hr className="border-gray-100" />
             <UrlListField
-              label="📷 Fotos reales del equipo"
-              hint="Fotos del equipo físico que estás vendiendo: pantalla, dorso, laterales, detalle de la batería, etc."
+              label="📷 Fotos reales del accesorio"
+              hint="Fotos del ítem físico que estás vendiendo."
               urls={imagenesReales}
               onChange={(next) => setValue(`variantes.${index}.imagenesReales`, next)}
               theme="amber"
@@ -273,11 +256,11 @@ function VarianteCard({
 
 // ─── página ───────────────────────────────────────────────────────────────────
 
-export default function GestionVariantesPage() {
+export default function GestionVariantesAccesorioPage() {
   const { id } = useParams();
 
-  const [producto, setProducto] = useState<Producto | null>(null);
-  const [loadingProducto, setLoadingProducto] = useState(true);
+  const [accesorio, setAccesorio] = useState<Accesorio | null>(null);
+  const [loadingAccesorio, setLoadingAccesorio] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -285,10 +268,10 @@ export default function GestionVariantesPage() {
     if (!id) return;
     setLoading(true);
     try {
-      const data = await ProductService.getById(Number(id));
-      setProducto(data);
+      const data = await AccesoriosService.getById(Number(id));
+      setAccesorio(data);
     } catch {
-      toast.error("Error al cargar el producto");
+      toast.error("Error al cargar el accesorio");
     } finally {
       setLoading(false);
     }
@@ -296,43 +279,41 @@ export default function GestionVariantesPage() {
 
   useEffect(() => {
     if (!id) return;
-    setLoadingProducto(true);
-    ProductService.getById(Number(id))
-      .then(setProducto)
-      .catch(() => toast.error("No se pudo cargar el producto"))
-      .finally(() => { setLoadingProducto(false); setLoading(false); });
+    setLoadingAccesorio(true);
+    AccesoriosService.getById(Number(id))
+      .then(setAccesorio)
+      .catch(() => toast.error("No se pudo cargar el accesorio"))
+      .finally(() => { setLoadingAccesorio(false); setLoading(false); });
   }, [id]);
 
-  const { register, control, handleSubmit, setValue } = useForm<{ variantes: VarianteForm[] }>({
+  const { register, control, handleSubmit, setValue } = useForm<{ variantes: AccesorioVarianteForm[] }>({
     defaultValues: { variantes: [{ ...VARIANTE_DEFAULT }] },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "variantes" });
 
-  const onSubmit = async (data: { variantes: VarianteForm[] }) => {
-    if (!id) return toast.error("No se encontró el ID del producto");
+  const onSubmit = async (data: { variantes: AccesorioVarianteForm[] }) => {
+    if (!id) return toast.error("No se encontró el ID del accesorio");
     setIsSubmitting(true);
 
     const savePromise = async () => {
       const peticiones = data.variantes.map((v) => {
-        // Compatibilidad hacia atrás: fotoEstadoUrl = primera foto real (o primera de stock)
         const fotoEstadoUrl = v.esUsado
           ? (v.imagenesReales?.[0] ?? v.imagenesStock?.[0] ?? "")
           : (v.imagenesStock?.[0] ?? "");
 
         const payload = {
-          productoId: Number(id),
+          accesorioId: Number(id),
           color: v.color,
-          memoria: v.memoria,
+          especificacion: v.especificacion,
           precio: Number(v.precio),
           stock: Number(v.stock),
           esUsado: v.esUsado,
-          detalleEstado: v.esUsado ? `Batería: ${v.detalleEstado}` : "Nuevo",
+          detalleEstado: v.esUsado ? v.detalleEstado : null,
           fotoEstadoUrl,
-          // Campo nuevo — el backend lo ignorará hasta estar implementado
           imagenes: [...(v.imagenesStock ?? []), ...(v.imagenesReales ?? [])],
         };
-        return VariantesService.create(payload);
+        return AccesorioVariantesService.create(payload);
       });
       return await Promise.all(peticiones);
     };
@@ -346,17 +327,17 @@ export default function GestionVariantesPage() {
       },
       error: (err) => {
         setIsSubmitting(false);
-        return `Error: ${err.message || "Revisa la consola"}`;
+        return `Error: ${err.message || "Revisá la consola"}`;
       },
     });
   };
 
   const handleDeleteVariante = async (varianteId: number) => {
     if (!window.confirm("¿Estás seguro de eliminar esta variante?")) return;
-    toast.promise(VariantesService.delete(varianteId), {
+    toast.promise(AccesorioVariantesService.delete(varianteId), {
       loading: "Eliminando...",
       success: () => {
-        setProducto((prev) =>
+        setAccesorio((prev) =>
           prev ? { ...prev, variantes: prev.variantes.filter((v) => v.id !== varianteId) } : null
         );
         return "Variante eliminada";
@@ -369,14 +350,14 @@ export default function GestionVariantesPage() {
     <div className="p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/productos" className="text-gray-400 hover:text-[#05467d] transition-colors">
+        <Link href="/admin/accesorios" className="text-gray-400 hover:text-[#05467d] transition-colors">
           <ArrowLeft size={22} />
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-[#05467d]">
-            {loadingProducto ? "Cargando..." : `Variantes de "${producto?.nombre} ${producto?.modelo}"`}
+            {loadingAccesorio ? "Cargando..." : `Variantes de "${accesorio?.nombre} ${accesorio?.modelo}"`}
           </h1>
-          {!loadingProducto && <p className="text-xs text-gray-400 mt-0.5">ID Base: #{id}</p>}
+          {!loadingAccesorio && <p className="text-xs text-gray-400 mt-0.5">ID Base: #{id}</p>}
         </div>
       </div>
 
@@ -393,7 +374,6 @@ export default function GestionVariantesPage() {
           />
         ))}
 
-        {/* Agregar variante */}
         <button
           type="button"
           onClick={() => append({ ...VARIANTE_DEFAULT })}
@@ -403,10 +383,9 @@ export default function GestionVariantesPage() {
           Agregar otra variante
         </button>
 
-        {/* Guardar */}
         <button
           type="submit"
-          disabled={isSubmitting || loadingProducto}
+          disabled={isSubmitting || loadingAccesorio}
           className="w-full bg-[#05467d] text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-[#043a68] transition-all disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
@@ -417,8 +396,8 @@ export default function GestionVariantesPage() {
       {/* Tabla de stock actual */}
       <section className="mt-12 space-y-4">
         <h2 className="text-xl font-bold text-gray-700">Stock Actual</h2>
-        <TableVariants
-          variantes={producto?.variantes || []}
+        <TableAccesorioVariants
+          variantes={accesorio?.variantes || []}
           loading={loading}
           onDelete={handleDeleteVariante}
         />
