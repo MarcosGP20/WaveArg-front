@@ -16,6 +16,16 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { TableVariants } from "@/app/admin/components/TableVariants";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // ─── tipos ────────────────────────────────────────────────────────────────────
 
@@ -144,13 +154,8 @@ function VarianteCard({
   onRemove: () => void;
 }) {
   const esUsado: boolean = useWatch({ control, name: `variantes.${index}.esUsado` });
-  const [imagenesStock = [], imagenesReales = []] = useWatch({
-    control,
-    name: [
-      `variantes.${index}.imagenesStock`,
-      `variantes.${index}.imagenesReales`,
-    ] as readonly string[],
-  }) as [string[], string[]];
+  const imagenesStock = (useWatch({ control, name: `variantes.${index}.imagenesStock` as any }) as string[]) ?? [];
+  const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` as any }) as string[]) ?? [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -280,6 +285,7 @@ export default function GestionVariantesPage() {
   const [loadingProducto, setLoadingProducto] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [varianteToDelete, setVarianteToDelete] = useState<number | null>(null);
 
   const cargarInformacion = async () => {
     if (!id) return;
@@ -351,14 +357,19 @@ export default function GestionVariantesPage() {
     });
   };
 
-  const handleDeleteVariante = async (varianteId: number) => {
-    if (!window.confirm("¿Estás seguro de eliminar esta variante?")) return;
-    toast.promise(VariantesService.delete(varianteId), {
+  const handleDeleteVariante = (varianteId: number) => {
+    setVarianteToDelete(varianteId);
+  };
+
+  const confirmDelete = () => {
+    if (varianteToDelete === null) return;
+    toast.promise(VariantesService.delete(varianteToDelete), {
       loading: "Eliminando...",
       success: () => {
         setProducto((prev) =>
-          prev ? { ...prev, variantes: prev.variantes.filter((v) => v.id !== varianteId) } : null
+          prev ? { ...prev, variantes: prev.variantes.filter((v) => v.id !== varianteToDelete) } : null
         );
+        setVarianteToDelete(null);
         return "Variante eliminada";
       },
       error: "No se pudo eliminar la variante",
@@ -423,6 +434,26 @@ export default function GestionVariantesPage() {
           onDelete={handleDeleteVariante}
         />
       </section>
+
+      <AlertDialog open={varianteToDelete !== null} onOpenChange={(open) => !open && setVarianteToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar variante?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La variante será eliminada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

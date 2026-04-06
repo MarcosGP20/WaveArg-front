@@ -16,6 +16,16 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { TableAccesorioVariants } from "@/app/admin/components/TableAccesorioVariants";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // ─── tipos ────────────────────────────────────────────────────────────────────
 
@@ -263,6 +273,7 @@ export default function GestionVariantesAccesorioPage() {
   const [loadingAccesorio, setLoadingAccesorio] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [varianteToDelete, setVarianteToDelete] = useState<number | null>(null);
 
   const cargarInformacion = async () => {
     if (!id) return;
@@ -332,14 +343,19 @@ export default function GestionVariantesAccesorioPage() {
     });
   };
 
-  const handleDeleteVariante = async (varianteId: number) => {
-    if (!window.confirm("¿Estás seguro de eliminar esta variante?")) return;
-    toast.promise(AccesorioVariantesService.delete(varianteId), {
+  const handleDeleteVariante = (varianteId: number) => {
+    setVarianteToDelete(varianteId);
+  };
+
+  const confirmDelete = () => {
+    if (varianteToDelete === null) return;
+    toast.promise(AccesorioVariantesService.delete(varianteToDelete), {
       loading: "Eliminando...",
       success: () => {
         setAccesorio((prev) =>
-          prev ? { ...prev, variantes: prev.variantes.filter((v) => v.id !== varianteId) } : null
+          prev ? { ...prev, variantes: prev.variantes.filter((v) => v.id !== varianteToDelete) } : null
         );
+        setVarianteToDelete(null);
         return "Variante eliminada";
       },
       error: "No se pudo eliminar la variante",
@@ -402,6 +418,26 @@ export default function GestionVariantesAccesorioPage() {
           onDelete={handleDeleteVariante}
         />
       </section>
+
+      <AlertDialog open={varianteToDelete !== null} onOpenChange={(open) => !open && setVarianteToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar variante?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La variante será eliminada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
