@@ -44,9 +44,10 @@ export default function NuevoProductoPage() {
         nombre: data.nombre,
         modelo: data.modelo,
         descripcion: data.descripcion,
-        imagenesUrls: data.imagenesUrls
+        imagenes: data.imagenesUrls
           .map((img) => img.url)
           .filter((url) => url !== ""),
+        variantes: [],
       };
 
       await ProductService.create(payload);

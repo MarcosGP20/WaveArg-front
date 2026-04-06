@@ -1,13 +1,53 @@
 // lib/api.ts
-import { Producto, Variante } from "@/interfaces/producto";
+import { Producto, Variante, CreateProductoDTO } from "@/interfaces/producto";
 import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Accesorio, AccesorioVariante, AccesorioImagenDetalle, CategoriaAccesorio, CATEGORIA_LABELS } from "@/interfaces/accesorio";
+import { Accesorio, AccesorioVariante, AccesorioImagenDetalle, CategoriaAccesorio, CATEGORIA_LABELS, CreateAccesorioDTO } from "@/interfaces/accesorio";
 
 // Re-export for convenience
-export type { Producto, Variante };
-export type { Accesorio, AccesorioVariante, AccesorioImagenDetalle };
+export type { Producto, Variante, CreateProductoDTO };
+export type { Accesorio, AccesorioVariante, AccesorioImagenDetalle, CreateAccesorioDTO };
 export { CategoriaAccesorio, CATEGORIA_LABELS };
+
+// --- DTOs de escritura ---
+
+export interface CreateVarianteDTO {
+  productoId: number;
+  color: string;
+  memoria: string;
+  precio: number;
+  stock: number;
+  esUsado: boolean;
+  detalleEstado: string | null;
+  fotoEstadoUrl: string;
+  imagenes: string[];
+}
+
+export interface UpdateProductoDTO {
+  nombre: string;
+  modelo: string;
+  descripcion: string;
+  imagenes: string[];
+}
+
+export interface UpdateAccesorioDTO {
+  nombre: string;
+  modelo: string;
+  descripcion: string;
+  categoria: CategoriaAccesorio;
+}
+
+export interface CreateAccesorioVarianteDTO {
+  accesorioId: number;
+  color: string;
+  especificacion: string;
+  precio: number;
+  stock: number;
+  esUsado: boolean;
+  detalleEstado: string | null;
+  fotoEstadoUrl: string;
+  imagenes: string[];
+}
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
@@ -114,15 +154,13 @@ export const ProductService = {
 
   getById: (id: number | string) => fetchFromApi<Producto>(`/Productos/${id}`),
 
-  create: (
-    data: any, // Usamos any o CreateProductoDTO
-  ) =>
+  create: (data: CreateProductoDTO) =>
     fetchFromApi<Producto>("/Productos", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Partial<Producto>) =>
+  update: (id: number, data: UpdateProductoDTO) =>
     fetchFromApi<Producto>(`/Productos`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),
@@ -135,7 +173,7 @@ export const ProductService = {
 };
 
 export const VariantesService = {
-  create: (data: any) =>
+  create: (data: CreateVarianteDTO) =>
     fetchFromApi<Variante[]>("/Variantes", {
       method: "POST",
       body: JSON.stringify(data),
@@ -161,13 +199,13 @@ export const AccesoriosService = {
 
   getById: (id: number | string) => fetchFromApi<Accesorio>(`/Accesorios/${id}`),
 
-  create: (data: any) =>
+  create: (data: CreateAccesorioDTO) =>
     fetchFromApi<Accesorio>("/Accesorios", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: any) =>
+  update: (id: number, data: UpdateAccesorioDTO) =>
     fetchFromApi<Accesorio>(`/Accesorios`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),
@@ -180,7 +218,7 @@ export const AccesoriosService = {
 };
 
 export const AccesorioVariantesService = {
-  create: (data: any) =>
+  create: (data: CreateAccesorioVarianteDTO) =>
     fetchFromApi<AccesorioVariante[]>("/AccesorioVariantes", {
       method: "POST",
       body: JSON.stringify(data),
