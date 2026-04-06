@@ -11,7 +11,7 @@ import {
   FaSignOutAlt,
   FaCog,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import DropdownItem from "./DropdownItem";
@@ -57,6 +57,7 @@ export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [cartHoverOpen, setCartHoverOpen] = useState(false);
+  const cartCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { cart, removeFromCart } = useCart();
   const { user, token, logout, isLoggedIn } = useAuthStore();
@@ -265,8 +266,13 @@ export default function NavBar() {
           {/* Links de usuario y carrito — con hover dropdown */}
           <div
             className="relative px-3 py-2"
-            onMouseEnter={() => setCartHoverOpen(true)}
-            onMouseLeave={() => setCartHoverOpen(false)}
+            onMouseEnter={() => {
+              if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
+              setCartHoverOpen(true);
+            }}
+            onMouseLeave={() => {
+              cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
+            }}
           >
             <Link href="/cart" className="relative inline-block">
               <FaShoppingCart size={24} className="text-[#05467D]" />
@@ -279,7 +285,15 @@ export default function NavBar() {
 
             {/* CART HOVER DROPDOWN */}
             {cartHoverOpen && (
-              <div className="absolute right-0 top-full mt-1 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeDown">
+              <div
+                className="absolute right-0 top-full mt-1 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeDown"
+                onMouseEnter={() => {
+                  if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
+                }}
+                onMouseLeave={() => {
+                  cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
+                }}
+              >
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 bg-[#05467D]">
                   <span className="text-white font-semibold text-sm tracking-wide">
