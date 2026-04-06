@@ -1,5 +1,10 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import FailureContent from "./FailureContent";
+
+export const metadata: Metadata = {
+  title: "Pago no aprobado | Wave ARG",
+};
 
 export default function FailurePage() {
   return (

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, Shield, Trash2, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
   const { token, user, logout } = useAuthStore();
@@ -31,8 +32,7 @@ export default function SettingsPage() {
   }
 
   const handleDeleteAccount = () => {
-    // Placeholder: implementar cuando el backend tenga el endpoint
-    alert("Función disponible próximamente.");
+    toast.info("Función disponible próximamente.");
   };
 
   return (

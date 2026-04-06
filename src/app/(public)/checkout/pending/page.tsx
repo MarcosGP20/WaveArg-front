@@ -1,5 +1,10 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import PendingContent from "./PendingContent";
+
+export const metadata: Metadata = {
+  title: "Pago pendiente | Wave ARG",
+};
 
 export default function PendingPage() {
   return (

@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { LazyVideoFacade } from "@/components/VideoPlayer";
 import IPhoneCarousel from "@/components/IPhoneCarousel";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Guía para creadores de contenido | Wave ARG",
+  description: "Descubrí qué iPhone, Mac y accesorios necesitás para crear contenido de calidad. Guía completa para creadores.",
+};
 
 const creatorTools = [
   {
@@ -135,9 +141,12 @@ export default function Creadores() {
                 </ul>
 
                 {item.button && (
-                  <button className="bg-[#05467D] hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors cursor-pointer">
+                  <Link
+                    href="/accesorios"
+                    className="bg-[#05467D] hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors"
+                  >
                     {item.buttonText}
-                  </button>
+                  </Link>
                 )}
               </div>
             </div>
@@ -167,9 +176,12 @@ export default function Creadores() {
               contenido al siguiente nivel.
             </p>
 
-            <button className="bg-white/90 hover:bg-white text-[#05467D] rounded-full px-8 py-2.5 text-base font-semibold transition-colors cursor-pointer">
+            <Link
+              href="/accesorios"
+              className="bg-white/90 hover:bg-white text-[#05467D] rounded-full px-8 py-2.5 text-base font-semibold transition-colors"
+            >
               Ver accesorios
-            </button>
+            </Link>
           </div>
         </div>
       </section>

@@ -1,5 +1,11 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import ProductsContent from "./ProductsContent";
+
+export const metadata: Metadata = {
+  title: "Catálogo | Wave ARG",
+  description: "Explorá nuestra selección de iPhones y accesorios. Equipos nuevos y usados con garantía.",
+};
 
 export default function ProductsPage() {
   return (

@@ -16,9 +16,6 @@ export async function POST(req: NextRequest) {
   const type = searchParams.get("type") ?? "";
   const dataId = searchParams.get("data.id") ?? "";
 
-  // Log para debugging
-  console.log(`[MP Webhook] type=${type}, data.id=${dataId}`);
-
   try {
     const backendUrl = `${API_BASE}/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`;
 
@@ -38,7 +35,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(`[MP Webhook] Procesado correctamente`);
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error("[MP Webhook] Error al reenviar al backend:", error);

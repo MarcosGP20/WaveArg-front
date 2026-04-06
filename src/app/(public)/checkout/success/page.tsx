@@ -1,5 +1,10 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import SuccessContent from "./SuccessContent";
+
+export const metadata: Metadata = {
+  title: "Pago aprobado | Wave ARG",
+};
 
 export default function SuccessPage() {
   return (

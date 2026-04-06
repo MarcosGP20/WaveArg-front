@@ -54,7 +54,6 @@ export async function fetchFromApi<T>(
     if (!res.ok) {
       // Intentamos leer el body como texto primero para no perder info
       const rawText = await res.text().catch(() => "");
-      console.error(`[API ${res.status}] ${endpoint} →`, rawText);
 
       // Luego intentamos parsearlo como JSON
       let errorData: Record<string, unknown> = {};
@@ -101,7 +100,6 @@ export async function fetchFromApi<T>(
       return { message: text } as T;
     }
   } catch (error) {
-    console.error(`[API Error - ${endpoint}]:`, error);
     throw error;
   }
 }

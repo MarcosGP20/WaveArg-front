@@ -60,7 +60,6 @@ export default function UsersPage() {
     setError(null);
     UsuariosService.getAll()
       .then((data) => {
-        if (data.length > 0) console.log("[Usuarios] Primer registro:", data[0]);
         setUsuarios(data);
       })
       .catch((err: Error) => setError(err.message))
