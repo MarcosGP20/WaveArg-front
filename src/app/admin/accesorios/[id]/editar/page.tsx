@@ -3,7 +3,7 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AccesoriosService } from "@/lib/api";
+import { AccesoriosService, AccesorioImagenesService, CategoriaAccesorio, CATEGORIA_LABELS } from "@/lib/api";
 import { Plus, Trash2, Image as ImageIcon, Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -12,6 +12,7 @@ interface AccesorioEditForm {
   nombre: string;
   modelo: string;
   descripcion: string;
+  categoria: number;
   imagenesUrls: { url: string }[];
 }
 
@@ -23,6 +24,8 @@ export default function EditarAccesorioPage() {
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  // Guardamos los IDs de las imágenes actuales para poder borrarlas al guardar
+  const [imagenesActualesIds, setImagenesActualesIds] = useState<number[]>([]);
 
   const {
     register,
@@ -40,15 +43,21 @@ export default function EditarAccesorioPage() {
     name: "imagenesUrls",
   });
 
-  // Carga los datos actuales del producto
+  // Carga los datos actuales del accesorio
   useEffect(() => {
     if (!id) return;
     AccesoriosService.getById(id)
       .then((p) => {
+        // Guardamos los IDs de imágenes existentes para borrarlas al editar
+        if (p.imagenesDetalle && p.imagenesDetalle.length > 0) {
+          setImagenesActualesIds(p.imagenesDetalle.map((img) => img.id));
+        }
+
         reset({
           nombre: p.nombre,
           modelo: p.modelo,
           descripcion: p.descripcion,
+          categoria: p.categoria,
           imagenesUrls:
             p.imagenes?.length > 0
               ? p.imagenes.map((url) => ({ url }))
@@ -62,14 +71,28 @@ export default function EditarAccesorioPage() {
   const onSubmit = async (data: AccesorioEditForm) => {
     setSaving(true);
     try {
+      // 1. Actualizar los campos del accesorio (nombre, modelo, descripcion, categoria)
       await AccesoriosService.update(id, {
         nombre: data.nombre,
         modelo: data.modelo,
         descripcion: data.descripcion,
-        imagenesUrls: data.imagenesUrls
-          .map((img) => img.url)
-          .filter((url) => url.trim() !== ""),
+        categoria: data.categoria,
       });
+
+      // 2. Eliminar todas las imágenes actuales
+      await Promise.all(
+        imagenesActualesIds.map((imgId) => AccesorioImagenesService.eliminar(imgId))
+      );
+
+      // 3. Agregar las nuevas imágenes
+      const urlsNuevas = data.imagenesUrls
+        .map((img) => img.url.trim())
+        .filter((url) => url !== "");
+
+      await Promise.all(
+        urlsNuevas.map((url) => AccesorioImagenesService.agregar(id, url))
+      );
+
       toast.success("Accesorio actualizado correctamente");
       router.push("/admin/accesorios");
     } catch (err: any) {
@@ -142,6 +165,23 @@ export default function EditarAccesorioPage() {
               <span className="text-red-500 text-xs mt-1">{errors.modelo.message}</span>
             )}
           </div>
+        </div>
+
+        {/* Categoría */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Categoría
+          </label>
+          <select
+            {...register("categoria", { valueAsNumber: true })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+          >
+            {Object.entries(CATEGORIA_LABELS).map(([val, label]) => (
+              <option key={val} value={Number(val)}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Descripción */}

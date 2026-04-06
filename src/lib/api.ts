@@ -2,11 +2,11 @@
 import { Producto, Variante } from "@/interfaces/producto";
 import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Accesorio, AccesorioVariante, CategoriaAccesorio, CATEGORIA_LABELS } from "@/interfaces/accesorio";
+import { Accesorio, AccesorioVariante, AccesorioImagenDetalle, CategoriaAccesorio, CATEGORIA_LABELS } from "@/interfaces/accesorio";
 
 // Re-export for convenience
 export type { Producto, Variante };
-export type { Accesorio, AccesorioVariante };
+export type { Accesorio, AccesorioVariante, AccesorioImagenDetalle };
 export { CategoriaAccesorio, CATEGORIA_LABELS };
 
 const API_BASE =
@@ -199,6 +199,28 @@ export const AccesorioVariantesService = {
       method: "DELETE",
     }),
 };
+export const AccesorioImagenesService = {
+  /**
+   * Agrega una imagen a un accesorio existente.
+   * POST /api/AccesorioImagenes
+   */
+  agregar: (accesorioId: number, url: string) =>
+    fetchFromApi<{ message: string }>("/AccesorioImagenes", {
+      method: "POST",
+      body: JSON.stringify({ accesorioId, url }),
+    }),
+
+  /**
+   * Elimina una imagen por su ID.
+   * DELETE /api/AccesorioImagenes/{id}
+   */
+  eliminar: (imagenId: number) =>
+    fetchFromApi<void>(`/AccesorioImagenes/${imagenId}`, {
+      method: "DELETE",
+    }),
+};
+
+
 export async function loginUser(data: LoginDTO) {
   return fetchFromApi<AuthResponse>("/Auth/login", {
     method: "POST",

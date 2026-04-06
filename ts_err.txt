@@ -1,0 +1,6 @@
+﻿src/app/admin/productos/[id]/variantes/page.tsx(147,55): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string' is not assignable to type 'readonly string[]'.
+src/app/admin/productos/[id]/variantes/page.tsx(148,56): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string' is not assignable to type 'readonly string[]'.

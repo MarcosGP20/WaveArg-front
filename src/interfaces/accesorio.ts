@@ -29,6 +29,12 @@ export interface AccesorioVariante {
   imagenes?: string[];
 }
 
+export interface AccesorioImagenDetalle {
+  id: number;
+  url: string;
+  esPrincipal: boolean;
+}
+
 export interface Accesorio {
   id: number;
   nombre: string;
@@ -37,6 +43,7 @@ export interface Accesorio {
   categoria: number; // Valor numérico del enum: 0=Cases, 1=Chargers, 2=Laptops...
   stockTotal: number;
   imagenes: string[];
+  imagenesDetalle?: AccesorioImagenDetalle[]; // Incluye id para poder editar/borrar
   variantes: AccesorioVariante[];
 }
 
