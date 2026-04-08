@@ -128,7 +128,15 @@ export function LoginForm() {
 
         {/* Campo Contraseña */}
         <div>
-          <Label htmlFor="password">Contraseña</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Contraseña</Label>
+            <a
+              href="/olvide-mi-contrasena"
+              className="text-xs text-[#05467D] hover:underline"
+            >
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
           <div className="flex items-center gap-2 py-2">
             <Lock size={16} className="text-gray-400" />
             <Input

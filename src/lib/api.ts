@@ -279,6 +279,20 @@ export async function registerUser(data: RegisterDTO) {
   });
 }
 
+export async function solicitarResetContrasena(email: string) {
+  return fetchFromApi<{ message: string }>("/auth/solicitar-reset", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetearContrasena(token: string, nuevaContrasena: string) {
+  return fetchFromApi<{ message: string }>("/auth/resetear-contrasena", {
+    method: "POST",
+    body: JSON.stringify({ token, nuevaContrasena }),
+  });
+}
+
 // Ejemplo de lo que necesitas para el catálogo
 // lib/api.ts
 export async function getProductos() {
