@@ -21,7 +21,7 @@ export default function CartPage() {
         </p>
         <Link
           href="/products"
-          className="bg-color-principal text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
+          className="bg-color-principal text-white px-6 py-2 rounded-full hover:bg-color-principal-oscuro transition"
         >
           Ver productos
         </Link>
