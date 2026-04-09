@@ -216,7 +216,7 @@ export const TableAccesorioVariants = ({
                           <button
                             onClick={() => saveEdit()}
                             disabled={isSaving}
-                            className="flex items-center gap-1.5 bg-color-principal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 bg-color-principal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-color-principal-oscuro transition-colors disabled:opacity-50"
                           >
                             {isSaving ? (
                               <Loader2 size={14} className="animate-spin" />

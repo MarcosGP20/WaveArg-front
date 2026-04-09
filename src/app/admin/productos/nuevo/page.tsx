@@ -179,7 +179,7 @@ export default function NuevoProductoPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-color-principal text-white py-3 rounded-md font-bold hover:bg-[#043a68] transition-colors disabled:bg-gray-400 flex justify-center items-center"
+          className="w-full bg-color-principal text-white py-3 rounded-md font-bold hover:bg-color-principal-oscuro transition-colors disabled:bg-gray-400 flex justify-center items-center"
         >
           {loading ? (
             <Loader2 className="animate-spin mr-2" />

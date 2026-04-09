@@ -104,7 +104,7 @@ export default function CheckoutPage() {
         </p>
         <Link
           href="/products"
-          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
+          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-color-principal-oscuro transition font-semibold"
         >
           Ver productos
         </Link>
@@ -199,7 +199,7 @@ export default function CheckoutPage() {
               </p>
               <button
                 onClick={() => router.push(`/login?redirect=/checkout`)}
-                className="bg-color-principal text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#063c68] transition flex items-center gap-2"
+                className="bg-color-principal text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-color-principal-oscuro transition flex items-center gap-2"
               >
                 <LogIn size={16} />
                 Iniciar sesión

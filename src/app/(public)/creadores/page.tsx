@@ -58,7 +58,7 @@ export default function Creadores() {
           </p>
           <Link
             href="/contacto"
-            className="mt-4 inline-block bg-color-principal text-white font-medium py-3 px-8 rounded-full transition-colors cursor-pointer hover:bg-[#03305a]"
+            className="mt-4 inline-block bg-color-principal text-white font-medium py-3 px-8 rounded-full transition-colors cursor-pointer hover:bg-color-principal-oscuro"
           >
             Quiero una asesoria!
           </Link>
@@ -84,7 +84,7 @@ export default function Creadores() {
           </h3>
           <a
             href="#equipos"
-            className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#043d6b] transition-colors inline-block"
+            className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-color-principal-oscuro transition-colors inline-block"
           >
             Ver equipos recomendados
           </a>
@@ -143,7 +143,7 @@ export default function Creadores() {
                 {item.button && (
                   <Link
                     href="/accesorios"
-                    className="bg-color-principal hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors"
+                    className="bg-color-principal hover:bg-color-principal-oscuro text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors"
                   >
                     {item.buttonText}
                   </Link>

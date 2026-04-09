@@ -206,7 +206,7 @@ export default function NuevoAccesorioPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-lg font-medium hover:bg-color-principal-oscuro transition-colors disabled:opacity-50"
           >
             {loading && <Loader2 size={15} className="animate-spin" />}
             Crear y agregar variantes →

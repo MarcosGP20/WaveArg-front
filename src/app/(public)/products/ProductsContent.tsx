@@ -8,7 +8,8 @@ import { Accesorio, CATEGORIA_LABELS, CategoriaAccesorio } from "@/interfaces/ac
 import ProductCard from "@/components/ProductCards";
 import AccesorioCard from "@/components/AccesorioCard";
 import FilterSidebar from "@/components/FilterSide";
-import { SlidersHorizontal, X, Package } from "lucide-react";
+import { SlidersHorizontal, X, Package, Smartphone } from "lucide-react";
+import Link from "next/link";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -171,9 +172,18 @@ export default function ProductsContent() {
               </div>
 
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <p className="font-medium mb-1">Ningún iPhone coincide con los filtros</p>
-                  <p className="text-sm">Probá cambiar o limpiar los filtros.</p>
+                <div className="flex flex-col items-center justify-center py-14 gap-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                  <Smartphone size={44} className="text-gray-200" />
+                  <div className="text-center text-gray-500">
+                    <p className="font-medium mb-1">Ningún iPhone coincide con los filtros</p>
+                    <p className="text-sm">Probá cambiar o limpiar los filtros.</p>
+                  </div>
+                  <Link
+                    href="/products"
+                    className="px-5 py-2 bg-color-principal text-white text-sm font-medium rounded-full hover:bg-color-principal-oscuro transition-colors"
+                  >
+                    Limpiar filtros
+                  </Link>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">

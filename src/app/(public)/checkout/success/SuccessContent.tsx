@@ -76,7 +76,7 @@ export default function SuccessContent() {
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
           href="/products"
-          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
+          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-color-principal-oscuro transition font-semibold"
         >
           Seguir comprando
         </Link>

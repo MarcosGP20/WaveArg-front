@@ -6,7 +6,8 @@ import { AccesoriosService } from "@/lib/api";
 import { Accesorio } from "@/interfaces/accesorio";
 import AccesorioCard from "@/components/AccesorioCard";
 import FilterSidebar from "@/components/FilterSide";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, Package } from "lucide-react";
+import Link from "next/link";
 
 function toSlug(name: string): string {
   return name
@@ -92,8 +93,11 @@ export default function AccesoriosContent() {
 
   if (loading)
     return (
-      <div className="p-20 text-center font-bold">
-        Conectando con el backend...
+      <div className="p-20 text-center">
+        <div className="inline-flex flex-col items-center gap-3 text-gray-500">
+          <div className="w-8 h-8 border-4 border-color-principal border-t-transparent rounded-full animate-spin" />
+          <span className="font-medium text-sm">Conectando con el servidor...</span>
+        </div>
       </div>
     );
   if (error)
@@ -144,9 +148,18 @@ export default function AccesoriosContent() {
 
         <main className="flex-1">
           {filteredProducts.length === 0 ? (
-            <div className="text-center py-16 text-gray-500">
-              <p className="text-lg font-medium mb-2">Ningún accesorio coincide con los filtros</p>
-              <p className="text-sm">Probá cambiar o limpiar los filtros.</p>
+            <div className="flex flex-col items-center justify-center py-16 gap-4 text-gray-400">
+              <Package size={48} className="text-gray-200" />
+              <div className="text-center">
+                <p className="font-medium text-gray-600">Ningún accesorio coincide con los filtros</p>
+                <p className="text-sm mt-1">Probá cambiar o limpiar los filtros.</p>
+              </div>
+              <Link
+                href="/accesorios"
+                className="mt-2 px-5 py-2 bg-color-principal text-white text-sm font-medium rounded-full hover:bg-color-principal-oscuro transition-colors"
+              >
+                Limpiar filtros
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">

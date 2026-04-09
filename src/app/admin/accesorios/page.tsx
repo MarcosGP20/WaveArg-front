@@ -61,7 +61,7 @@ export default function InventarioPage() {
           <p className="text-red-500 text-sm max-w-sm">{error}</p>
           <button
             onClick={cargarAccesorios}
-            className="flex items-center gap-2 bg-color-principal text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors"
+            className="flex items-center gap-2 bg-color-principal text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-color-principal-oscuro transition-colors"
           >
             <RefreshCw size={15} />
             Reintentar
@@ -110,7 +110,7 @@ export default function InventarioPage() {
         </h1>
         <Link
           href="/admin/accesorios/nuevo"
-          className="bg-color-principal text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#043a68] transition-all shadow-sm"
+          className="bg-color-principal text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-color-principal-oscuro transition-all shadow-sm"
         >
           <Plus size={20} /> Nuevo Accesorio
         </Link>

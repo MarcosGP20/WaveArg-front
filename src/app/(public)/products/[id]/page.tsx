@@ -383,7 +383,7 @@ export default function ProductDetail({
               className={`flex-1 font-bold py-3.5 rounded-full text-sm tracking-wide transition-all ${
                 added
                   ? "bg-green-600 text-white shadow-lg shadow-green-700/20"
-                  : "bg-color-principal text-white shadow-lg shadow-blue-900/20 hover:bg-[#043a6a] active:scale-[0.98]"
+                  : "bg-color-principal text-white shadow-lg shadow-blue-900/20 hover:bg-color-principal-oscuro active:scale-[0.98]"
               } disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none`}
             >
               {added ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}

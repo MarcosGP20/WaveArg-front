@@ -94,7 +94,7 @@ export default function HomePage() {
                     </h2>
                     <div className="flex gap-4">
                       <a href="/products">
-                        <button className="bg-color-principal hover:bg-[#043d6b] text-white px-8 py-3 rounded-full cursor-pointer">
+                        <button className="bg-color-principal hover:bg-color-principal-oscuro text-white px-8 py-3 rounded-full cursor-pointer">
                           Ver más
                         </button>
                       </a>
@@ -151,7 +151,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-color-principal text-white px-8 py-4 rounded-full hover:bg-[#043d6b] transition-colors text-lg font-medium cursor-pointer">
+                  <button className="bg-color-principal text-white px-8 py-4 rounded-full hover:bg-color-principal-oscuro transition-colors text-lg font-medium cursor-pointer">
                     <Link href="/creadores">Ver la guía</Link>
                   </button>
                 </div>

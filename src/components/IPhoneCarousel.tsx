@@ -219,7 +219,7 @@ export default function IPhoneCarousel() {
 
                 <a
                   href="/products"
-                  className="inline-flex items-center gap-2 bg-color-principal hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-colors w-fit"
+                  className="inline-flex items-center gap-2 bg-color-principal hover:bg-color-principal-oscuro text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-colors w-fit"
                 >
                   Ver {slide.model} →
                 </a>

@@ -72,7 +72,7 @@ function UrlListField({
     blue: {
       label: "text-color-principal",
       inputRing: "focus:border-color-principal focus:ring-color-principal/20",
-      btn: "bg-color-principal hover:bg-[#043a68]",
+      btn: "bg-color-principal hover:bg-color-principal-oscuro",
       item: "bg-blue-50 border-blue-100",
     },
     amber: {
@@ -402,7 +402,7 @@ export default function GestionVariantesAccesorioPage() {
         <button
           type="submit"
           disabled={isSubmitting || loadingAccesorio}
-          className="w-full bg-color-principal text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-[#043a68] transition-all disabled:opacity-60"
+          className="w-full bg-color-principal text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-color-principal-oscuro transition-all disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {isSubmitting ? "Guardando..." : "Guardar Variantes"}

@@ -363,7 +363,7 @@ export default function NavBar() {
                       </div>
                       <Link
                         href="/cart"
-                        className="block w-full text-center bg-color-principal hover:bg-[#0a6db5] text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+                        className="block w-full text-center bg-color-principal hover:bg-color-principal-oscuro text-white text-sm font-semibold py-2 rounded-lg transition-colors"
                       >
                         Ver carrito completo →
                       </Link>

@@ -51,7 +51,7 @@ export default function CartPage() {
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <button
-                  className="px-2 py-1 border rounded"
+                  className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded transition-colors"
                   onClick={() =>
                     updateQuantity(item.id, Math.max(1, item.quantity - 1))
                   }
@@ -61,14 +61,14 @@ export default function CartPage() {
                 </button>
                 <span>{item.quantity}</span>
                 <button
-                  className="px-2 py-1 border rounded"
+                  className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 rounded transition-colors"
                   onClick={() => updateQuantity(item.id, item.quantity + 1)}
                   aria-label="Aumentar cantidad"
                 >
                   +
                 </button>
                 <button
-                  className="ml-4 text-gray-500  hover:underline"
+                  className="ml-4 text-gray-500 hover:text-red-500 transition-colors"
                   onClick={() => removeFromCart(item.id)}
                   aria-label="Eliminar"
                 >
@@ -94,7 +94,7 @@ export default function CartPage() {
           Vaciar carrito
         </button>
         <button
-          className="bg-color-principal text-white px-4 py-2 rounded-full hover:bg-[#063c68]"
+          className="bg-color-principal text-white px-4 py-2 rounded-full hover:bg-color-principal-oscuro"
           onClick={() => router.push("/checkout")}
         >
           Ir a pagar
