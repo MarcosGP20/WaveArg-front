@@ -49,16 +49,16 @@ export default function Creadores() {
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center text-center mt-20  px-4 py-20">
         <div className="max-w-4xl">
-          <h2 className="text-center text-[#05467D] text-5xl font-bold mb-6">
+          <h2 className="text-center text-color-principal text-5xl font-bold mb-6">
             Guía para creadores de contenido
           </h2>
-          <p className="text-center text-2xl text-[#05467D] mt-4 mb-10 px-4 md:px-0">
+          <p className="text-center text-2xl text-color-principal mt-4 mb-10 px-4 md:px-0">
             Todo lo que necesitas para crear contenido de calidad, elegir el
             equipo correcto y sacarle máximo provecho a tu iPhone o Mac
           </p>
           <Link
             href="/contacto"
-            className="mt-4 inline-block bg-[#05467D] text-white font-medium py-3 px-8 rounded-full transition-colors cursor-pointer hover:bg-[#03305a]"
+            className="mt-4 inline-block bg-color-principal text-white font-medium py-3 px-8 rounded-full transition-colors cursor-pointer hover:bg-[#03305a]"
           >
             Quiero una asesoria!
           </Link>
@@ -84,7 +84,7 @@ export default function Creadores() {
           </h3>
           <a
             href="#equipos"
-            className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#043d6b] transition-colors inline-block"
+            className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#043d6b] transition-colors inline-block"
           >
             Ver equipos recomendados
           </a>
@@ -93,7 +93,7 @@ export default function Creadores() {
 
       {/* iPhone Selection Section (Espacio para el carrusel futuro) */}
       <section className="flex flex-col items-center justify-center text-center mt-10 px-4 py-10">
-        <h3 className="text-[#05467D] text-3xl font-bold mb-10">
+        <h3 className="text-color-principal text-3xl font-bold mb-10">
           ¿Qué iPhone elegir para crear contenido?
         </h3>
         <IPhoneCarousel />
@@ -101,7 +101,7 @@ export default function Creadores() {
 
       {/* Zig-Zag Section: ¿Con qué editar? */}
       <section id="equipos" className="max-w-5xl mx-auto px-6 py-20">
-        <h3 className="text-[#05467D] text-3xl font-bold text-center mb-16">
+        <h3 className="text-color-principal text-3xl font-bold text-center mb-16">
           ¿Con qué editar tu contenido?
         </h3>
 
@@ -125,14 +125,14 @@ export default function Creadores() {
 
               {/* Contenedor de Texto */}
               <div className="w-full md:w-1/2 flex flex-col items-start text-left">
-                <h4 className="text-[#05467D] text-2xl md:text-3xl font-bold mb-4">
+                <h4 className="text-color-principal text-2xl md:text-3xl font-bold mb-4">
                   {item.title}
                 </h4>
                 <ul className="space-y-3 mb-8">
                   {item.description.map((line, i) => (
                     <li
                       key={i}
-                      className="flex items-center text-[#05467D] text-lg"
+                      className="flex items-center text-color-principal text-lg"
                     >
                       <span className="mr-3 text-xl font-bold">✓</span>
                       {line}
@@ -143,7 +143,7 @@ export default function Creadores() {
                 {item.button && (
                   <Link
                     href="/accesorios"
-                    className="bg-[#05467D] hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors"
+                    className="bg-color-principal hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-base font-medium transition-colors"
                   >
                     {item.buttonText}
                   </Link>
@@ -178,7 +178,7 @@ export default function Creadores() {
 
             <Link
               href="/accesorios"
-              className="bg-white/90 hover:bg-white text-[#05467D] rounded-full px-8 py-2.5 text-base font-semibold transition-colors"
+              className="bg-white/90 hover:bg-white text-color-principal rounded-full px-8 py-2.5 text-base font-semibold transition-colors"
             >
               Ver accesorios
             </Link>

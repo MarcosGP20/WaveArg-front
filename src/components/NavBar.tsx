@@ -76,7 +76,7 @@ export default function NavBar() {
   };
 
   const linkStyle = (href: string) =>
-    `px-3 py-2 rounded-md hover:bg-gray-200 transition text-[#05467D] ${
+    `px-3 py-2 rounded-md hover:bg-gray-200 transition text-color-principal ${
       pathname === href ? "font-bold " : ""
     }`;
 
@@ -118,7 +118,7 @@ export default function NavBar() {
         onClick={() => setMenuOpen(false)}
       >
         <div className="relative inline-block">
-          <FaShoppingCart size={24} className="text-[#05467D]" />
+          <FaShoppingCart size={24} className="text-color-principal" />
           {cartCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
@@ -204,7 +204,7 @@ export default function NavBar() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 min-w-[300px] lg:min-w-[600px] px-2 py-2">
               {menuItems.map((familia) => (
                 <div key={familia.slugFamilia} className="group">
-                  <div className="flex flex-wrap items-center gap-x-2 text-sm text-[#05467D]">
+                  <div className="flex flex-wrap items-center gap-x-2 text-sm text-color-principal">
                     {/* 1. Link a la Familia (NEGRITA) */}
                     <Link
                       href={`/products?familia=${familia.slugFamilia}`}
@@ -245,7 +245,7 @@ export default function NavBar() {
             <div className="border-t mt-4 pt-3">
               <Link
                 href="/products"
-                className="block -mx-4 px-4 py-1 text-center font-semibold text-[#05467D] hover:bg-gray-50 text-sm"
+                className="block -mx-4 px-4 py-1 text-center font-semibold text-color-principal hover:bg-gray-50 text-sm"
               >
                 Ver todo el catálogo completo &rarr;
               </Link>
@@ -275,7 +275,7 @@ export default function NavBar() {
             }}
           >
             <Link href="/cart" className="relative inline-block">
-              <FaShoppingCart size={24} className="text-[#05467D]" />
+              <FaShoppingCart size={24} className="text-color-principal" />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
@@ -295,7 +295,7 @@ export default function NavBar() {
                 }}
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 bg-[#05467D]">
+                <div className="flex items-center justify-between px-4 py-3 bg-color-principal">
                   <span className="text-white font-semibold text-sm tracking-wide">
                     🛒 Mi Carrito
                   </span>
@@ -324,7 +324,7 @@ export default function NavBar() {
                             />
                           ) : (
                             <div className="w-11 h-11 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                              <FaShoppingCart size={16} className="text-[#05467D] opacity-50" />
+                              <FaShoppingCart size={16} className="text-color-principal opacity-50" />
                             </div>
                           )}
 
@@ -337,7 +337,7 @@ export default function NavBar() {
                           </div>
 
                           {/* Precio */}
-                          <span className="text-sm font-bold text-[#05467D] whitespace-nowrap">
+                          <span className="text-sm font-bold text-color-principal whitespace-nowrap">
                             ${(item.price * item.quantity).toLocaleString("es-AR")}
                           </span>
 
@@ -363,7 +363,7 @@ export default function NavBar() {
                       </div>
                       <Link
                         href="/cart"
-                        className="block w-full text-center bg-[#05467D] hover:bg-[#0a6db5] text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+                        className="block w-full text-center bg-color-principal hover:bg-[#0a6db5] text-white text-sm font-semibold py-2 rounded-lg transition-colors"
                       >
                         Ver carrito completo →
                       </Link>
@@ -379,7 +379,7 @@ export default function NavBar() {
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition text-[#05467D] font-medium"
+                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition text-color-principal font-medium"
               >
                 <FaUserCircle size={20} />
                 <span className="text-sm">{user.email?.split("@")[0]}</span>

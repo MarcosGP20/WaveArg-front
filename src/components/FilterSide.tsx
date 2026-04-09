@@ -32,7 +32,7 @@ export default function FilterSidebar({ mode = "iphones" }: { mode?: FilterMode 
   return (
     <aside className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="font-bold text-xl text-[#05467D] dark:text-white">Filtros</h2>
+        <h2 className="font-bold text-xl text-color-principal dark:text-white">Filtros</h2>
         {hasActiveFilters && (
           <button
             onClick={() => router.push("?", { scroll: false })}
@@ -120,7 +120,7 @@ function FilterOption({
       <div className="relative flex items-center justify-center w-5 h-5 flex-shrink-0">
         <input
           type="checkbox"
-          className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded checked:bg-[#05467D] checked:border-[#05467D] transition-all cursor-pointer"
+          className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded checked:bg-color-principal checked:border-color-principal transition-all cursor-pointer"
           checked={checked}
           onChange={onChange}
         />
@@ -138,8 +138,8 @@ function FilterOption({
       </div>
       <span
         className={`text-sm ${
-          checked ? "font-medium text-[#05467D]" : "text-gray-600 dark:text-gray-400"
-        } group-hover:text-[#05467D] transition-colors`}
+          checked ? "font-medium text-color-principal" : "text-gray-600 dark:text-gray-400"
+        } group-hover:text-color-principal transition-colors`}
       >
         {label}
       </span>

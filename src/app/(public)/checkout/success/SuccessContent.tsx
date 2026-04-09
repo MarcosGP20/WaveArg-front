@@ -76,13 +76,13 @@ export default function SuccessContent() {
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
           href="/products"
-          className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
+          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
         >
           Seguir comprando
         </Link>
         <Link
           href="/account/profile"
-          className="border border-[#05467D] text-[#05467D] px-8 py-3 rounded-full hover:bg-[#05467D]/5 transition font-semibold"
+          className="border border-color-principal text-color-principal px-8 py-3 rounded-full hover:bg-color-principal/5 transition font-semibold"
         >
           Ver mis pedidos
         </Link>

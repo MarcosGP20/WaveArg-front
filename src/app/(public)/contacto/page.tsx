@@ -66,7 +66,7 @@ export default function ContactPage() {
 
   // Helper para clases de inputs con feedback de error
   const fieldClass = (isValid: boolean, isTouched: boolean) =>
-    `w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#05467D] focus:border-[#05467D] transition outline-none ${
+    `w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none ${
       isTouched && !isValid
         ? "border-red-400 bg-red-50"
         : "border-gray-300"
@@ -77,7 +77,7 @@ export default function ContactPage() {
       <div className="max-w-4xl mx-auto">
         {/* Encabezado */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-[#05467D] mb-3">Contacto</h1>
+          <h1 className="text-4xl font-bold text-color-principal mb-3">Contacto</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             ¿Tenés alguna consulta? Completá el formulario y te respondemos por
             WhatsApp en menos de 24 horas.
@@ -87,7 +87,7 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Formulario de contacto */}
           <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
-            <h2 className="text-2xl font-semibold text-[#05467D] mb-6">
+            <h2 className="text-2xl font-semibold text-color-principal mb-6">
               Envíanos un mensaje
             </h2>
 
@@ -114,7 +114,7 @@ export default function ContactPage() {
                     setMensaje("");
                     setTouched({ nombre: false, email: false, mensaje: false });
                   }}
-                  className="text-sm text-[#05467D] hover:underline mt-2"
+                  className="text-sm text-color-principal hover:underline mt-2"
                 >
                   Enviar otro mensaje
                 </button>
@@ -189,7 +189,7 @@ export default function ContactPage() {
                   <input
                     type="tel"
                     id="phone"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#05467D] focus:border-[#05467D] transition outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none"
                     placeholder="+54 11 1234-5678"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
@@ -207,7 +207,7 @@ export default function ContactPage() {
                   </label>
                   <select
                     id="subject"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#05467D] focus:border-[#05467D] transition outline-none bg-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none bg-white"
                     value={asunto}
                     onChange={(e) => setAsunto(e.target.value)}
                   >
@@ -264,14 +264,14 @@ export default function ContactPage() {
           {/* Información de contacto */}
           <div className="space-y-6">
             <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
-              <h2 className="text-2xl font-semibold text-[#05467D] mb-6">
+              <h2 className="text-2xl font-semibold text-color-principal mb-6">
                 Información de contacto
               </h2>
 
               <div className="space-y-5">
                 <div className="flex items-start gap-4">
                   <div className="bg-[#E6F2FF] p-2 rounded-full">
-                    <Mail className="w-5 h-5 text-[#05467D]" />
+                    <Mail className="w-5 h-5 text-color-principal" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">
@@ -284,7 +284,7 @@ export default function ContactPage() {
 
                 <div className="flex items-start gap-4">
                   <div className="bg-[#E6F2FF] p-2 rounded-full">
-                    <Phone className="w-5 h-5 text-[#05467D]" />
+                    <Phone className="w-5 h-5 text-color-principal" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Teléfono</h3>
@@ -294,7 +294,7 @@ export default function ContactPage() {
 
                 <div className="flex items-start gap-4">
                   <div className="bg-[#E6F2FF] p-2 rounded-full">
-                    <MapPin className="w-5 h-5 text-[#05467D]" />
+                    <MapPin className="w-5 h-5 text-color-principal" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Ubicación</h3>
@@ -305,7 +305,7 @@ export default function ContactPage() {
 
                 <div className="flex items-start gap-4">
                   <div className="bg-[#E6F2FF] p-2 rounded-full">
-                    <Clock className="w-5 h-5 text-[#05467D]" />
+                    <Clock className="w-5 h-5 text-color-principal" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">

@@ -89,7 +89,7 @@ export function RegisterForm() {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div className="space-y-2 text-center">
-        <h2 className="text-3xl font-bold text-[#05467D]">Unite a Wave Arg</h2>
+        <h2 className="text-3xl font-bold text-color-principal">Unite a Wave Arg</h2>
         <p className="text-sm text-gray-500">
           Crea tu cuenta y surfeá al próximo nivel
         </p>
@@ -147,7 +147,7 @@ export function RegisterForm() {
 
         <Button
           type="submit"
-          className="w-full bg-[#05467D] hover:bg-[#0F3C64] text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
+          className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -185,7 +185,7 @@ export function RegisterForm() {
 
       <p className="text-sm text-center mt-4 text-gray-500">
         ¿Ya tenés cuenta?{" "}
-        <a href="/login" className="text-[#05467D] font-bold hover:underline">
+        <a href="/login" className="text-color-principal font-bold hover:underline">
           Iniciá sesión
         </a>
       </p>

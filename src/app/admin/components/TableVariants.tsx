@@ -70,7 +70,7 @@ export const TableVariants = ({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-dashed border-gray-300">
-        <Loader2 className="animate-spin text-[#05467d] mb-4" size={40} />
+        <Loader2 className="animate-spin text-color-principal mb-4" size={40} />
         <p className="text-gray-500 font-medium">
           Consultando stock en base de datos...
         </p>
@@ -122,7 +122,7 @@ export const TableVariants = ({
                   <td className="px-6 py-4 font-mono text-xs text-gray-600">
                     {v.memoria}
                   </td>
-                  <td className="px-6 py-4 font-bold text-[#05467d]">
+                  <td className="px-6 py-4 font-bold text-color-principal">
                     USD {v.precio.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-center text-gray-600">
@@ -192,7 +192,7 @@ export const TableVariants = ({
                                 precio: e.target.value,
                               }))
                             }
-                            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+                            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-color-principal"
                           />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -209,14 +209,14 @@ export const TableVariants = ({
                                 stock: e.target.value,
                               }))
                             }
-                            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+                            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-color-principal"
                           />
                         </div>
                         <div className="flex gap-2 pb-0.5">
                           <button
                             onClick={() => saveEdit()}
                             disabled={isSaving}
-                            className="flex items-center gap-1.5 bg-[#05467d] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 bg-color-principal text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
                           >
                             {isSaving ? (
                               <Loader2 size={14} className="animate-spin" />

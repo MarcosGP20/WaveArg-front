@@ -8,7 +8,7 @@ import {
 export default function FAQSection() {
   return (
     <>
-      <h2 className="mt-14 text-3xl text-[#05467D] font-bold text-center">
+      <h2 className="mt-14 text-3xl text-color-principal font-bold text-center">
         Preguntas frecuentes
       </h2>
       <div className="w-full flex justify-center items-center py-10">
@@ -22,10 +22,10 @@ export default function FAQSection() {
             className="border-b-0 border-gray-300 rounded-lg shadow-md overflow-hidden"
             value="item-1"
           >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
+            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               ¿Los iPhones son nuevos o usados?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-[#05467D] text-lg">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-color-principal text-lg">
               <p>
                 Todos los iPhones que vendemos son{" "}
                 <span className="font-semibold">originales Apple</span>, y
@@ -44,10 +44,10 @@ export default function FAQSection() {
             className="border-b-0 border-gray-300 rounded-lg shadow-md overflow-hidden"
             value="item-2"
           >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
+            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               ¿Qué signfica que un iPhone sea reacondicionado?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-[#05467D] text-lg">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
               <p>
                 Un iPhone reacondicionado es{" "}
                 <span className="font-semibold">
@@ -73,10 +73,10 @@ export default function FAQSection() {
             className="border-b-0 border-gray-300 rounded-lg shadow-md overflow-hidden"
             value="item-3"
           >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
+            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               ¿Hacen envíos a todo el país?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-[#05467D] text-lg">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
               <p>
                 Sí. Enviamos a{" "}
                 <span className="font-semibold">
@@ -96,10 +96,10 @@ export default function FAQSection() {
             className="border-b-0 border-gray-300 rounded-lg shadow-md overflow-hidden"
             value="item-4"
           >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
+            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               ¿Qué medios de pago aceptan?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-[#05467D] text-lg">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
               <p>
                 Podés pagar con
                 <span className="font-semibold">
@@ -120,10 +120,10 @@ export default function FAQSection() {
             className="border-b-0 border-gray-300 rounded-lg shadow-md overflow-hidden"
             value="item-5"
           >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
+            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-color-principal hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               ¿Cómo funciona el plan canje?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-[#05467D] text-lg">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
               El plan canje es simple: <br /> 1-Nos mandás las fotos y el modelo
               de tu iPhone actual. <br />
               2- Te hacemos una cotización real según el estado y el
@@ -140,10 +140,10 @@ export default function FAQSection() {
             className="border-b-0 border-gray-300 rounded-lg shadow-md overflow-hidden"
             value="item-6"
           >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-[#05467D] hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
+            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-color-principal hover:bg-gray-200 hover:no-underline rounded-lg shadow-md overflow-hidden">
               🧾 ¿Tienen garantía?
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-[#05467D] text-lg">
+            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-color-principal text-lg">
               <p>
                 Sí. Todos nuestros equipos incluyen{" "}
                 <span className="font-semibold">garantía de 3 meses</span> contra

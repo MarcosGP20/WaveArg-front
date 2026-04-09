@@ -61,7 +61,7 @@ export default function InventarioPage() {
           <p className="text-red-500 text-sm max-w-sm">{error}</p>
           <button
             onClick={cargarAccesorios}
-            className="flex items-center gap-2 bg-[#05467d] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors"
+            className="flex items-center gap-2 bg-color-principal text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#043a68] transition-colors"
           >
             <RefreshCw size={15} />
             Reintentar
@@ -98,19 +98,19 @@ export default function InventarioPage() {
       {/* Breadcrumb / Volver */}
       <Link
         href="/admin"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#05467d] transition-colors mb-6 group"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-color-principal transition-colors mb-6 group"
       >
         <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
         Volver al Dashboard
       </Link>
 
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-[#05467d]">
+        <h1 className="text-3xl font-bold text-color-principal">
           Inventario de Accesorios
         </h1>
         <Link
           href="/admin/accesorios/nuevo"
-          className="bg-[#05467d] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#043a68] transition-all shadow-sm"
+          className="bg-color-principal text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#043a68] transition-all shadow-sm"
         >
           <Plus size={20} /> Nuevo Accesorio
         </Link>
@@ -118,7 +118,7 @@ export default function InventarioPage() {
 
       <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 text-[#05467d] uppercase text-xs font-semibold">
+          <thead className="bg-gray-50 text-color-principal uppercase text-xs font-semibold">
             <tr>
               <th className="px-6 py-4 w-20 text-center">Foto</th>
               <th className="px-6 py-4">Accesorio</th>
@@ -175,13 +175,13 @@ export default function InventarioPage() {
                     <div className="flex justify-center gap-2">
                       <Link
                         href={`/admin/accesorios/${p.id}/variantes`}
-                        className="flex items-center gap-1 text-sm text-[#05467d] hover:text-blue-800 font-bold transition-colors"
+                        className="flex items-center gap-1 text-sm text-color-principal hover:text-blue-800 font-bold transition-colors"
                       >
                         + Variante
                       </Link>
                       <Link
                         href={`/admin/accesorios/${p.id}/editar`}
-                        className="p-1.5 text-gray-400 hover:text-[#05467d] transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-color-principal transition-colors"
                         title="Editar Accesorio"
                       >
                         <Edit3 size={16} />

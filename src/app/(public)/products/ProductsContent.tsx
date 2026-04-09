@@ -105,7 +105,7 @@ export default function ProductsContent() {
     return (
       <div className="p-20 text-center">
         <div className="inline-flex flex-col items-center gap-3 text-gray-500">
-          <div className="w-8 h-8 border-4 border-[#05467D] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-color-principal border-t-transparent rounded-full animate-spin" />
           <span className="font-medium text-sm">Conectando con el servidor...</span>
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function ProductsContent() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-[#05467D]">Nuestro Catálogo</h1>
+          <h1 className="text-3xl font-bold text-color-principal">Nuestro Catálogo</h1>
           <p className="text-gray-500 text-sm mt-1">
             {filteredProducts.length} iPhone{filteredProducts.length !== 1 ? "s" : ""} ·{" "}
             {filteredAccesorios.length} accesorio{filteredAccesorios.length !== 1 ? "s" : ""}
@@ -135,14 +135,14 @@ export default function ProductsContent() {
 
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-[#05467D] hover:text-[#05467D] transition-colors"
+          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors"
           aria-expanded={showFilters}
           aria-controls="filter-sidebar"
         >
           {showFilters ? <X size={16} /> : <SlidersHorizontal size={16} />}
           Filtros
           {activeFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#05467D] text-white text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-color-principal text-white text-[10px] font-bold">
               {activeFilterCount}
             </span>
           )}
@@ -165,7 +165,7 @@ export default function ProductsContent() {
             <section>
               <div className="flex items-center gap-3 mb-5">
                 <h2 className="text-xl font-bold text-gray-800">iPhones</h2>
-                <span className="text-xs bg-[#05467D]/10 text-[#05467D] font-semibold px-2.5 py-1 rounded-full">
+                <span className="text-xs bg-color-principal/10 text-color-principal font-semibold px-2.5 py-1 rounded-full">
                   {filteredProducts.length} disponibles
                 </span>
               </div>
@@ -225,8 +225,8 @@ export default function ProductsContent() {
                         href={buildHref()}
                         className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
                           isActive
-                            ? "bg-[#05467D] text-white border-[#05467D]"
-                            : "bg-white text-gray-600 border-gray-200 hover:border-[#05467D] hover:text-[#05467D]"
+                            ? "bg-color-principal text-white border-color-principal"
+                            : "bg-white text-gray-600 border-gray-200 hover:border-color-principal hover:text-color-principal"
                         }`}
                       >
                         {label}

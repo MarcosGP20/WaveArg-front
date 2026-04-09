@@ -32,7 +32,7 @@ export function OlvideMiContrasenaForm() {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <CheckCircle className="mx-auto text-green-500" size={48} />
-        <h2 className="text-xl font-bold text-[#05467D]">Revisá tu email</h2>
+        <h2 className="text-xl font-bold text-color-principal">Revisá tu email</h2>
         <p className="text-gray-600 text-sm">
           Si el email está registrado, recibirás un enlace para restablecer tu
           contraseña en los próximos minutos.
@@ -42,7 +42,7 @@ export function OlvideMiContrasenaForm() {
         </p>
         <Link
           href="/login"
-          className="inline-flex items-center gap-2 text-[#05467D] font-semibold text-sm hover:underline mt-2"
+          className="inline-flex items-center gap-2 text-color-principal font-semibold text-sm hover:underline mt-2"
         >
           <ArrowLeft size={14} /> Volver al inicio de sesión
         </Link>
@@ -53,7 +53,7 @@ export function OlvideMiContrasenaForm() {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div>
-        <h2 className="text-2xl font-bold text-center text-[#05467D]">
+        <h2 className="text-2xl font-bold text-center text-color-principal">
           Olvidé mi contraseña
         </h2>
         <p className="text-sm text-center text-gray-500 mt-2">
@@ -82,7 +82,7 @@ export function OlvideMiContrasenaForm() {
 
         <Button
           type="submit"
-          className="w-full bg-[#05467D] hover:bg-[#0F3C64] text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
+          className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -98,7 +98,7 @@ export function OlvideMiContrasenaForm() {
       <p className="text-sm text-center text-gray-500">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1 text-[#05467D] font-semibold hover:underline"
+          className="inline-flex items-center gap-1 text-color-principal font-semibold hover:underline"
         >
           <ArrowLeft size={14} /> Volver al inicio de sesión
         </Link>

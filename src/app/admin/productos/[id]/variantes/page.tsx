@@ -72,9 +72,9 @@ function UrlListField({
 
   const s = {
     blue: {
-      label: "text-[#05467d]",
-      inputRing: "focus:border-[#05467d] focus:ring-[#05467d]/20",
-      btn: "bg-[#05467d] hover:bg-[#043a68]",
+      label: "text-color-principal",
+      inputRing: "focus:border-color-principal focus:ring-color-principal/20",
+      btn: "bg-color-principal hover:bg-[#043a68]",
       item: "bg-blue-50 border-blue-100",
     },
     amber: {
@@ -180,7 +180,7 @@ function VarianteCard({
             <input
               {...register(`variantes.${index}.color`)}
               placeholder="ej: Negro Titanio"
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] focus:ring-2 focus:ring-[#05467d]/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
             />
           </div>
@@ -189,7 +189,7 @@ function VarianteCard({
             <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Memoria *</label>
             <select
               {...register(`variantes.${index}.memoria`)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal outline-none"
             >
               {MEMORIAS.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
@@ -201,7 +201,7 @@ function VarianteCard({
               {...register(`variantes.${index}.esUsado`, {
                 setValueAs: (v: string) => v === "true",
               })}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal outline-none"
             >
               <option value="false">🆕 Nuevo</option>
               <option value="true">📦 Usado</option>
@@ -214,7 +214,7 @@ function VarianteCard({
               {...register(`variantes.${index}.detalleEstado`)}
               placeholder="ej: 87"
               disabled={!esUsado}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] outline-none disabled:bg-gray-50 disabled:text-gray-300 transition-colors"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal outline-none disabled:bg-gray-50 disabled:text-gray-300 transition-colors"
             />
           </div>
         </div>
@@ -228,7 +228,7 @@ function VarianteCard({
               <input
                 type="number"
                 {...register(`variantes.${index}.precio`)}
-                className="w-full pl-7 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] focus:ring-2 focus:ring-[#05467d]/20 outline-none font-semibold"
+                className="w-full pl-7 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none font-semibold"
                 required
                 min={0}
               />
@@ -240,7 +240,7 @@ function VarianteCard({
             <input
               type="number"
               {...register(`variantes.${index}.stock`)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-[#05467d] focus:ring-2 focus:ring-[#05467d]/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
               min={0}
             />
@@ -380,11 +380,11 @@ export default function GestionVariantesPage() {
     <div className="p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/productos" className="text-gray-400 hover:text-[#05467d] transition-colors">
+        <Link href="/admin/productos" className="text-gray-400 hover:text-color-principal transition-colors">
           <ArrowLeft size={22} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#05467d]">
+          <h1 className="text-2xl font-bold text-color-principal">
             {loadingProducto ? "Cargando..." : `Variantes de "${producto?.nombre} ${producto?.modelo}"`}
           </h1>
           {!loadingProducto && <p className="text-xs text-gray-400 mt-0.5">ID Base: #{id}</p>}
@@ -408,7 +408,7 @@ export default function GestionVariantesPage() {
         <button
           type="button"
           onClick={() => append({ ...VARIANTE_DEFAULT })}
-          className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-[#05467d] hover:text-[#05467d] transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-color-principal hover:text-color-principal transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={16} />
           Agregar otra variante
@@ -418,7 +418,7 @@ export default function GestionVariantesPage() {
         <button
           type="submit"
           disabled={isSubmitting || loadingProducto}
-          className="w-full bg-[#05467d] text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-[#043a68] transition-all disabled:opacity-60"
+          className="w-full bg-color-principal text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-[#043a68] transition-all disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {isSubmitting ? "Guardando..." : "Guardar Variantes"}

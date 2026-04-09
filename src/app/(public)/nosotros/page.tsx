@@ -62,10 +62,10 @@ export default function AboutPage() {
         </div>
 
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#05467D] mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-color-principal mb-6">
             Quiénes somos
           </h1>
-          <p className="text-[#05467D] leading-relaxed text-lg">
+          <p className="text-color-principal leading-relaxed text-lg">
             Somos una marca argentina especializada en la{" "}
             <span className="font-bold">
               venta de iPhones online, con envíos a todo el país.
@@ -98,11 +98,11 @@ export default function AboutPage() {
       <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
         {/* Bloque de Texto (Primero en el código para que salga a la izquierda en Desktop) */}
         <div className="flex-1 text-center md:text-left order-2 md:order-1">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#05467D] mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-color-principal mb-6">
             Nuestra misión y visión
           </h2>
           {/* Usamos space-y-4 para separar los párrafos sin usar <br> */}
-          <div className="text-[#05467D] leading-relaxed text-lg space-y-4">
+          <div className="text-color-principal leading-relaxed text-lg space-y-4">
             <p>
               En Wave queremos que comprar un iPhone en Argentina sea una{" "}
               <span className="font-bold">
@@ -148,7 +148,7 @@ export default function AboutPage() {
       </div>
       {/* SECCIÓN 3: NUESTROS VALORES */}
       <div className="flex flex-col gap-12 w-full">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#05467D] text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-color-principal text-center">
           Nuestros Valores
         </h2>
 
@@ -169,8 +169,8 @@ export default function AboutPage() {
               <span className="text-4xl" role="img" aria-label={val.title}>
                 {val.icon}
               </span>
-              <h3 className="text-xl font-bold text-[#05467D]">{val.title}</h3>
-              <p className="text-[#05467D]/80 leading-relaxed text-sm">
+              <h3 className="text-xl font-bold text-color-principal">{val.title}</h3>
+              <p className="text-color-principal/80 leading-relaxed text-sm">
                 {/* Lógica simple para renderizar negritas si es necesario, 
                     o simplemente renderizar el texto plano */}
                 {val.text.split(/(:|\.)/).map((part, i, arr) => {
@@ -185,7 +185,7 @@ export default function AboutPage() {
                     part.includes("Priorizamos")
                   ) {
                     return (
-                      <span key={i} className="font-bold text-[#05467D]">
+                      <span key={i} className="font-bold text-color-principal">
                         {part}
                       </span>
                     );
@@ -199,7 +199,7 @@ export default function AboutPage() {
       </div>
       {/* SECCIÓN 4: NUESTROS OBJETIVOS */}
       <div className="flex flex-col gap-12 w-full pb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#05467D] text-center ">
+        <h2 className="text-3xl md:text-4xl font-bold text-color-principal text-center ">
           Nuestros objetivos
         </h2>
 
@@ -212,10 +212,10 @@ export default function AboutPage() {
               <div key={index} className="py-2">
                 {/* --- MOBILE: número + texto apilados (simple, sin duplicación) --- */}
                 <div className="md:hidden flex flex-col items-center text-center gap-3 py-4">
-                  <span className="text-6xl font-bold text-[#05467D]">
+                  <span className="text-6xl font-bold text-color-principal">
                     {number}.
                   </span>
-                  <p className="text-[#05467D] font-medium text-lg leading-relaxed px-4 max-w-sm">
+                  <p className="text-color-principal font-medium text-lg leading-relaxed px-4 max-w-sm">
                     {text}
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export default function AboutPage() {
                   {/* Columna izquierda: solo pares */}
                   <div className={isEven ? "md:text-right flex items-center justify-end" : ""}>
                     {isEven && (
-                      <p className="text-[#05467D] font-medium text-lg leading-relaxed max-w-md ml-auto">
+                      <p className="text-color-principal font-medium text-lg leading-relaxed max-w-md ml-auto">
                         {text}
                       </p>
                     )}
@@ -233,7 +233,7 @@ export default function AboutPage() {
 
                   {/* Columna central: número */}
                   <div className="flex justify-center items-center">
-                    <span className="text-6xl font-bold text-[#05467D]">
+                    <span className="text-6xl font-bold text-color-principal">
                       {number}.
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export default function AboutPage() {
                   {/* Columna derecha: solo impares */}
                   <div className="flex items-center">
                     {!isEven && (
-                      <p className="text-[#05467D] font-medium text-lg leading-relaxed max-w-md mr-auto">
+                      <p className="text-color-principal font-medium text-lg leading-relaxed max-w-md mr-auto">
                         {text}
                       </p>
                     )}

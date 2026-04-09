@@ -103,7 +103,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Nombre y modelo */}
         <Link href={`/products/${product.id}`} className="block text-center">
-          <h2 className="text-[17px] font-semibold text-[#05467D] dark:text-white leading-snug">
+          <h2 className="text-[17px] font-semibold text-color-principal dark:text-white leading-snug">
             {product.nombre}
           </h2>
           <span className="text-[10px] text-gray-400 uppercase tracking-widest">
@@ -123,7 +123,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                   aria-label={`Color ${cv.color}`}
                   className={`w-6 h-6 rounded-full transition-all duration-200 focus:outline-none ${
                     varianteActiva.color === cv.color
-                      ? "ring-2 ring-[#05467D] ring-offset-2 scale-125 shadow-sm"
+                      ? "ring-2 ring-color-principal ring-offset-2 scale-125 shadow-sm"
                       : `ring-1 hover:scale-110 ${
                           needsDarkBorder(cv.color) ? "ring-gray-300" : "ring-transparent"
                         }`
@@ -151,7 +151,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Precio */}
-        <p className="text-2xl font-bold text-center text-[#05467D] dark:text-white">
+        <p className="text-2xl font-bold text-center text-color-principal dark:text-white">
           {varianteActiva.precio
             ? `$${varianteActiva.precio.toLocaleString("es-AR")}`
             : "Consultar precio"}
@@ -160,7 +160,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         {/* Botón principal */}
         <Link
           href={`/products/${product.id}`}
-          className="mt-1 bg-[#05467D] text-white py-2.5 rounded-full font-semibold hover:bg-[#0F3C64] transition-colors text-center text-sm"
+          className="mt-1 bg-color-principal text-white py-2.5 rounded-full font-semibold hover:bg-color-principal-oscuro transition-colors text-center text-sm"
         >
           Más información
         </Link>
@@ -172,7 +172,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
           aria-disabled={atLimit}
           className={`py-2 rounded-full font-medium text-sm border transition-colors ${
             seleccionado
-              ? "bg-[#0F3C64] text-white border-transparent"
+              ? "bg-color-principal-oscuro text-white border-transparent"
               : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
           } ${atLimit ? "opacity-40 cursor-not-allowed" : ""}`}
         >

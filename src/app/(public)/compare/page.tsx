@@ -79,14 +79,14 @@ export default function ComparePage() {
   if (compareList.length < 2) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-        <h1 className="text-3xl font-bold mb-2 text-[#05467D]">Comparar modelos</h1>
+        <h1 className="text-3xl font-bold mb-2 text-color-principal">Comparar modelos</h1>
         <p className="text-gray-500 mb-8 max-w-sm">
           Seleccioná al menos 2 productos desde el catálogo para ver una
           comparación detallada.
         </p>
         <Link
           href="/products"
-          className="bg-[#05467D] text-white px-8 py-3 rounded-full font-medium hover:bg-[#0F3C64] transition-colors shadow-md"
+          className="bg-color-principal text-white px-8 py-3 rounded-full font-medium hover:bg-color-principal-oscuro transition-colors shadow-md"
         >
           Ver productos
         </Link>
@@ -133,7 +133,7 @@ export default function ComparePage() {
                 <h2 className="text-lg font-semibold leading-tight truncate">
                   {p.nombre}
                 </h2>
-                <p className="text-sm font-bold text-[#0F3C64]">
+                <p className="text-sm font-bold text-color-principal-oscuro">
                   {getValue(p, "Precio")}
                 </p>
               </div>
@@ -212,7 +212,7 @@ export default function ComparePage() {
                         `}
                       >
                         {label === "Precio" ? (
-                          <span className="text-[#05467D] font-bold">
+                          <span className="text-color-principal font-bold">
                             {value}
                           </span>
                         ) : (

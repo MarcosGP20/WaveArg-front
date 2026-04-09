@@ -104,7 +104,7 @@ export default function CheckoutPage() {
         </p>
         <Link
           href="/products"
-          className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
+          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
         >
           Ver productos
         </Link>
@@ -117,7 +117,7 @@ export default function CheckoutPage() {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#05467D]">Checkout</h1>
+          <h1 className="text-3xl font-bold text-color-principal">Checkout</h1>
           <p className="text-gray-500 mt-1">
             Revisá tu pedido y continuá con el pago seguro
           </p>
@@ -165,17 +165,17 @@ export default function CheckoutPage() {
           {/* Total */}
           <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
             <span className="text-lg font-bold text-gray-800">Total</span>
-            <span className="text-2xl font-bold text-[#05467D]">
+            <span className="text-2xl font-bold text-color-principal">
               ${total.toLocaleString("es-AR")}
             </span>
           </div>
         </div>
 
         {/* Info de pago */}
-        <div className="bg-[#05467D]/5 border border-[#05467D]/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
-          <CreditCard className="text-[#05467D] mt-0.5 shrink-0" size={20} />
+        <div className="bg-color-principal/5 border border-color-principal/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
+          <CreditCard className="text-color-principal mt-0.5 shrink-0" size={20} />
           <div className="text-sm text-gray-700">
-            <p className="font-semibold text-[#05467D] mb-0.5">
+            <p className="font-semibold text-color-principal mb-0.5">
               Pago seguro con MercadoPago
             </p>
             <p>
@@ -199,7 +199,7 @@ export default function CheckoutPage() {
               </p>
               <button
                 onClick={() => router.push(`/login?redirect=/checkout`)}
-                className="bg-[#05467D] text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#063c68] transition flex items-center gap-2"
+                className="bg-color-principal text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#063c68] transition flex items-center gap-2"
               >
                 <LogIn size={16} />
                 Iniciar sesión
@@ -259,7 +259,7 @@ export default function CheckoutPage() {
         <div className="mt-6 text-center">
           <Link
             href="/cart"
-            className="text-[#05467D] hover:underline text-sm font-medium"
+            className="text-color-principal hover:underline text-sm font-medium"
           >
             ← Volver al carrito
           </Link>

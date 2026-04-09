@@ -14,7 +14,7 @@ const iPhones = [
     subtitle: "El más completo para creadores",
     image: "/iphones/iphone-16-pro-max.png", // ← SWAP: reemplazá con la imagen real
     badge: "Top Pick",
-    badgeColor: "bg-[#05467D]",
+    badgeColor: "bg-color-principal",
     features: [
       "Cámara principal 48MP con Fusion Camera",
       "Grabación 4K a 120fps (ProRes Log)",
@@ -140,7 +140,7 @@ export default function IPhoneCarousel() {
         {/* Flecha izquierda */}
         <button
           onClick={prev}
-          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-[#05467D] hover:bg-[#05467D] hover:text-white hover:border-[#05467D] transition-all duration-200 z-10"
+          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-color-principal hover:bg-color-principal hover:text-white hover:border-color-principal transition-all duration-200 z-10"
           aria-label="iPhone anterior"
         >
           <ChevronLeft size={20} />
@@ -198,7 +198,7 @@ export default function IPhoneCarousel() {
                 <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-1">
                   {`${current + 1} / ${total}`}
                 </p>
-                <h4 className="text-2xl md:text-3xl font-bold text-[#05467D] mb-1">
+                <h4 className="text-2xl md:text-3xl font-bold text-color-principal mb-1">
                   {slide.model}
                 </h4>
                 <p className="text-gray-500 text-base mb-6">{slide.subtitle}</p>
@@ -210,7 +210,7 @@ export default function IPhoneCarousel() {
                       className="flex items-start gap-3 text-gray-700 text-sm"
                     >
                       <span className="shrink-0 w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center mt-0.5">
-                        <Check size={11} className="text-[#05467D]" />
+                        <Check size={11} className="text-color-principal" />
                       </span>
                       {feat}
                     </li>
@@ -219,7 +219,7 @@ export default function IPhoneCarousel() {
 
                 <a
                   href="/products"
-                  className="inline-flex items-center gap-2 bg-[#05467D] hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-colors w-fit"
+                  className="inline-flex items-center gap-2 bg-color-principal hover:bg-[#043d6b] text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-colors w-fit"
                 >
                   Ver {slide.model} →
                 </a>
@@ -231,7 +231,7 @@ export default function IPhoneCarousel() {
         {/* Flecha derecha */}
         <button
           onClick={next}
-          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-[#05467D] hover:bg-[#05467D] hover:text-white hover:border-[#05467D] transition-all duration-200 z-10"
+          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-color-principal hover:bg-color-principal hover:text-white hover:border-color-principal transition-all duration-200 z-10"
           aria-label="iPhone siguiente"
         >
           <ChevronRight size={20} />
@@ -246,7 +246,7 @@ export default function IPhoneCarousel() {
             onClick={() => goTo(i, i > current ? "right" : "left")}
             className={`rounded-full transition-all duration-300 ${
               i === current
-                ? "w-6 h-2.5 bg-[#05467D]"
+                ? "w-6 h-2.5 bg-color-principal"
                 : "w-2.5 h-2.5 bg-gray-200 hover:bg-gray-400"
             }`}
             aria-label={`Ir a ${iPhones[i].model}`}

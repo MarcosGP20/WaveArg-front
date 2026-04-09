@@ -63,7 +63,7 @@ export default function NuevoProductoPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
-      <h1 className="text-2xl font-bold mb-6 text-[#05467d]">
+      <h1 className="text-2xl font-bold mb-6 text-color-principal">
         Crear Nuevo Producto
       </h1>
 
@@ -76,7 +76,7 @@ export default function NuevoProductoPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#05467d] focus:border-[#05467d]"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-color-principal focus:border-color-principal"
               placeholder="Ej: iPhone 14 Pro"
             />
             {errors.nombre && (
@@ -92,7 +92,7 @@ export default function NuevoProductoPage() {
             </label>
             <input
               {...register("modelo", { required: "El modelo es obligatorio" })}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#05467d] focus:border-[#05467d]"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-color-principal focus:border-color-principal"
               placeholder="Ej: A2894"
             />
             {errors.modelo && (
@@ -112,13 +112,13 @@ export default function NuevoProductoPage() {
               required: "La descripción es obligatoria",
             })}
             rows={4}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-[#05467d] focus:border-[#05467d]"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-color-principal focus:border-color-principal"
           />
         </div>
 
         {/* Sección Imágenes Dinámicas */}
         <div className="space-y-4">
-          <label className="text-sm font-medium text-[#05467d] flex items-center gap-2">
+          <label className="text-sm font-medium text-color-principal flex items-center gap-2">
             <ImageIcon size={18} /> Imágenes del Producto
           </label>
 
@@ -164,7 +164,7 @@ export default function NuevoProductoPage() {
           <button
             type="button"
             onClick={() => append({ url: "" })}
-            className="flex items-center gap-2 text-sm text-[#05467d] font-semibold hover:underline"
+            className="flex items-center gap-2 text-sm text-color-principal font-semibold hover:underline"
           >
             <Plus size={16} /> Agregar otra imagen
           </button>
@@ -179,7 +179,7 @@ export default function NuevoProductoPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#05467d] text-white py-3 rounded-md font-bold hover:bg-[#043a68] transition-colors disabled:bg-gray-400 flex justify-center items-center"
+          className="w-full bg-color-principal text-white py-3 rounded-md font-bold hover:bg-[#043a68] transition-colors disabled:bg-gray-400 flex justify-center items-center"
         >
           {loading ? (
             <Loader2 className="animate-spin mr-2" />

@@ -11,8 +11,8 @@ module.exports = {
         sans: ["var(--font-atkinson)", "sans-serif"],
       },
       colors: {
-        colorPrincipal: "#05467D",
-        colorPrincipalOscuro: "#0F3C64",
+        "color-principal": "var(--color-principal)",
+        "color-principal-oscuro": "var(--color-principal-oscuro)",
         colorSecundario: "#CCCCCC",
       },
       keyframes: {

@@ -70,7 +70,7 @@ export default function AdminHeader({
       {/* Centro: acceso rápido a la tienda */}
       <Link
         href="/products"
-        className="hidden sm:flex items-center gap-2 text-sm font-medium text-[#05467D] bg-blue-50 hover:bg-blue-100 border border-blue-100 px-4 py-1.5 rounded-full transition-colors"
+        className="hidden sm:flex items-center gap-2 text-sm font-medium text-color-principal bg-blue-50 hover:bg-blue-100 border border-blue-100 px-4 py-1.5 rounded-full transition-colors"
       >
         <ShoppingBag size={15} />
         <span>Ir a la tienda</span>

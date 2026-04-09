@@ -49,13 +49,13 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <AlertTriangle className="mx-auto text-yellow-500" size={48} />
-        <h2 className="text-xl font-bold text-[#05467D]">Link inválido</h2>
+        <h2 className="text-xl font-bold text-color-principal">Link inválido</h2>
         <p className="text-gray-600 text-sm">
           Este link de recuperación no es válido.
         </p>
         <Link
           href="/olvide-mi-contrasena"
-          className="inline-block text-[#05467D] font-semibold text-sm hover:underline"
+          className="inline-block text-color-principal font-semibold text-sm hover:underline"
         >
           Solicitar un nuevo link
         </Link>
@@ -67,7 +67,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <CheckCircle className="mx-auto text-green-500" size={48} />
-        <h2 className="text-xl font-bold text-[#05467D]">
+        <h2 className="text-xl font-bold text-color-principal">
           ¡Contraseña actualizada!
         </h2>
         <p className="text-gray-600 text-sm">
@@ -83,7 +83,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div>
-        <h2 className="text-2xl font-bold text-center text-[#05467D]">
+        <h2 className="text-2xl font-bold text-center text-color-principal">
           Nueva contraseña
         </h2>
         <p className="text-sm text-center text-gray-500 mt-2">
@@ -137,7 +137,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               <p className="text-xs text-center mt-1">
                 <Link
                   href="/olvide-mi-contrasena"
-                  className="text-[#05467D] font-semibold hover:underline"
+                  className="text-color-principal font-semibold hover:underline"
                 >
                   Pedí un nuevo link aquí
                 </Link>
@@ -148,7 +148,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
         <Button
           type="submit"
-          className="w-full bg-[#05467D] hover:bg-[#0F3C64] text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
+          className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
         >
           {isSubmitting ? (

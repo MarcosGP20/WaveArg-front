@@ -18,7 +18,7 @@ export default function GlobalError({
     <html lang="es">
       <body>
         <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center bg-white">
-          <p className="text-7xl font-black text-[#05467D] mb-4">500</p>
+          <p className="text-7xl font-black text-color-principal mb-4">500</p>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
             Algo salió mal
           </h1>
@@ -28,13 +28,13 @@ export default function GlobalError({
           <div className="flex gap-3">
             <button
               onClick={reset}
-              className="bg-[#05467D] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#063c68] transition"
+              className="bg-color-principal text-white px-8 py-3 rounded-full font-semibold hover:bg-[#063c68] transition"
             >
               Reintentar
             </button>
             <Link
               href="/"
-              className="border border-[#05467D] text-[#05467D] px-8 py-3 rounded-full font-semibold hover:bg-[#05467D]/5 transition"
+              className="border border-color-principal text-color-principal px-8 py-3 rounded-full font-semibold hover:bg-color-principal/5 transition"
             >
               Ir al inicio
             </Link>

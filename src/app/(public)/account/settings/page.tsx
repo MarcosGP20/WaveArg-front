@@ -39,21 +39,21 @@ export default function SettingsPage() {
     <div className="max-w-2xl mx-auto py-12 px-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-        <Link href="/account" className="hover:text-[#05467D] transition-colors">
+        <Link href="/account" className="hover:text-color-principal transition-colors">
           Mi cuenta
         </Link>
         <ChevronRight size={14} />
         <span className="text-gray-600 font-medium">Ajustes</span>
       </nav>
 
-      <h1 className="text-3xl font-bold text-[#05467D] mb-8">Ajustes</h1>
+      <h1 className="text-3xl font-bold text-color-principal mb-8">Ajustes</h1>
 
       <div className="space-y-4">
         {/* Sección: Notificaciones */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-50 rounded-xl">
-              <Bell className="text-[#05467D]" size={20} />
+              <Bell className="text-color-principal" size={20} />
             </div>
             <h2 className="text-lg font-semibold text-gray-800">
               Notificaciones
@@ -128,7 +128,7 @@ export default function SettingsPage() {
       <div className="mt-8">
         <Link
           href="/account/profile"
-          className="text-sm text-gray-400 hover:text-[#05467D] transition-colors"
+          className="text-sm text-gray-400 hover:text-color-principal transition-colors"
         >
           ← Volver a mi perfil
         </Link>

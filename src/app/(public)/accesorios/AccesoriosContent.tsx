@@ -104,7 +104,7 @@ export default function AccesoriosContent() {
       {/* Cabecera: título + botón filtros (mobile) */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-[#05467D]">Nuestro Catálogo</h1>
+          <h1 className="text-3xl font-bold text-color-principal">Nuestro Catálogo</h1>
           <p className="text-gray-500 text-sm mt-1">
             {filteredProducts.length === products.length
               ? `${products.length} accesorios disponibles`
@@ -114,7 +114,7 @@ export default function AccesoriosContent() {
 
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-[#05467D] hover:text-[#05467D] transition-colors"
+          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors"
           aria-expanded={showFilters}
           aria-controls="filter-sidebar"
         >
@@ -125,7 +125,7 @@ export default function AccesoriosContent() {
           )}
           Filtros
           {activeFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#05467D] text-white text-[10px] font-bold">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-color-principal text-white text-[10px] font-bold">
               {activeFilterCount}
             </span>
           )}

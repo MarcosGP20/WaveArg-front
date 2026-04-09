@@ -89,7 +89,7 @@ export default function UsersPage() {
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#05467d]">Usuarios</h1>
+          <h1 className="text-2xl font-bold text-color-principal">Usuarios</h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {loading
               ? "Cargando..."
@@ -183,7 +183,7 @@ export default function UsersPage() {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[#05467d] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-color-principal flex items-center justify-center text-white text-xs font-bold shrink-0">
                         {(usuario.nombre ?? usuario.email)[0].toUpperCase()}
                       </div>
                       <span className="font-medium text-gray-800">

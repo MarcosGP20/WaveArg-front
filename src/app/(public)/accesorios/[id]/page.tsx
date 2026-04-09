@@ -172,7 +172,7 @@ export default function AccesorioDetail({
                   onClick={() => setActiveImage(img)}
                   className={`w-[60px] h-[60px] rounded-lg border-2 overflow-hidden transition-all bg-white ${
                     activeImage === img
-                      ? "border-[#05467D] shadow-md"
+                      ? "border-color-principal shadow-md"
                       : "border-gray-200 hover:border-gray-400"
                   }`}
                 >
@@ -208,7 +208,7 @@ export default function AccesorioDetail({
                     key={idx}
                     onClick={() => setActiveImage(img)}
                     className={`flex-shrink-0 w-14 h-14 rounded-lg border-2 overflow-hidden transition-all bg-white ${
-                      activeImage === img ? "border-[#05467D]" : "border-gray-200"
+                      activeImage === img ? "border-color-principal" : "border-gray-200"
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -232,7 +232,7 @@ export default function AccesorioDetail({
           </button>
 
           {/* Categoría + nombre */}
-          <span className="text-xs font-bold uppercase tracking-widest text-[#05467D] bg-[#05467D]/10 px-2.5 py-1 rounded-full self-start mb-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-color-principal bg-color-principal/10 px-2.5 py-1 rounded-full self-start mb-2">
             {categoriaLabel}
           </span>
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">{accesorio.nombre}</h1>
@@ -243,7 +243,7 @@ export default function AccesorioDetail({
 
           {/* Precio + stock */}
           <div className="mt-6 pt-5 border-t border-gray-100">
-            <p className="text-4xl font-bold text-[#05467D]">
+            <p className="text-4xl font-bold text-color-principal">
               ${selectedVariante.precio.toLocaleString("es-AR")}
             </p>
             <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -283,7 +283,7 @@ export default function AccesorioDetail({
                     aria-label={`Color ${cv.color}`}
                     className={`w-10 h-10 rounded-full transition-all duration-200 focus:outline-none ${
                       selectedVariante.color === cv.color
-                        ? "ring-2 ring-[#05467D] ring-offset-2 scale-110 shadow-md"
+                        ? "ring-2 ring-color-principal ring-offset-2 scale-110 shadow-md"
                         : `ring-1 hover:scale-105 ${
                             needsDarkBorder(cv.color) ? "ring-gray-300" : "ring-transparent"
                           }`
@@ -308,8 +308,8 @@ export default function AccesorioDetail({
                     onClick={() => handleEspecificacionClick(esp)}
                     className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
                       selectedVariante.especificacion === esp
-                        ? "bg-[#05467D] text-white border-[#05467D] shadow-md"
-                        : "bg-white border-gray-200 text-gray-600 hover:border-[#05467D]/40"
+                        ? "bg-color-principal text-white border-color-principal shadow-md"
+                        : "bg-white border-gray-200 text-gray-600 hover:border-color-principal/40"
                     }`}
                   >
                     {esp}
@@ -343,7 +343,7 @@ export default function AccesorioDetail({
               className={`flex-1 font-bold py-3.5 rounded-full text-sm tracking-wide transition-all ${
                 added
                   ? "bg-green-600 text-white shadow-lg shadow-green-700/20"
-                  : "bg-[#05467D] text-white shadow-lg shadow-blue-900/20 hover:bg-[#043a6a] active:scale-[0.98]"
+                  : "bg-color-principal text-white shadow-lg shadow-blue-900/20 hover:bg-[#043a6a] active:scale-[0.98]"
               } disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none`}
             >
               {added ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}

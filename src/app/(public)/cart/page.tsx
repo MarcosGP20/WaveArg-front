@@ -21,7 +21,7 @@ export default function CartPage() {
         </p>
         <Link
           href="/products"
-          className="bg-[#05467D] text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
+          className="bg-color-principal text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
         >
           Ver productos
         </Link>
@@ -31,7 +31,7 @@ export default function CartPage() {
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-4xl text-[#05467D] font-bold mb-4">Carrito</h1>
+      <h1 className="text-4xl text-color-principal font-bold mb-4">Carrito</h1>
       <ul className="divide-y divide-gray-200 mb-6">
         {cart.map((item) => (
           <li key={item.id} className="flex items-center py-4 gap-4">
@@ -94,7 +94,7 @@ export default function CartPage() {
           Vaciar carrito
         </button>
         <button
-          className="bg-[#05467D] text-white px-4 py-2 rounded-full hover:bg-[#063c68]"
+          className="bg-color-principal text-white px-4 py-2 rounded-full hover:bg-[#063c68]"
           onClick={() => router.push("/checkout")}
         >
           Ir a pagar

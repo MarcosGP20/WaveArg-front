@@ -15,7 +15,7 @@ export default function AdminError({
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
-      <p className="text-7xl font-black text-[#05467D] mb-4">500</p>
+      <p className="text-7xl font-black text-color-principal mb-4">500</p>
       <h1 className="text-2xl font-bold text-gray-800 mb-2">
         Error en el panel
       </h1>
@@ -24,7 +24,7 @@ export default function AdminError({
       </p>
       <button
         onClick={reset}
-        className="bg-[#05467D] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#063c68] transition"
+        className="bg-color-principal text-white px-8 py-3 rounded-full font-semibold hover:bg-[#063c68] transition"
       >
         Reintentar
       </button>

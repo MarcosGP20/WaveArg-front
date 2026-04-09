@@ -32,7 +32,7 @@ export default function FailureContent() {
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
           href="/checkout"
-          className="bg-[#05467D] text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
+          className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-[#063c68] transition font-semibold"
         >
           Reintentar pago
         </Link>

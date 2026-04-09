@@ -53,7 +53,7 @@ export default function ProfilePage() {
         <p className="text-gray-500 mb-4">Iniciá sesión para continuar</p>
         <Button
           onClick={() => router.push("/login")}
-          className="bg-[#05467D] rounded-full p-6"
+          className="bg-color-principal rounded-full p-6"
         >
           Login
         </Button>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
         {/* ASIDE: PERFIL Y ACCIONES RÁPIDAS */}
         <aside className="w-full lg:w-1/3">
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center sticky top-24 ">
-            <div className="w-24 h-24 bg-[#05467D] rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-24 h-24 bg-color-principal rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg">
               <User className="text-white" size={48} />
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-5">
@@ -98,13 +98,13 @@ export default function ProfilePage() {
         {/* MAIN: INFORMACIÓN RELEVANTE */}
         <main className="flex-1 space-y-6">
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-lg font-bold text-[#05467D] mb-6">
+            <h3 className="text-lg font-bold text-color-principal mb-6">
               Datos de contacto
             </h3>
 
             <div className="flex items-center gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100">
               <div className="bg-white p-2 rounded-lg shadow-sm">
-                <Mail className="text-[#05467D]" size={20} />
+                <Mail className="text-color-principal" size={20} />
               </div>
               <div>
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -121,7 +121,7 @@ export default function ProfilePage() {
               href="/account/orders"
               className="bg-white p-6 rounded-3xl border border-gray-100 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all group"
             >
-              <div className="p-3 bg-blue-50 text-[#05467D] rounded-2xl group-hover:bg-blue-100 transition-colors">
+              <div className="p-3 bg-blue-50 text-color-principal rounded-2xl group-hover:bg-blue-100 transition-colors">
                 <ShoppingBag size={24} />
               </div>
               <div>
@@ -136,7 +136,7 @@ export default function ProfilePage() {
               </div>
             </Link>
             <div className="bg-white p-6 rounded-3xl border border-gray-100 flex items-center gap-4">
-              <div className="p-3 bg-blue-50 text-[#05467D] rounded-2xl">
+              <div className="p-3 bg-blue-50 text-color-principal rounded-2xl">
                 <Bell size={24} />
               </div>
               <div>

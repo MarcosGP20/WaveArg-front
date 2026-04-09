@@ -146,7 +146,7 @@ export default function MisPedidosPage() {
           </div>
           <Link
             href="/products"
-            className="mt-2 px-5 py-2 bg-[#05467d] text-white text-sm font-medium rounded-full hover:bg-[#043a6a] transition"
+            className="mt-2 px-5 py-2 bg-color-principal text-white text-sm font-medium rounded-full hover:bg-[#043a6a] transition"
           >
             Ver productos
           </Link>

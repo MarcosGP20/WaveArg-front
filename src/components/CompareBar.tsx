@@ -69,7 +69,7 @@ export default function CompareBar() {
             transition
             ${
               canCompare
-                ? "bg-[#05467D] text-white hover:bg-[#0F3C64]"
+                ? "bg-color-principal text-white hover:bg-color-principal-oscuro"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }
           `}

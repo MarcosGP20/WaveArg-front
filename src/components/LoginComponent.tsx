@@ -103,7 +103,7 @@ export function LoginForm() {
 
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
-      <h2 className="text-2xl font-bold text-center text-[#05467D]">
+      <h2 className="text-2xl font-bold text-center text-color-principal">
         Iniciar Sesión
       </h2>
 
@@ -132,7 +132,7 @@ export function LoginForm() {
             <Label htmlFor="password">Contraseña</Label>
             <a
               href="/olvide-mi-contrasena"
-              className="text-xs text-[#05467D] hover:underline"
+              className="text-xs text-color-principal hover:underline"
             >
               ¿Olvidaste tu contraseña?
             </a>
@@ -169,7 +169,7 @@ export function LoginForm() {
 
         <Button
           type="submit"
-          className="w-full bg-[#05467D] hover:bg-[#0F3C64] text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
+          className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -209,7 +209,7 @@ export function LoginForm() {
         ¿Aún no eres parte?{" "}
         <a
           href="/register"
-          className="text-[#05467D] font-bold hover:underline"
+          className="text-color-principal font-bold hover:underline"
         >
           Crea tu cuenta gratis
         </a>

@@ -104,7 +104,7 @@ export default function EditarProductoPage() {
           <ArrowLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#05467d]">Editar Producto</h1>
+          <h1 className="text-2xl font-bold text-color-principal">Editar Producto</h1>
           <p className="text-sm text-gray-500">ID #{id}</p>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function EditarProductoPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: iPhone 15 Pro"
             />
             {errors.nombre && (
@@ -135,7 +135,7 @@ export default function EditarProductoPage() {
             </label>
             <input
               {...register("modelo", { required: "El modelo es obligatorio" })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: A3293"
             />
             {errors.modelo && (
@@ -152,7 +152,7 @@ export default function EditarProductoPage() {
           <textarea
             {...register("descripcion", { required: "La descripción es obligatoria" })}
             rows={4}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
           />
           {errors.descripcion && (
             <span className="text-red-500 text-xs mt-1">{errors.descripcion.message}</span>
@@ -162,7 +162,7 @@ export default function EditarProductoPage() {
         {/* Imágenes */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <ImageIcon size={16} className="text-[#05467d]" />
+            <ImageIcon size={16} className="text-color-principal" />
             Imágenes (URLs)
           </label>
 
@@ -172,7 +172,7 @@ export default function EditarProductoPage() {
                 <input
                   {...register(`imagenesUrls.${index}.url` as const)}
                   placeholder="https://ejemplo.com/imagen.jpg"
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
                 />
                 {fields.length > 1 && (
                   <button
@@ -203,7 +203,7 @@ export default function EditarProductoPage() {
           <button
             type="button"
             onClick={() => append({ url: "" })}
-            className="flex items-center gap-2 text-sm text-[#05467d] font-semibold hover:underline"
+            className="flex items-center gap-2 text-sm text-color-principal font-semibold hover:underline"
           >
             <Plus size={15} /> Agregar imagen
           </button>
@@ -214,7 +214,7 @@ export default function EditarProductoPage() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 bg-[#05467d] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
           >
             {saving && <Loader2 size={15} className="animate-spin" />}
             Guardar cambios

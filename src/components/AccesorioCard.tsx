@@ -97,7 +97,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
           )}
 
           {/* Badge de categoría */}
-          <span className="absolute top-2 left-2 bg-[#05467D]/10 text-[#05467D] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide border border-[#05467D]/20">
+          <span className="absolute top-2 left-2 bg-color-principal/10 text-color-principal text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide border border-color-principal/20">
             {categoriaLabel}
           </span>
 
@@ -115,7 +115,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
 
         {/* Nombre y modelo */}
         <Link href={`/accesorios/${accesorio.id}`} className="block text-center">
-          <h2 className="text-[17px] font-semibold text-[#05467D] leading-snug">
+          <h2 className="text-[17px] font-semibold text-color-principal leading-snug">
             {accesorio.nombre}
           </h2>
           <span className="text-[11px] text-gray-400 uppercase tracking-widest">
@@ -147,7 +147,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
         )}
 
         {/* Precio */}
-        <p className="text-2xl font-bold text-center text-[#05467D]">
+        <p className="text-2xl font-bold text-center text-color-principal">
           {precio != null
             ? `$${precio.toLocaleString("es-AR")}`
             : "Consultar precio"}
@@ -161,7 +161,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
         {/* Botón */}
         <Link
           href={`/accesorios/${accesorio.id}`}
-          className="mt-1 bg-[#05467D] text-white py-2.5 rounded-full font-semibold hover:bg-[#0F3C64] transition-colors text-center text-sm"
+          className="mt-1 bg-color-principal text-white py-2.5 rounded-full font-semibold hover:bg-color-principal-oscuro transition-colors text-center text-sm"
         >
           Ver accesorio
         </Link>

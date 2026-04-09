@@ -79,7 +79,7 @@ export default function NuevoAccesorioPage() {
           <ArrowLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#05467d]">Nuevo Accesorio</h1>
+          <h1 className="text-2xl font-bold text-color-principal">Nuevo Accesorio</h1>
           <p className="text-sm text-gray-500">Completá los datos y luego agregá las variantes</p>
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function NuevoAccesorioPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: Funda MagSafe"
             />
             {errors.nombre && (
@@ -110,7 +110,7 @@ export default function NuevoAccesorioPage() {
             </label>
             <input
               {...register("modelo")}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: iPhone 14 / 15"
             />
           </div>
@@ -123,7 +123,7 @@ export default function NuevoAccesorioPage() {
           </label>
           <select
             {...register("categoria", { valueAsNumber: true })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d] bg-white"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal bg-white"
           >
             {CATEGORIAS.map((c) => (
               <option key={c.value} value={c.value}>
@@ -141,7 +141,7 @@ export default function NuevoAccesorioPage() {
           <textarea
             {...register("descripcion")}
             rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
             placeholder="Descripción del accesorio..."
           />
         </div>
@@ -149,7 +149,7 @@ export default function NuevoAccesorioPage() {
         {/* Imágenes */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <ImageIcon size={16} className="text-[#05467d]" />
+            <ImageIcon size={16} className="text-color-principal" />
             Imágenes (URLs)
           </label>
 
@@ -159,7 +159,7 @@ export default function NuevoAccesorioPage() {
                 <input
                   {...register(`imagenesUrls.${index}.url` as const)}
                   placeholder="https://ejemplo.com/imagen.jpg"
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#05467d]"
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
                 />
                 {fields.length > 1 && (
                   <button
@@ -189,7 +189,7 @@ export default function NuevoAccesorioPage() {
           <button
             type="button"
             onClick={() => append({ url: "" })}
-            className="flex items-center gap-2 text-sm text-[#05467d] font-semibold hover:underline"
+            className="flex items-center gap-2 text-sm text-color-principal font-semibold hover:underline"
           >
             <Plus size={15} /> Agregar imagen
           </button>
@@ -206,7 +206,7 @@ export default function NuevoAccesorioPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-[#05467d] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#043a68] transition-colors disabled:opacity-50"
           >
             {loading && <Loader2 size={15} className="animate-spin" />}
             Crear y agregar variantes →
