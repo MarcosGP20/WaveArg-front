@@ -7,6 +7,8 @@ export type Product = Producto;
 type CompareContextType = {
   compareList: Product[];
   toggleCompare: (product: Product) => void;
+  removeProduct: (id: number) => void;
+  swapProduct: (oldId: number, newProduct: Product) => void;
   clearCompare: () => void;
   modoComparacion: boolean;
   setModoComparacion: (estado: boolean) => void;
@@ -30,6 +32,19 @@ export const CompareProvider = ({ children }: { children: ReactNode }) => {
     setModoComparacion(updatedList.length > 0);
   };
 
+  const removeProduct = (id: number) => {
+    const updated = compareList.filter((p) => p.id !== id);
+    setCompareList(updated);
+    setModoComparacion(updated.length > 0);
+  };
+
+  const swapProduct = (oldId: number, newProduct: Product) => {
+    // Evitar duplicados: si el nuevo ya está en la lista, no lo agrega
+    if (compareList.some((p) => p.id === newProduct.id)) return;
+    const updated = compareList.map((p) => (p.id === oldId ? newProduct : p));
+    setCompareList(updated);
+  };
+
   const clearCompare = () => setCompareList([]);
 
   return (
@@ -37,6 +52,8 @@ export const CompareProvider = ({ children }: { children: ReactNode }) => {
       value={{
         compareList,
         toggleCompare,
+        removeProduct,
+        swapProduct,
         clearCompare,
         modoComparacion,
         setModoComparacion,
