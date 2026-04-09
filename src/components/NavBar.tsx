@@ -69,6 +69,19 @@ export default function NavBar() {
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
+  const [cartBump, setCartBump] = useState(false);
+  const prevCartCountRef = useRef(0);
+
+  useEffect(() => {
+    if (cartCount > prevCartCountRef.current) {
+      setCartBump(true);
+      const t = setTimeout(() => setCartBump(false), 350);
+      prevCartCountRef.current = cartCount;
+      return () => clearTimeout(t);
+    }
+    prevCartCountRef.current = cartCount;
+  }, [cartCount]);
+
   const handleLogout = () => {
     logout();
     setUserDropdownOpen(false);
@@ -275,9 +288,15 @@ export default function NavBar() {
             }}
           >
             <Link href="/cart" className="relative inline-block">
-              <FaShoppingCart size={24} className="text-color-principal" />
+              <FaShoppingCart
+                size={24}
+                className={`text-color-principal transition-transform ${cartBump ? "animate-cartBump" : ""}`}
+              />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span
+                  key={cartCount}
+                  className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-badgePop"
+                >
                   {cartCount}
                 </span>
               )}

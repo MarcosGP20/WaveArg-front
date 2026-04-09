@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
 import CompareBar from "@/components/CompareBar";
+import CartAbandonmentReminder from "@/components/CartAbandonmentReminder";
 
 export default function PublicLayout({
   children,
@@ -16,6 +17,7 @@ export default function PublicLayout({
           <NavBar />
           <main className="flex-1">{children}</main>
           <CompareBar />
+          <CartAbandonmentReminder />
           <Footer />
         </div>
       </CompareProvider>
