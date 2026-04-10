@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useCompare } from "@/context/CompareContext";
 import { Producto, Variante } from "@/lib/api";
+import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
 
 type ProductCardProps = {
   product: Producto;
@@ -12,35 +13,6 @@ type ProductCardProps = {
 };
 
 const MAX_COMPARE = 3;
-
-function mapColorToHex(color: string): string {
-  const map: Record<string, string> = {
-    Negro: "#1a1a1a",
-    Blanco: "#f5f5f7",
-    Azul: "#1e40af",
-    "Azul Oscuro": "#1e3a5f",
-    Rojo: "#be1b1b",
-    Medianoche: "#0f172a",
-    Estelar: "#e8e3d5",
-    Púrpura: "#6b21a8",
-    Verde: "#15803d",
-    Amarillo: "#ca8a04",
-    Rosa: "#db2777",
-    Titanio: "#8a8a8e",
-    "Titanio Natural": "#c8b89a",
-    "Titanio Negro": "#2c2c2e",
-    "Titanio Blanco": "#f2f2f2",
-    "Titanio Desierto": "#c9a96e",
-    Grafito: "#374151",
-    Plata: "#d1d5db",
-    Dorado: "#b8962e",
-  };
-  return map[color] ?? "#9ca3af";
-}
-
-function needsDarkBorder(color: string): boolean {
-  return ["Blanco", "Estelar", "Plata", "Titanio Blanco", "Titanio Natural", "Dorado", "Titanio Desierto", "Titanio"].includes(color);
-}
 
 export default function ProductCard({ product, className }: ProductCardProps) {
   const { toggleCompare, compareList } = useCompare();
@@ -77,7 +49,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
 
   return (
     <div
-      className={`rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col bg-white dark:bg-neutral-900 group overflow-hidden ${className}`}
+      className={`rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col bg-white group overflow-hidden ${className}`}
     >
       {/* ── ZONA DE IMAGEN ── */}
       <Link href={`/products/${product.id}`} className="block relative">
@@ -103,7 +75,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Nombre y modelo */}
         <Link href={`/products/${product.id}`} className="block text-center">
-          <h2 className="text-[17px] font-semibold text-color-principal dark:text-white leading-snug">
+          <h2 className="text-[17px] font-semibold text-color-principal leading-snug">
             {product.nombre}
           </h2>
           <span className="text-[10px] text-gray-400 uppercase tracking-widest">
@@ -151,7 +123,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Precio */}
-        <p className="text-2xl font-bold text-center text-color-principal dark:text-white">
+        <p className="text-2xl font-bold text-center text-color-principal">
           {varianteActiva.precio
             ? `$${varianteActiva.precio.toLocaleString("es-AR")}`
             : "Consultar precio"}
@@ -173,7 +145,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
           className={`py-2 rounded-full font-medium text-sm border transition-colors ${
             seleccionado
               ? "bg-color-principal-oscuro text-white border-transparent"
-              : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
+              : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
           } ${atLimit ? "opacity-40 cursor-not-allowed" : ""}`}
         >
           {seleccionado ? "✓ En comparación" : "Comparar"}

@@ -4,31 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { ImageOff } from "lucide-react";
 import { Accesorio, AccesorioVariante, CATEGORIA_LABELS } from "@/lib/api";
+import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
 
 type AccesorioCardProps = {
   accesorio: Accesorio;
   className?: string;
 };
-
-function mapColorToHex(color: string): string {
-  const map: Record<string, string> = {
-    Negro: "#1a1a1a",
-    Blanco: "#f5f5f7",
-    Azul: "#1e40af",
-    Rojo: "#be1b1b",
-    Gris: "#6b7280",
-    Plateado: "#d1d5db",
-    Dorado: "#b8962e",
-    Rosa: "#db2777",
-    Verde: "#15803d",
-    Transparente: "#e5e7eb",
-  };
-  return map[color] ?? "#9ca3af";
-}
-
-function needsDarkBorder(color: string): boolean {
-  return ["Blanco", "Plateado", "Transparente", "Dorado"].includes(color);
-}
 
 export default function AccesorioCard({ accesorio, className }: AccesorioCardProps) {
   const [imgError, setImgError] = useState(false);

@@ -5,6 +5,11 @@
   --font-work-sans: "Work Sans", sans-serif;
   --color-principal: #05467D;
   --color-principal-oscuro: #0F3C64;
+
+  /* Animation timing system */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
 }
 
 body {
@@ -24,9 +29,9 @@ body {
   --color-color-principal-oscuro: var(--color-principal-oscuro);
 
   /* Animations */
-  --animate-fadeDown: fadeDown 0.18s ease-out forwards;
-  --animate-cartBump: cartBump 0.35s ease-out forwards;
-  --animate-badgePop: badgePop 0.25s ease-out forwards;
+  --animate-fadeDown: fadeDown var(--duration-fast) ease-out forwards;
+  --animate-cartBump: cartBump var(--duration-slow) ease-out forwards;
+  --animate-badgePop: badgePop var(--duration-base) ease-out forwards;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
