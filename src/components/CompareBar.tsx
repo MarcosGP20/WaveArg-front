@@ -290,13 +290,13 @@ export default function CompareBar() {
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap ${
                   canCompare
                     ? "bg-color-principal text-white hover:bg-color-principal-oscuro"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-100 text-gray-500 cursor-not-allowed"
                 }`}
               >
                 Ver comparación
               </button>
               {!canCompare && (
-                <span className="text-[10px] text-gray-400 mt-0.5">
+                <span className="text-[10px] text-gray-600 mt-0.5">
                   Seleccioná 1 modelo más
                 </span>
               )}
