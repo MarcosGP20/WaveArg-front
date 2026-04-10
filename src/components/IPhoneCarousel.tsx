@@ -156,7 +156,7 @@ export default function IPhoneCarousel() {
               : "translate-x-0 opacity-100"
           }`}
         >
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="flex flex-col md:flex-row">
               {/* Imagen */}
               <div className="md:w-2/5 bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-8 min-h-[240px] md:min-h-[320px] relative">

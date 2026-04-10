@@ -122,7 +122,7 @@ export default function EditarAccesorioPage() {
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/admin/accesorios"
-          className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
         >
           <ArrowLeft size={20} />
         </Link>
@@ -144,7 +144,7 @@ export default function EditarAccesorioPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+              className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: iPhone 15 Pro"
             />
             {errors.nombre && (
@@ -158,7 +158,7 @@ export default function EditarAccesorioPage() {
             </label>
             <input
               {...register("modelo", { required: "El modelo es obligatorio" })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+              className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: A3293"
             />
             {errors.modelo && (
@@ -174,7 +174,7 @@ export default function EditarAccesorioPage() {
           </label>
           <select
             {...register("categoria", { valueAsNumber: true })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+            className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
           >
             {Object.entries(CATEGORIA_LABELS).map(([val, label]) => (
               <option key={val} value={Number(val)}>
@@ -192,7 +192,7 @@ export default function EditarAccesorioPage() {
           <textarea
             {...register("descripcion", { required: "La descripción es obligatoria" })}
             rows={4}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+            className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
           />
           {errors.descripcion && (
             <span className="text-red-500 text-xs mt-1">{errors.descripcion.message}</span>
@@ -207,18 +207,18 @@ export default function EditarAccesorioPage() {
           </label>
 
           {fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 p-3 bg-gray-50 border rounded-lg">
+            <div key={field.id} className="flex flex-col gap-2 p-3 bg-gray-50 border rounded-xl">
               <div className="flex gap-2">
                 <input
                   {...register(`imagenesUrls.${index}.url` as const)}
                   placeholder="https://ejemplo.com/imagen.jpg"
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+                  className="flex-1 border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
                 />
                 {fields.length > 1 && (
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="text-red-400 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                    className="text-red-400 hover:bg-red-50 p-2 rounded-full transition-colors"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -226,7 +226,7 @@ export default function EditarAccesorioPage() {
               </div>
               {/* Preview */}
               {watch(`imagenesUrls.${index}.url`) && (
-                <div className="relative w-16 h-16 border rounded-lg overflow-hidden">
+                <div className="relative w-16 h-16 border rounded-xl overflow-hidden">
                   <img
                     src={watch(`imagenesUrls.${index}.url`)}
                     alt="Preview"
@@ -254,14 +254,14 @@ export default function EditarAccesorioPage() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-lg font-medium hover:bg-color-principal-oscuro transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-full font-medium hover:bg-color-principal-oscuro transition-colors disabled:opacity-50"
           >
             {saving && <Loader2 size={15} className="animate-spin" />}
             Guardar cambios
           </button>
           <Link
             href="/admin/accesorios"
-            className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="px-6 py-2.5 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             Cancelar
           </Link>

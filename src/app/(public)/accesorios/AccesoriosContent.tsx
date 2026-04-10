@@ -118,7 +118,7 @@ export default function AccesoriosContent() {
 
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors"
+          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors"
           aria-expanded={showFilters}
           aria-controls="filter-sidebar"
         >

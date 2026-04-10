@@ -114,7 +114,7 @@ export default function SettingsPage() {
             </div>
             <Button
               variant="outline"
-              className="border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 rounded-xl shrink-0"
+              className="border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 rounded-full shrink-0"
               onClick={handleDeleteAccount}
             >
               <Trash2 size={14} className="mr-2" />

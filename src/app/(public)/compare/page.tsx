@@ -198,9 +198,9 @@ function SwapDropdown({ currentId, excludedIds, onSelect, onClose }: SwapDropdow
               >
                 {p.imagenes?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.imagenes[0]} alt={p.nombre} className="w-9 h-9 object-contain rounded-lg bg-gray-100 shrink-0" />
+                  <img src={p.imagenes[0]} alt={p.nombre} className="w-9 h-9 object-contain rounded-xl bg-gray-100 shrink-0" />
                 ) : (
-                  <div className="w-9 h-9 rounded-lg bg-color-principal/10 shrink-0" />
+                  <div className="w-9 h-9 rounded-xl bg-color-principal/10 shrink-0" />
                 )}
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-gray-800 truncate">{p.nombre}</p>
@@ -361,7 +361,7 @@ export default function ComparePage() {
                 <div className="relative shrink-0">
                   <button
                     onClick={() => setOpenSwap(openSwap === colIdx ? null : colIdx)}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-color-principal transition-colors px-2 py-1 rounded-lg hover:bg-gray-50"
+                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-color-principal transition-colors px-2 py-1 rounded-full hover:bg-gray-50"
                   >
                     <ArrowLeftRight size={12} />
                     Cambiar
@@ -394,7 +394,7 @@ export default function ComparePage() {
                 <button
                   onClick={() => handleAddToCart(p)}
                   disabled={!hasStock || isAdded}
-                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-all ${
                     isAdded
                       ? "bg-green-600 text-white"
                       : hasStock
@@ -406,7 +406,7 @@ export default function ComparePage() {
                 </button>
                 <Link
                   href={`/products/${p.id}`}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium text-color-principal hover:bg-gray-50 transition-colors border border-gray-200"
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-full text-sm font-medium text-color-principal hover:bg-gray-50 transition-colors border border-gray-200"
                 >
                   <ExternalLink size={13} />
                   Ver producto
@@ -456,7 +456,7 @@ export default function ComparePage() {
                       <div className="relative inline-block mb-3">
                         <button
                           onClick={() => setOpenSwap(openSwap === colIdx ? null : colIdx)}
-                          className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-color-principal transition-colors px-2 py-1 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
+                          className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-color-principal transition-colors px-2 py-1 rounded-full hover:bg-gray-50 border border-transparent hover:border-gray-200"
                         >
                           <ArrowLeftRight size={11} />
                           Cambiar modelo
@@ -476,7 +476,7 @@ export default function ComparePage() {
                         <button
                           onClick={() => handleAddToCart(p)}
                           disabled={!hasStock || isAdded}
-                          className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                          className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold transition-all ${
                             isAdded
                               ? "bg-green-600 text-white"
                               : hasStock
@@ -491,7 +491,7 @@ export default function ComparePage() {
                         </button>
                         <Link
                           href={`/products/${p.id}`}
-                          className="w-full flex items-center justify-center gap-1 py-1.5 rounded-xl text-xs font-medium text-gray-500 hover:text-color-principal hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center justify-center gap-1 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-color-principal hover:bg-gray-50 transition-colors"
                         >
                           <ExternalLink size={11} />
                           Ver producto

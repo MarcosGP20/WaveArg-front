@@ -134,7 +134,7 @@ export function RegisterForm() {
 
         {/* Feedback al usuario */}
         {serverError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
             <p className="text-sm text-red-600 text-center">{serverError}</p>
           </div>
         )}
@@ -147,7 +147,7 @@ export function RegisterForm() {
 
         <Button
           type="submit"
-          className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-xl shadow-md transition-all active:scale-[0.98]"
+          className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-full shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
         >
           {isSubmitting ? (

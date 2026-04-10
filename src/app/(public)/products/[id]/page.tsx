@@ -199,7 +199,7 @@ export default function ProductDetail({
                   onMouseEnter={() => setActiveImage(img)}
                   onClick={() => setActiveImage(img)}
                   aria-label={`Ver imagen ${idx + 1} de ${product.nombre} en ${selectedVariante.color}`}
-                  className={`w-[60px] h-[60px] rounded-lg border-2 overflow-hidden transition-all bg-white ${
+                  className={`w-[60px] h-[60px] rounded-xl border-2 overflow-hidden transition-all bg-white ${
                     activeImage === img
                       ? "border-color-principal shadow-md"
                       : "border-gray-200 hover:border-gray-400"
@@ -241,7 +241,7 @@ export default function ProductDetail({
                     key={idx}
                     onClick={() => setActiveImage(img)}
                     aria-label={`Ver imagen ${idx + 1} de ${product.nombre} en ${selectedVariante.color}`}
-                    className={`flex-shrink-0 w-14 h-14 rounded-lg border-2 overflow-hidden transition-all bg-white ${
+                    className={`flex-shrink-0 w-14 h-14 rounded-xl border-2 overflow-hidden transition-all bg-white ${
                       activeImage === img ? "border-color-principal" : "border-gray-200"
                     }`}
                   >
@@ -346,7 +346,7 @@ export default function ProductDetail({
                   <button
                     key={mem}
                     onClick={() => handleMemoriaClick(mem)}
-                    className={`px-5 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
+                    className={`px-5 py-2 rounded-full text-sm font-bold border-2 transition-all ${
                       selectedVariante.memoria === mem
                         ? "bg-color-principal text-white border-color-principal shadow-md shadow-blue-900/20"
                         : "bg-white border-gray-200 text-gray-600 hover:border-color-principal/40"

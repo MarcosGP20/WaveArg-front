@@ -164,7 +164,7 @@ export default function AboutPage() {
               key={index}
               // min-w-[85vw]: En móvil, cada tarjeta ocupa el 85% del ancho de pantalla (para que se vea que hay otra al lado).
               // snap-center: El punto de anclaje del carrusel.
-              className="min-w-[85vw] md:min-w-0 snap-center bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.16)] border border-gray-100 flex flex-col items-center text-center gap-4  transition-shadow "
+              className="min-w-[85vw] md:min-w-0 snap-center bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.16)] border border-gray-100 flex flex-col items-center text-center gap-4  transition-shadow "
             >
               <span className="text-4xl" role="img" aria-label={val.title}>
                 {val.icon}

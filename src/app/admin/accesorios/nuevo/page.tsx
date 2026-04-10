@@ -74,7 +74,7 @@ export default function NuevoAccesorioPage() {
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/admin/accesorios"
-          className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
         >
           <ArrowLeft size={20} />
         </Link>
@@ -96,7 +96,7 @@ export default function NuevoAccesorioPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+              className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: Funda MagSafe"
             />
             {errors.nombre && (
@@ -110,7 +110,7 @@ export default function NuevoAccesorioPage() {
             </label>
             <input
               {...register("modelo")}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+              className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: iPhone 14 / 15"
             />
           </div>
@@ -123,7 +123,7 @@ export default function NuevoAccesorioPage() {
           </label>
           <select
             {...register("categoria", { valueAsNumber: true })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal bg-white"
+            className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal bg-white"
           >
             {CATEGORIAS.map((c) => (
               <option key={c.value} value={c.value}>
@@ -141,7 +141,7 @@ export default function NuevoAccesorioPage() {
           <textarea
             {...register("descripcion")}
             rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+            className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
             placeholder="Descripción del accesorio..."
           />
         </div>
@@ -154,25 +154,25 @@ export default function NuevoAccesorioPage() {
           </label>
 
           {fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 p-3 bg-gray-50 border rounded-lg">
+            <div key={field.id} className="flex flex-col gap-2 p-3 bg-gray-50 border rounded-xl">
               <div className="flex gap-2">
                 <input
                   {...register(`imagenesUrls.${index}.url` as const)}
                   placeholder="https://ejemplo.com/imagen.jpg"
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+                  className="flex-1 border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
                 />
                 {fields.length > 1 && (
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="text-red-400 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                    className="text-red-400 hover:bg-red-50 p-2 rounded-full transition-colors"
                   >
                     <Trash2 size={18} />
                   </button>
                 )}
               </div>
               {watch(`imagenesUrls.${index}.url`) && (
-                <div className="relative w-16 h-16 border rounded-lg overflow-hidden">
+                <div className="relative w-16 h-16 border rounded-xl overflow-hidden">
                   <img
                     src={watch(`imagenesUrls.${index}.url`)}
                     alt="Preview"
@@ -196,7 +196,7 @@ export default function NuevoAccesorioPage() {
         </div>
 
         {error && (
-          <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+          <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
             {error}
           </div>
         )}
@@ -206,14 +206,14 @@ export default function NuevoAccesorioPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-lg font-medium hover:bg-color-principal-oscuro transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-color-principal text-white px-6 py-2.5 rounded-full font-medium hover:bg-color-principal-oscuro transition-colors disabled:opacity-50"
           >
             {loading && <Loader2 size={15} className="animate-spin" />}
             Crear y agregar variantes →
           </button>
           <Link
             href="/admin/accesorios"
-            className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="px-6 py-2.5 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             Cancelar
           </Link>

@@ -105,9 +105,9 @@ function SlotDropdown({ currentId, excludedIds, onSelect, onClose }: SlotDropdow
                 >
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={img} alt={p.nombre} className="w-9 h-9 object-contain rounded-lg bg-gray-100 shrink-0" />
+                    <img src={img} alt={p.nombre} className="w-9 h-9 object-contain rounded-xl bg-gray-100 shrink-0" />
                   ) : (
-                    <div className="w-9 h-9 rounded-lg bg-color-principal/10 shrink-0" />
+                    <div className="w-9 h-9 rounded-xl bg-color-principal/10 shrink-0" />
                   )}
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-800 truncate">{p.nombre}</p>
@@ -152,9 +152,9 @@ function ProductChip({ product, slotIndex, excludedIds, onRemove, onSwap }: Prod
         {/* Thumbnail */}
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={img} alt={product.nombre} className="w-7 h-7 object-contain rounded-lg bg-white shrink-0" />
+          <img src={img} alt={product.nombre} className="w-7 h-7 object-contain rounded-xl bg-white shrink-0" />
         ) : (
-          <div className="w-7 h-7 rounded-lg bg-color-principal/10 shrink-0" />
+          <div className="w-7 h-7 rounded-xl bg-color-principal/10 shrink-0" />
         )}
 
         {/* Nombre + swap hint */}
@@ -208,7 +208,7 @@ function EmptySlot({ slotIndex, excludedIds, onAdd, disabled }: EmptySlotProps) 
     <div className="relative">
       <button
         onClick={() => setDropdownOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-gray-300 hover:border-color-principal hover:text-color-principal text-gray-400 rounded-xl text-xs font-medium transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-gray-300 hover:border-color-principal hover:text-color-principal text-gray-400 rounded-full text-xs font-medium transition-colors"
       >
         <Plus size={13} />
         <span className="hidden sm:inline">Agregar</span>
@@ -287,7 +287,7 @@ export default function CompareBar() {
               <button
                 onClick={() => canCompare && router.push("/compare")}
                 disabled={!canCompare}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap ${
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
                   canCompare
                     ? "bg-color-principal text-white hover:bg-color-principal-oscuro"
                     : "bg-gray-100 text-gray-500 cursor-not-allowed"

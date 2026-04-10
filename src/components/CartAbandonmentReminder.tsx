@@ -129,10 +129,10 @@ export default function CartAbandonmentReminder() {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-10 h-10 rounded-lg object-contain border border-gray-100 flex-shrink-0 bg-gray-50"
+                  className="w-10 h-10 rounded-xl object-contain border border-gray-100 flex-shrink-0 bg-gray-50"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-lg bg-color-principal/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-color-principal/10 flex items-center justify-center flex-shrink-0">
                   <ShoppingCart size={14} className="text-color-principal" />
                 </div>
               )}

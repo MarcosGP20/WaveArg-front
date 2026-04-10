@@ -66,7 +66,7 @@ export default function ContactPage() {
 
   // Helper para clases de inputs con feedback de error
   const fieldClass = (isValid: boolean, isTouched: boolean) =>
-    `w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none ${
+    `w-full px-4 py-2 border rounded-full focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none ${
       isTouched && !isValid
         ? "border-red-400 bg-red-50"
         : "border-gray-300"
@@ -86,7 +86,7 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Formulario de contacto */}
-          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+          <div className="bg-white p-8 rounded-2xl shadow-md border border-gray-200">
             <h2 className="text-2xl font-semibold text-color-principal mb-6">
               Envíanos un mensaje
             </h2>
@@ -189,7 +189,7 @@ export default function ContactPage() {
                   <input
                     type="tel"
                     id="phone"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none"
                     placeholder="+54 11 1234-5678"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
@@ -207,7 +207,7 @@ export default function ContactPage() {
                   </label>
                   <select
                     id="subject"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none bg-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-color-principal focus:border-color-principal transition outline-none bg-white"
                     value={asunto}
                     onChange={(e) => setAsunto(e.target.value)}
                   >
@@ -247,7 +247,7 @@ export default function ContactPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 font-semibold"
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full transition-colors flex items-center justify-center gap-2 font-semibold"
                 >
                   <FaWhatsapp className="w-5 h-5" />
                   Enviar por WhatsApp
@@ -263,7 +263,7 @@ export default function ContactPage() {
 
           {/* Información de contacto */}
           <div className="space-y-6">
-            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+            <div className="bg-white p-8 rounded-2xl shadow-md border border-gray-200">
               <h2 className="text-2xl font-semibold text-color-principal mb-6">
                 Información de contacto
               </h2>
@@ -325,7 +325,7 @@ export default function ContactPage() {
               href={`https://wa.me/${WA_NUMBER}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-3 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-xl transition-colors shadow-md"
+              className="flex items-center justify-center gap-3 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-full transition-colors shadow-md"
             >
               <FaWhatsapp className="w-6 h-6" />
               Escribinos directo por WhatsApp

@@ -24,7 +24,7 @@ export default function CommunitySection() {
         {/* 4. Aplicamos la animación al div que contiene la imagen y el texto */}
         <motion.div
           style={{ scale, opacity }}
-          className="relative rounded-3xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
+          className="relative rounded-2xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
         >
           <Image
             src="/celu-wave-perfil-ig.png"

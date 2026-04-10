@@ -56,7 +56,7 @@ const iconStyles = "w-5 h-5 text-white hover:text-gray-300 transition";
 
 // --- Estilos de Botones (Sin cambios) ---
 const baseButtonStyles =
-  "px-4 py-2 rounded-lg text-center font-medium transition text-sm";
+  "px-4 py-2 rounded-full text-center font-medium transition text-sm";
 const outlineButtonStyles = `${baseButtonStyles} border border-white text-white hover:bg-white hover:text-color-principal`;
 const solidButtonStyles = `${baseButtonStyles} bg-white text-color-principal hover:bg-gray-200`;
 

@@ -80,7 +80,7 @@ export default function HomePage() {
           >
             <motion.div style={{ scale, opacity }} className="relative w-full">
               {/* ...el resto de tu div de producto... */}
-              <div className="relative h-[95vh] bg-gray-900 rounded-xl md:rounded-3xl overflow-hidden">
+              <div className="relative h-[95vh] bg-gray-900 rounded-2xl md:rounded-2xl overflow-hidden">
                 <img
                   src={ASSET_PATHS.IPHONE_IMG}
                   alt="iPhone Detail"

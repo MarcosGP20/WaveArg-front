@@ -53,7 +53,7 @@ export default function AdminHeader({
         {/* Botón hamburguesa — solo en mobile */}
         <button
           onClick={onMenuToggle}
-          className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          className="md:hidden p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
           aria-label="Abrir menú"
         >
           <MenuIcon size={22} />
@@ -131,7 +131,7 @@ export default function AdminHeader({
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 z-50">
+                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 z-50">
                   {/* Header del menú con info del usuario */}
                   <div className="px-4 py-3">
                     <p className="text-sm font-medium text-gray-900 truncate">

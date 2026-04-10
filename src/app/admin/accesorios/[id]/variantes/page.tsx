@@ -104,12 +104,12 @@ function UrlListField({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
           placeholder="https://..."
-          className={`flex-1 text-xs px-3 py-2 border border-gray-200 rounded-lg outline-none ring-2 ring-transparent transition-all ${s.inputRing}`}
+          className={`flex-1 text-xs px-3 py-2 border border-gray-200 rounded-full outline-none ring-2 ring-transparent transition-all ${s.inputRing}`}
         />
         <button
           type="button"
           onClick={add}
-          className={`${s.btn} text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors`}
+          className={`${s.btn} text-white px-4 py-2 rounded-full text-xs font-bold transition-colors`}
         >
           + Agregar
         </button>
@@ -118,8 +118,8 @@ function UrlListField({
       {urls.length > 0 && (
         <ul className="space-y-2 pt-1">
           {urls.map((url, i) => (
-            <li key={i} className={`flex items-center gap-3 px-3 py-2 rounded-lg border text-xs ${s.item}`}>
-              <div className="w-12 h-12 flex-shrink-0 rounded-md border border-white overflow-hidden bg-white shadow-sm">
+            <li key={i} className={`flex items-center gap-3 px-3 py-2 rounded-xl border text-xs ${s.item}`}>
+              <div className="w-12 h-12 flex-shrink-0 rounded-xl border border-white overflow-hidden bg-white shadow-sm">
                 <div className="relative w-full h-full">
                   <Image src={url} alt={`foto-${i + 1}`} fill className="object-contain p-0.5" />
                 </div>
@@ -178,7 +178,7 @@ function VarianteCard({
             <input
               {...register(`variantes.${index}.color`)}
               placeholder="ej: Negro"
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
             />
           </div>
@@ -188,7 +188,7 @@ function VarianteCard({
             <input
               {...register(`variantes.${index}.especificacion`)}
               placeholder="ej: Compatible iPhone 14/15, Tipo-C, 65W..."
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
             />
           </div>
@@ -199,7 +199,7 @@ function VarianteCard({
               {...register(`variantes.${index}.esUsado`, {
                 setValueAs: (v: string) => v === "true",
               })}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal outline-none"
             >
               <option value="false">🆕 Nuevo</option>
               <option value="true">📦 Usado</option>
@@ -216,7 +216,7 @@ function VarianteCard({
               <input
                 type="number"
                 {...register(`variantes.${index}.precio`)}
-                className="w-full pl-7 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none font-semibold"
+                className="w-full pl-7 pr-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none font-semibold"
                 required
                 min={0}
               />
@@ -228,7 +228,7 @@ function VarianteCard({
             <input
               type="number"
               {...register(`variantes.${index}.stock`)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
               min={0}
             />
@@ -402,7 +402,7 @@ export default function GestionVariantesAccesorioPage() {
         <button
           type="submit"
           disabled={isSubmitting || loadingAccesorio}
-          className="w-full bg-color-principal text-white py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-color-principal-oscuro transition-all disabled:opacity-60"
+          className="w-full bg-color-principal text-white py-4 rounded-full font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-color-principal-oscuro transition-all disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {isSubmitting ? "Guardando..." : "Guardar Variantes"}
