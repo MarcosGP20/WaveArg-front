@@ -118,11 +118,15 @@ export function LoginForm() {
               type="email"
               placeholder="tu@correo.com"
               className={errors.email ? "border-red-500" : ""}
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "login-email-error" : undefined}
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+            <p id="login-email-error" role="alert" className="text-xs text-red-500 mt-1">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
@@ -144,11 +148,13 @@ export function LoginForm() {
               type="password"
               placeholder="••••••••"
               className={errors.contraseña ? "border-red-500" : ""}
+              aria-invalid={!!errors.contraseña}
+              aria-describedby={errors.contraseña ? "login-password-error" : undefined}
               {...register("contraseña")}
             />
           </div>
           {errors.contraseña && (
-            <p className="text-xs text-red-500 mt-1">
+            <p id="login-password-error" role="alert" className="text-xs text-red-500 mt-1">
               {errors.contraseña.message}
             </p>
           )}
@@ -171,6 +177,7 @@ export function LoginForm() {
           type="submit"
           className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-full shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
+          aria-busy={isSubmitting}
         >
           {isSubmitting ? (
             <>

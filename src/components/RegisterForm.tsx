@@ -106,11 +106,15 @@ export function RegisterForm() {
               type="email"
               placeholder="tu@correo.com"
               className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "reg-email-error" : undefined}
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="text-xs text-red-500">{errors.email.message}</p>
+            <p id="reg-email-error" role="alert" className="text-xs text-red-500">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
@@ -124,11 +128,15 @@ export function RegisterForm() {
               type="password"
               placeholder="••••••••"
               className={`pl-10 ${errors.contraseña ? "border-red-500" : ""}`}
+              aria-invalid={!!errors.contraseña}
+              aria-describedby={errors.contraseña ? "reg-password-error" : undefined}
               {...register("contraseña")}
             />
           </div>
           {errors.contraseña && (
-            <p className="text-xs text-red-500">{errors.contraseña.message}</p>
+            <p id="reg-password-error" role="alert" className="text-xs text-red-500">
+              {errors.contraseña.message}
+            </p>
           )}
         </div>
 
@@ -149,6 +157,7 @@ export function RegisterForm() {
           type="submit"
           className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-full shadow-md transition-all active:scale-[0.98]"
           disabled={isSubmitting}
+          aria-busy={isSubmitting}
         >
           {isSubmitting ? (
             <>

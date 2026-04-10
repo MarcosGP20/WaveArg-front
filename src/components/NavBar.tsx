@@ -131,9 +131,15 @@ export default function NavBar() {
         onClick={() => setMenuOpen(false)}
       >
         <div className="relative inline-block">
-          <FaShoppingCart size={24} className="text-color-principal" />
+          <FaShoppingCart
+            size={24}
+            className={`text-color-principal transition-transform ${cartBump ? "animate-cartBump" : ""}`}
+          />
           {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span
+              key={cartCount}
+              className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-badgePop"
+            >
               {cartCount}
             </span>
           )}
@@ -178,7 +184,7 @@ export default function NavBar() {
         <Link href="/">
           <Image
             src="/waves5.svg"
-            alt="Logo"
+            alt="Wave Arg – ir al inicio"
             width={120}
             height={120}
             className="hidden md:block"
@@ -188,7 +194,7 @@ export default function NavBar() {
         <Link href="/">
           <Image
             src="/iso3.svg"
-            alt="Logo"
+            alt="Wave Arg – ir al inicio"
             width={40}
             height={40}
             className="md:hidden"

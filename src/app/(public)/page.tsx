@@ -83,7 +83,7 @@ export default function HomePage() {
               <div className="relative h-[95vh] bg-gray-900 rounded-2xl md:rounded-2xl overflow-hidden">
                 <img
                   src={ASSET_PATHS.IPHONE_IMG}
-                  alt="iPhone Detail"
+                  alt="iPhone – conocé nuestros productos"
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
