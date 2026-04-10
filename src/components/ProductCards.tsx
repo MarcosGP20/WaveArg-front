@@ -93,7 +93,7 @@ export default function ProductCard({ product, className }: ProductCardProps) {
                   onClick={(e) => handleColorClick(cv, e)}
                   title={cv.color}
                   aria-label={`Color ${cv.color}`}
-                  className={`w-6 h-6 rounded-full transition-all duration-200 focus:outline-none ${
+                  className={`w-6 h-6 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-principal focus-visible:ring-offset-2 ${
                     varianteActiva.color === cv.color
                       ? "ring-2 ring-color-principal ring-offset-2 scale-125 shadow-sm"
                       : `ring-1 hover:scale-110 ${

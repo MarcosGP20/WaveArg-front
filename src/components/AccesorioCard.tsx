@@ -142,9 +142,15 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
         {/* Botón */}
         <Link
           href={`/accesorios/${accesorio.id}`}
-          className="mt-1 bg-color-principal text-white py-2.5 rounded-full font-semibold hover:bg-color-principal-oscuro transition-colors text-center text-sm"
+          aria-disabled={variantesConStock.length === 0}
+          tabIndex={variantesConStock.length === 0 ? -1 : undefined}
+          className={`mt-1 py-2.5 rounded-full font-semibold transition-colors text-center text-sm ${
+            variantesConStock.length === 0
+              ? "bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed"
+              : "bg-color-principal text-white hover:bg-color-principal-oscuro"
+          }`}
         >
-          Ver accesorio
+          {variantesConStock.length === 0 ? "Sin stock" : "Ver accesorio"}
         </Link>
       </div>
     </div>
