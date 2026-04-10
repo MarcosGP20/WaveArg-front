@@ -1,54 +1,67 @@
+"use client";
+
 import React, { useState, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
 type DropdownItemProps = {
-  title: React.ReactNode;
+  title: string;
+  href: string;
   children: React.ReactNode;
 };
 
-const DropdownItem: React.FC<DropdownItemProps> = ({ title, children }) => {
+const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children }) => {
   const [isOpen, setIsOpen] = useState(false);
-
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Un valor para que la experiencia sea fluida
+  const pathname = usePathname();
   const DELAY_MS = 200;
 
-  const handleMouseEnter = () => {
-    // 1. Limpiar el temporizador actual (por si está a punto de cerrarse)
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
+  const isActive = pathname === href || pathname.startsWith(href + "/");
 
-    // 2. Abrir con retraso (para evitar el "roce accidental")
-    timerRef.current = setTimeout(() => {
-      setIsOpen(true);
-    }, DELAY_MS);
+  const open = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setIsOpen(true), DELAY_MS);
   };
 
-  const handleMouseLeave = () => {
-    // 1. Limpiar el temporizador de apertura (por si el mouse se fue antes de abrir)
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    // 2. CERRAR CON RETRASO (ESTA ES LA CLAVE).
-    // Esto le da al cursor 200ms para saltar la brecha y entrar al menú.
-    timerRef.current = setTimeout(() => {
-      setIsOpen(false);
-    }, DELAY_MS);
+  const scheduleClose = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setIsOpen(false), DELAY_MS);
   };
 
   return (
-    <div
-      className=""
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className="cursor-pointer ">{title}</div>
+    <div onMouseEnter={open} onMouseLeave={scheduleClose}>
+      <div className="flex items-center">
+        <Link
+          href={href}
+          className={`px-3 py-2 rounded-full hover:bg-gray-200 transition text-color-principal ${
+            isActive ? "font-bold" : ""
+          }`}
+        >
+          {title}
+        </Link>
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          aria-expanded={isOpen}
+          aria-label={`${isOpen ? "Cerrar" : "Abrir"} menú de ${title}`}
+          className="p-1 rounded-full hover:bg-gray-200 transition text-color-principal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-principal focus-visible:ring-offset-1"
+        >
+          <ChevronDown
+            size={14}
+            className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
 
       {isOpen && (
-        <div className="absolute inset-x-0 top-full w-screen z-30 bg-white shadow-xl border-b">
-          <div className=" mx-auto flex flex-col p-4">{children}</div>
+        <div
+          className="absolute inset-x-0 top-full w-screen z-30 bg-white shadow-xl border-b"
+          onMouseEnter={() => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+          }}
+          onMouseLeave={scheduleClose}
+        >
+          <div className="mx-auto flex flex-col p-4">{children}</div>
         </div>
       )}
     </div>

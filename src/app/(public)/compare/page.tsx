@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { getProductos } from "@/lib/api";
 import { Producto } from "@/interfaces/producto";
 import Toast from "@/components/ui/Toast";
+import Breadcrumb from "@/components/Breadcrumb";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -309,6 +310,12 @@ export default function ComparePage() {
   // ── Main ─────────────────────────────────────────────────────────────────
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 pb-32 md:pb-12">
+
+      <Breadcrumb items={[
+        { label: "Inicio", href: "/" },
+        { label: "Productos", href: "/products" },
+        { label: "Comparar modelos" },
+      ]} />
 
       {/* Título */}
       <div className="flex items-center justify-between mb-6">

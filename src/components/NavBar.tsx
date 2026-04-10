@@ -202,13 +202,7 @@ export default function NavBar() {
           </Link>
 
           {/* DROPDOWN DINÁMICO */}
-          <DropdownItem
-            title={
-              <Link href="/products" className={linkStyle("/products")}>
-                Productos
-              </Link>
-            }
-          >
+          <DropdownItem title="Productos" href="/products">
             {/* AQUÍ ESTÁ EL CAMBIO CLAVE:
                 1. grid grid-cols-2: Divide en dos columnas.
                 2. min-w-[600px]: Fuerza el ancho para ocupar espacio.
@@ -285,6 +279,18 @@ export default function NavBar() {
             }}
             onMouseLeave={() => {
               cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
+            }}
+            onFocus={() => {
+              if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
+              setCartHoverOpen(true);
+            }}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setCartHoverOpen(false);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setCartHoverOpen(false);
             }}
           >
             <Link href="/cart" className="relative inline-block">

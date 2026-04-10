@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-import { notFound, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { AccesoriosService, Accesorio, AccesorioVariante, CATEGORIA_LABELS } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import Toast from "@/components/ui/Toast";
+import Breadcrumb from "@/components/Breadcrumb";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
@@ -46,7 +47,6 @@ export default function AccesorioDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const router = useRouter();
   const { addToCart } = useCart();
 
   const [accesorio, setAccesorio] = useState<Accesorio | null>(null);
@@ -225,13 +225,12 @@ export default function AccesorioDetail({
         {/* ════ INFO ════ */}
         <div className="w-full md:w-1/2 flex flex-col">
 
-          {/* Volver */}
-          <button
-            onClick={() => router.back()}
-            className="mb-5 self-start flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition-colors"
-          >
-            ← Volver
-          </button>
+          {/* Breadcrumb */}
+          <Breadcrumb items={[
+            { label: "Inicio", href: "/" },
+            { label: "Accesorios", href: "/accesorios" },
+            { label: accesorio.nombre },
+          ]} />
 
           {/* Categoría + nombre */}
           <span className="text-xs font-bold uppercase tracking-widest text-color-principal bg-color-principal/10 px-2.5 py-1 rounded-full self-start mb-2">

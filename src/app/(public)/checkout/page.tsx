@@ -6,7 +6,7 @@ import { MercadoPagoService } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn } from "lucide-react";
+import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check } from "lucide-react";
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
@@ -115,11 +115,42 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
+        {/* Indicador de pasos */}
+        <div className="flex items-center justify-center gap-0 mb-10">
+          {/* Paso 1: Carrito */}
+          <div className="flex flex-col items-center">
+            <div className="w-8 h-8 rounded-full bg-color-principal flex items-center justify-center">
+              <Check size={16} className="text-white" />
+            </div>
+            <span className="text-[11px] text-color-principal font-semibold mt-1.5">Carrito</span>
+          </div>
+
+          <div className="w-16 sm:w-24 h-0.5 bg-color-principal mb-5" />
+
+          {/* Paso 2: Revisión (activo) */}
+          <div className="flex flex-col items-center">
+            <div className="w-8 h-8 rounded-full bg-color-principal ring-4 ring-color-principal/20 flex items-center justify-center">
+              <span className="text-white text-xs font-bold">2</span>
+            </div>
+            <span className="text-[11px] text-color-principal font-semibold mt-1.5">Revisión</span>
+          </div>
+
+          <div className="w-16 sm:w-24 h-0.5 bg-gray-200 mb-5" />
+
+          {/* Paso 3: Pago */}
+          <div className="flex flex-col items-center">
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-400 text-xs font-bold">3</span>
+            </div>
+            <span className="text-[11px] text-gray-400 font-medium mt-1.5">Pago</span>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-color-principal">Checkout</h1>
+          <h1 className="text-3xl font-bold text-color-principal">Revisá tu pedido</h1>
           <p className="text-gray-500 mt-1">
-            Revisá tu pedido y continuá con el pago seguro
+            Confirmá los productos y continuá con el pago seguro
           </p>
         </div>
 

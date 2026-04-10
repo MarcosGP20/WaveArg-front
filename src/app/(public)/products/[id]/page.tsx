@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-import { notFound, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getProductoById, Producto, Variante } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import Toast from "@/components/ui/Toast";
+import Breadcrumb from "@/components/Breadcrumb";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
@@ -67,7 +68,6 @@ export default function ProductDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const router = useRouter();
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<Producto | null>(null);
@@ -258,13 +258,12 @@ export default function ProductDetail({
         {/* ════ INFO ════ */}
         <div className="w-full md:w-1/2 flex flex-col">
 
-          {/* Volver */}
-          <button
-            onClick={() => router.back()}
-            className="mb-5 self-start flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition-colors"
-          >
-            ← Volver al catálogo
-          </button>
+          {/* Breadcrumb */}
+          <Breadcrumb items={[
+            { label: "Inicio", href: "/" },
+            { label: "Productos", href: "/products" },
+            { label: product.nombre },
+          ]} />
 
           {/* Título */}
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">{product.nombre}</h1>
