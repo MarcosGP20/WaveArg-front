@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { ImageOff } from "lucide-react";
 import { Accesorio, AccesorioVariante, CATEGORIA_LABELS } from "@/lib/api";
@@ -63,11 +64,12 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
       <Link href={`/accesorios/${accesorio.id}`} className="block relative">
         <div className="relative w-full h-52 bg-gray-50 overflow-hidden">
           {imagen && !imgError ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={imagen}
               alt={accesorio.nombre}
-              className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+              fill
+              unoptimized
+              className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
               onError={() => setImgError(true)}
             />
           ) : (

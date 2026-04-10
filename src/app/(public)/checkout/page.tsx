@@ -256,7 +256,7 @@ export default function CheckoutPage() {
         <button
           onClick={handlePagar}
           disabled={loading}
-          className="w-full bg-[#009EE3] hover:bg-[#008dcc] active:bg-[#007ab8] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-200 shadow-lg shadow-[#009EE3]/30"
+          className="w-full bg-mp hover:bg-mp-dark active:bg-mp-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-200 shadow-lg shadow-mp/30"
         >
           {loading ? (
             <>

@@ -4,6 +4,7 @@ import { useCompare } from "@/context/CompareContext";
 import { useCart } from "@/context/CartContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Trash2, ArrowLeftRight, Search, X, Loader2,
   ShoppingCart, Check, ExternalLink,
@@ -446,11 +447,12 @@ export default function ComparePage() {
                     >
                       {/* Imagen */}
                       <div className="relative mx-auto w-28 h-28 mb-3">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <Image
                           src={p.imagenes?.[0] || "/placeholder.png"}
                           alt={p.nombre}
-                          className="w-full h-full object-contain"
+                          fill
+                          unoptimized
+                          className="object-contain"
                         />
                       </div>
 

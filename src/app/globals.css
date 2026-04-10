@@ -5,6 +5,8 @@
   --font-work-sans: "Work Sans", sans-serif;
   --color-principal: #05467D;
   --color-principal-oscuro: #0F3C64;
+  --color-mp: #009EE3;
+  --color-mp-dark: #007ab8;
 
   /* Animation timing system */
   --duration-fast: 150ms;
