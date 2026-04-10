@@ -170,6 +170,7 @@ export default function AccesorioDetail({
                   key={idx}
                   onMouseEnter={() => setActiveImage(img)}
                   onClick={() => setActiveImage(img)}
+                  aria-label={`Ver imagen ${idx + 1} de ${accesorio.nombre} en ${selectedVariante.color}`}
                   className={`w-[60px] h-[60px] rounded-lg border-2 overflow-hidden transition-all bg-white ${
                     activeImage === img
                       ? "border-color-principal shadow-md"
@@ -177,7 +178,7 @@ export default function AccesorioDetail({
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img} alt={`Vista ${idx + 1}`} className="w-full h-full object-contain p-1" />
+                  <img src={img} alt="" className="w-full h-full object-contain p-1" />
                 </button>
               ))}
             </div>
@@ -207,12 +208,13 @@ export default function AccesorioDetail({
                   <button
                     key={idx}
                     onClick={() => setActiveImage(img)}
+                    aria-label={`Ver imagen ${idx + 1} de ${accesorio.nombre} en ${selectedVariante.color}`}
                     className={`flex-shrink-0 w-14 h-14 rounded-lg border-2 overflow-hidden transition-all bg-white ${
                       activeImage === img ? "border-color-principal" : "border-gray-200"
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img} alt={`Vista ${idx + 1}`} className="w-full h-full object-contain p-1" />
+                    <img src={img} alt="" className="w-full h-full object-contain p-1" />
                   </button>
                 ))}
               </div>

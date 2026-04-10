@@ -198,6 +198,7 @@ export default function ProductDetail({
                   key={idx}
                   onMouseEnter={() => setActiveImage(img)}
                   onClick={() => setActiveImage(img)}
+                  aria-label={`Ver imagen ${idx + 1} de ${product.nombre} en ${selectedVariante.color}`}
                   className={`w-[60px] h-[60px] rounded-lg border-2 overflow-hidden transition-all bg-white ${
                     activeImage === img
                       ? "border-color-principal shadow-md"
@@ -205,7 +206,7 @@ export default function ProductDetail({
                   }`}
                 >
                   <div className="relative w-full h-full">
-                    <Image src={img} alt={`Vista ${idx + 1}`} fill className="object-contain p-1" />
+                    <Image src={img} alt="" fill className="object-contain p-1" />
                   </div>
                 </button>
               ))}
@@ -239,12 +240,13 @@ export default function ProductDetail({
                   <button
                     key={idx}
                     onClick={() => setActiveImage(img)}
+                    aria-label={`Ver imagen ${idx + 1} de ${product.nombre} en ${selectedVariante.color}`}
                     className={`flex-shrink-0 w-14 h-14 rounded-lg border-2 overflow-hidden transition-all bg-white ${
                       activeImage === img ? "border-color-principal" : "border-gray-200"
                     }`}
                   >
                     <div className="relative w-full h-full">
-                      <Image src={img} alt={`Vista ${idx + 1}`} fill className="object-contain p-1" />
+                      <Image src={img} alt="" fill className="object-contain p-1" />
                     </div>
                   </button>
                 ))}
