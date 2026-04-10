@@ -460,14 +460,20 @@ export default function NavBar() {
         </div>
 
         {/* TOGGLE MÓVIL */}
-        <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="md:hidden"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+          aria-label="Menú de navegación"
+        >
           {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </button>
       </div>
 
       {/* MENÚ MÓVIL DESPLEGABLE */}
       {menuOpen && (
-        <div className="flex flex-col gap-2 mt-3 md:hidden px-2 pb-2">
+        <div id="mobile-menu" className="flex flex-col gap-2 mt-3 md:hidden px-2 pb-2">
           {mobileLinks}
         </div>
       )}
