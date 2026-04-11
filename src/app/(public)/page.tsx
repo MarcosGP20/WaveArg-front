@@ -163,7 +163,7 @@ export default function HomePage() {
                   </div>
                 </div>
               ) : (
-                <IPhoneCarousel items={carouselItems.length > 0 ? carouselItems : undefined} />
+                <IPhoneCarousel items={carouselItems} />
               )}
             </div>
           </section>

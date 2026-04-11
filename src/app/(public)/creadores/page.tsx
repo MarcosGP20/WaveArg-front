@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LazyVideoFacade } from "@/components/VideoPlayer";
-import IPhoneCarousel from "@/components/IPhoneCarousel";
+import IPhoneCarouselWithData from "@/components/IPhoneCarouselWithData";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -92,11 +92,11 @@ export default function Creadores() {
       </section>
 
       {/* iPhone Selection Section (Espacio para el carrusel futuro) */}
-      <section className="flex flex-col items-center justify-center text-center mt-10 px-4 py-10">
+      <section className="flex flex-col items-center justify-center text-center mt-10 px-4 py-10 w-full">
         <h3 className="text-color-principal text-3xl font-bold mb-10">
           ¿Qué iPhone elegir para crear contenido?
         </h3>
-        <IPhoneCarousel />
+        <IPhoneCarouselWithData />
       </section>
 
       {/* Zig-Zag Section: ¿Con qué editar? */}
