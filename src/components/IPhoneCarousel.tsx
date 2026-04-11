@@ -1,107 +1,65 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📸 DATOS DEL CARRUSEL
-// Cuando lleguen las imágenes reales, solo cambiá los valores de `image` acá.
-// ─────────────────────────────────────────────────────────────────────────────
-const iPhones = [
-  {
-    model: "iPhone 16 Pro Max",
-    subtitle: "El más completo para creadores",
-    image: "/iphones/iphone-16-pro-max.png", // ← SWAP: reemplazá con la imagen real
-    badge: "Top Pick",
-    badgeColor: "bg-color-principal",
-    features: [
-      "Cámara principal 48MP con Fusion Camera",
-      "Grabación 4K a 120fps (ProRes Log)",
-      "Botón de Acción personalizable",
-      "Pantalla 6.9\" Super Retina XDR",
-    ],
-  },
-  {
-    model: "iPhone 16 Pro",
-    subtitle: "Potencia profesional en tamaño compacto",
-    image: "/iphones/iphone-16-pro.png", // ← SWAP
-    badge: null,
-    badgeColor: "",
-    features: [
-      "Chip A18 Pro, el más rápido del mercado",
-      "Zoom óptico 5x con teleobjetivo",
-      "ProRes 4K a 60fps en Log",
-      "Audio espacial avanzado",
-    ],
-  },
-  {
-    model: "iPhone 15",
-    subtitle: "El mejor ingreso al ecosistema",
-    image: "/iphones/iphone-15.png", // ← SWAP
-    badge: "Precio / Calidad",
-    badgeColor: "bg-amber-500",
-    features: [
-      "Cámara gran angular 48MP",
-      "Dynamic Island",
-      "Conector USB-C",
-      "Video HDR Dolby Vision",
-    ],
-  },
-  {
-    model: "iPhone 14 Pro",
-    subtitle: "Potencia al precio justo",
-    image: "/iphones/iphone-14-pro.png", // ← SWAP
-    badge: null,
-    badgeColor: "",
-    features: [
-      "Cámara 48MP con modo Fotográfico",
-      "Always-On Display",
-      "Chip A16 Bionic",
-      "ProRes Video 4K",
-    ],
-  },
-];
+export interface CarouselItem {
+  id?: string | number;
+  model: string;
+  description: string;
+  image: string;
+  badge?: string | null;
+  specs: { icon: string; label: string }[];
+  href?: string;
+}
 
-const AUTOPLAY_DELAY = 4500;
+const AUTOPLAY_DELAY = 5000;
 
-export default function IPhoneCarousel() {
+interface IPhoneCarouselProps {
+  items: CarouselItem[]; // Obligatorio ahora para evitar mock data interna
+}
+
+export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
   const [current, setCurrent] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [direction, setDirection] = useState<"left" | "right">("right");
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [imageError, setImageError] = useState(false); // Control de placeholder
+
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStartX = useRef<number | null>(null);
+  const isAnimatingRef = useRef(false);
 
-  const total = iPhones.length;
+  const total = items.length;
+
+  // Resetear el error de imagen cada vez que cambia el slide
+  useEffect(() => {
+    setImageError(false);
+  }, [current]);
 
   const goTo = useCallback(
-    (index: number, dir: "left" | "right") => {
-      if (isAnimating) return;
+    (index: number, dir: 1 | -1) => {
+      if (isAnimatingRef.current || total === 0) return;
+      isAnimatingRef.current = true;
       setDirection(dir);
-      setIsAnimating(true);
+      setCurrent(((index % total) + total) % total);
       setTimeout(() => {
-        setCurrent((index + total) % total);
-        setIsAnimating(false);
-      }, 300);
+        isAnimatingRef.current = false;
+      }, 480);
     },
-    [isAnimating, total]
+    [total],
   );
 
-  const prev = useCallback(() => {
-    goTo(current - 1, "left");
-  }, [current, goTo]);
+  const next = useCallback(() => goTo(current + 1, 1), [current, goTo]);
+  const prev = useCallback(() => goTo(current - 1, -1), [current, goTo]);
 
-  const next = useCallback(() => {
-    goTo(current + 1, "right");
-  }, [current, goTo]);
-
-  // Autoplay
   const startAutoplay = useCallback(() => {
+    if (total <= 1) return;
     if (autoplayRef.current) clearInterval(autoplayRef.current);
     autoplayRef.current = setInterval(() => {
-      goTo(current + 1, "right");
+      next();
     }, AUTOPLAY_DELAY);
-  }, [current, goTo]);
+  }, [total, next]);
 
   useEffect(() => {
     startAutoplay();
@@ -110,149 +68,164 @@ export default function IPhoneCarousel() {
     };
   }, [startAutoplay]);
 
-  // Touch / swipe support
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) > 50) {
-      delta < 0 ? next() : prev();
-    }
-    touchStartX.current = null;
-  };
+  if (total === 0) return null;
 
-  const slide = iPhones[current];
+  const slide = items[current];
+
+  const variants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 50 : -50, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -50 : 50, opacity: 0 }),
+  };
 
   return (
-    <div className="w-full max-w-5xl mx-auto select-none">
-      {/* Carrusel principal */}
+    <div className="w-full select-none">
       <div
-        className="relative flex items-center gap-4"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onMouseEnter={() => {
-          if (autoplayRef.current) clearInterval(autoplayRef.current);
-        }}
+        className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[450px] md:min-h-[550px]"
+        onMouseEnter={() =>
+          autoplayRef.current && clearInterval(autoplayRef.current)
+        }
         onMouseLeave={startAutoplay}
+        onTouchStart={(e) => (touchStartX.current = e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (!touchStartX.current) return;
+          const delta = e.changedTouches[0].clientX - touchStartX.current;
+          if (Math.abs(delta) > 50) delta < 0 ? next() : prev();
+          touchStartX.current = null;
+        }}
       >
-        {/* Flecha izquierda */}
-        <button
-          onClick={prev}
-          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-color-principal hover:bg-color-principal hover:text-white hover:border-color-principal transition-all duration-200 z-10"
-          aria-label="iPhone anterior"
-        >
-          <ChevronLeft size={20} />
-        </button>
+        {/* ── Panel de Imagen: Ahora con más aire y protagonismo ── */}
+        <div className="relative md:w-[45%] bg-[#F8F9FA] flex items-center justify-center p-8 md:p-12">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={current}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.4, ease: "circOut" }}
+              className="relative w-full h-full flex items-center justify-center"
+            >
+              {slide.badge && (
+                <span className="absolute top-0 left-0 bg-[#E1EFFE] text-[#05467D] text-xs font-bold px-4 py-1.5 rounded-full shadow-sm z-10">
+                  {slide.badge}
+                </span>
+              )}
 
-        {/* Card */}
-        <div
-          className={`flex-1 transition-all duration-300 ${
-            isAnimating
-              ? direction === "right"
-                ? "-translate-x-4 opacity-0"
-                : "translate-x-4 opacity-0"
-              : "translate-x-0 opacity-100"
-          }`}
-        >
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-            <div className="flex flex-col md:flex-row">
-              {/* Imagen */}
-              <div className="md:w-2/5 bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-8 min-h-[240px] md:min-h-[320px] relative">
-                {/* Badge */}
-                {slide.badge && (
-                  <span
-                    className={`absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full ${slide.badgeColor}`}
-                  >
-                    {slide.badge}
-                  </span>
-                )}
-
-                {/* Imagen con fallback placeholder */}
-                <div className="relative w-[160px] h-[220px] md:w-[180px] md:h-[260px]">
+              {/* Contenedor de imagen dinámico */}
+              <div className="relative w-full h-[280px] md:h-[400px] transition-transform duration-500 hover:scale-105">
+                {!imageError ? (
                   <Image
                     src={slide.image}
                     alt={slide.model}
                     fill
-                    className="object-contain drop-shadow-xl"
-                    onError={(e) => {
-                      // Si la imagen no existe, muestra el placeholder
-                      (e.currentTarget as HTMLImageElement).style.display =
-                        "none";
-                    }}
+                    className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)]"
+                    onError={() => setImageError(true)}
+                    priority
                   />
-                  {/* Placeholder visible si la imagen falla */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 text-xs text-center gap-2">
-                    <div className="w-24 h-36 border-2 border-dashed border-gray-200 rounded-[1.5rem] flex items-center justify-center">
-                      <span className="text-[10px] text-gray-300 px-2 text-center leading-tight">
-                        Imagen próximamente
-                      </span>
-                    </div>
+                ) : (
+                  /* Placeholder estilizado */
+                  <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50">
+                    <span className="text-gray-400 text-sm font-medium">Imagen próximamente</span>
                   </div>
-                </div>
+                )}
               </div>
-
-              {/* Contenido */}
-              <div className="md:w-3/5 p-6 md:p-10 flex flex-col justify-center text-left">
-                <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-1">
-                  {`${current + 1} / ${total}`}
-                </p>
-                <h4 className="text-2xl md:text-3xl font-bold text-color-principal mb-1">
-                  {slide.model}
-                </h4>
-                <p className="text-gray-500 text-base mb-6">{slide.subtitle}</p>
-
-                <ul className="space-y-3 mb-8">
-                  {slide.features.map((feat, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 text-gray-700 text-sm"
-                    >
-                      <span className="shrink-0 w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center mt-0.5">
-                        <Check size={11} className="text-color-principal" />
-                      </span>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href="/products"
-                  className="inline-flex items-center gap-2 bg-color-principal hover:bg-color-principal-oscuro text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-colors w-fit"
-                >
-                  Ver {slide.model} →
-                </a>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Flecha derecha */}
-        <button
-          onClick={next}
-          className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-color-principal hover:bg-color-principal hover:text-white hover:border-color-principal transition-all duration-200 z-10"
-          aria-label="iPhone siguiente"
-        >
-          <ChevronRight size={20} />
-        </button>
+        {/* ── Panel de Contenido ── */}
+        <div className="md:w-[55%] flex flex-col justify-center px-8 py-10 md:px-16 md:py-16">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">
+                {current + 1} / {total}
+              </p>
+
+              <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5 tracking-tight">
+                {slide.model}
+              </h3>
+
+              <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-8 max-w-lg">
+                {slide.description}
+              </p>
+
+              <div className="flex flex-wrap gap-3 mb-10">
+                {slide.specs.map((spec, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 bg-gray-50 border border-gray-100 text-gray-700 text-sm font-semibold px-4 py-2 rounded-xl"
+                  >
+                    <span>{spec.icon}</span>
+                    {spec.label}
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                href={slide.href ?? `/products/${slide.id || ""}`}
+                className="inline-flex items-center gap-3 bg-[#05467D] hover:bg-[#032d52] text-white font-bold text-base px-10 py-4 rounded-2xl shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 transition-all active:scale-95"
+              >
+                Ver más
+                <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M1 7h12M8 2l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* ── Flechas de Navegación ── */}
+        {total > 1 && (
+          <>
+            <button
+              onClick={prev}
+              aria-label="iPhone anterior"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
+            >
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M10 3L5 8l5 5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              onClick={next}
+              aria-label="iPhone siguiente"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
+            >
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M6 3l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
-      {/* Dot indicators */}
-      <div className="flex justify-center gap-2 mt-6">
-        {iPhones.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i, i > current ? "right" : "left")}
-            className={`rounded-full transition-all duration-300 ${
-              i === current
-                ? "w-6 h-2.5 bg-color-principal"
-                : "w-2.5 h-2.5 bg-gray-200 hover:bg-gray-400"
-            }`}
-            aria-label={`Ir a ${iPhones[i].model}`}
-          />
-        ))}
-      </div>
+      {/* ── Indicadores ── */}
+      {total > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          {items.map((item, i) => (
+            <button
+              key={i}
+              role="tab"
+              aria-selected={i === current}
+              aria-label={`Ir a ${item.model}`}
+              onClick={() => goTo(i, i > current ? 1 : -1)}
+              className={`rounded-full transition-all duration-300 ${
+                i === current
+                  ? "w-6 h-2.5 bg-[#05467D]"
+                  : "w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400"
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
