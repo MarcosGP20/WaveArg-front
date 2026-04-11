@@ -60,8 +60,8 @@ export const TableAccesorioVariants = ({
       toast.success("Variante actualizada correctamente");
       cancelEdit();
       window.location.reload();
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al actualizar");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err) ?? "Error al actualizar");
     } finally {
       setIsSaving(false);
     }
@@ -120,7 +120,7 @@ export const TableAccesorioVariants = ({
                     {v.color}
                   </td>
                   <td className="px-6 py-4 text-xs text-gray-600 max-w-[200px] truncate">
-                    {(v as any).especificacion ?? "-"}
+                    {(v as unknown as Record<string, any>)?.especificacion ?? "-"}
                   </td>
                   <td className="px-6 py-4 font-bold text-color-principal">
                     USD {v.precio.toLocaleString()}

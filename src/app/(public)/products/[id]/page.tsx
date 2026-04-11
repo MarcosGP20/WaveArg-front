@@ -46,7 +46,7 @@ function needsDarkBorder(color: string): boolean {
  */
 function getGalleryImages(product: Producto, variante: Variante, colorIdx: number): string[] {
   // Prioridad 1: backend envía imagenes[] propias de la variante (futuro)
-  const varImgs = (variante as any).imagenes as string[] | undefined;
+  const varImgs = (variante as unknown as Record<string, any>)?.imagenes as string[] | undefined;
   if (varImgs && varImgs.length > 0) return varImgs;
 
   // Prioridad 2: la variante tiene foto real propia → mostrar SOLO esa

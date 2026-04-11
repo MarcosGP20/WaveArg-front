@@ -36,7 +36,7 @@ export default function Dashboard() {
   useEffect(() => {
     AdminService.getDashboard()
       .then(setMetrics)
-      .catch((err: Error) => setError(err.message))
+      .catch((err: Error) => setError(err instanceof Error ? err.message : String(err)))
       .finally(() => setLoading(false));
   }, []);
 

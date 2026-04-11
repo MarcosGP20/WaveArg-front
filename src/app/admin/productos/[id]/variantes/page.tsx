@@ -352,7 +352,7 @@ export default function GestionVariantesPage() {
       },
       error: (err) => {
         setIsSubmitting(false);
-        return `Error: ${err.message || "Revisa la consola"}`;
+        return `Error: ${err instanceof Error ? err.message : String(err) || "Revisa la consola"}`;
       },
     });
   };

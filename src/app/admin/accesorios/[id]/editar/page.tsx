@@ -64,7 +64,7 @@ export default function EditarAccesorioPage() {
               : [{ url: "" }],
         });
       })
-      .catch((err) => setFetchError(err.message ?? "Error al cargar el Accesorio"))
+      .catch((err) => setFetchError(err instanceof Error ? err.message : String(err) ?? "Error al cargar el Accesorio"))
       .finally(() => setLoadingData(false));
   }, [id, reset]);
 
@@ -95,8 +95,8 @@ export default function EditarAccesorioPage() {
 
       toast.success("Accesorio actualizado correctamente");
       router.push("/admin/accesorios");
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al guardar los cambios");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err) ?? "Error al guardar los cambios");
     } finally {
       setSaving(false);
     }

@@ -54,8 +54,8 @@ export default function NuevoProductoPage() {
 
       toast.success("Producto creado correctamente");
       router.push("/admin/productos");
-    } catch (err: any) {
-      setError(err.message ?? "Error al crear el producto. Intentá de nuevo.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err) ?? "Error al crear el producto. Intentá de nuevo.");
     } finally {
       setLoading(false);
     }

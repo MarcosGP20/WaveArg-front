@@ -20,8 +20,8 @@ export default function InventarioPage() {
     try {
       const data = await ProductService.getAll();
       setProductos(data);
-    } catch (err: any) {
-      setError(err.message ?? "No se pudo cargar el inventario.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario.");
     } finally {
       setLoading(false);
     }
@@ -34,8 +34,8 @@ export default function InventarioPage() {
       toast.success("Producto eliminado correctamente");
       setDeletingId(null);
       await cargarProductos();
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al eliminar el producto");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err) ?? "Error al eliminar el producto");
     } finally {
       setIsDeleting(false);
     }

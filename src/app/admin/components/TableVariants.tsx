@@ -60,8 +60,8 @@ export const TableVariants = ({
       toast.success("Variante actualizada correctamente");
       cancelEdit();
       window.location.reload();
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al actualizar");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err) ?? "Error al actualizar");
     } finally {
       setIsSaving(false);
     }

@@ -97,7 +97,7 @@ function EstadoSelector({
       await PedidosService.updateEstado(pedidoId, nuevoEstado);
       onUpdated(pedidoId, nuevoEstado);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al actualizar");
+      setError(err instanceof Error ? err instanceof Error ? err.message : String(err) : "Error al actualizar");
     } finally {
       setLoading(false);
     }
@@ -156,7 +156,7 @@ export default function OrdersPage() {
       .then((data) => {
         setPedidos(data);
       })
-      .catch((err: Error) => setError(err.message))
+      .catch((err: Error) => setError(err instanceof Error ? err.message : String(err)))
       .finally(() => setLoading(false));
   }
 

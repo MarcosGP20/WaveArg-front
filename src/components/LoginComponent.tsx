@@ -67,10 +67,10 @@ export function LoginForm() {
           router.push(isAdmin ? "/admin" : "/account/profile");
         }, 1000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStatusMessage("");
       // El error viene del throw que configuramos en api.ts
-      setServerError(error.message || "Credenciales incorrectas.");
+      setServerError(error instanceof Error ? error.message : String(error) || "Credenciales incorrectas.");
     }
   };
 
@@ -95,9 +95,9 @@ export function LoginForm() {
         const isAdmin = user?.rol === "Admin";
         setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStatusMessage("");
-      setServerError(error.message || "Error al iniciar sesión con Google.");
+      setServerError(error instanceof Error ? error.message : String(error) || "Error al iniciar sesión con Google.");
     }
   };
 

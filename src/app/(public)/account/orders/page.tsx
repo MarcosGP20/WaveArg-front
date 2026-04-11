@@ -93,7 +93,7 @@ export default function MisPedidosPage() {
     }
     PedidosService.getMisPedidos()
       .then(setPedidos)
-      .catch((err: Error) => setError(err.message))
+      .catch((err: Error) => setError(err instanceof Error ? err.message : String(err)))
       .finally(() => setLoading(false));
   }, [mounted, token, user, router]);
 

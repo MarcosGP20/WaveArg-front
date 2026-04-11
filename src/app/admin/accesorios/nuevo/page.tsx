@@ -61,8 +61,8 @@ export default function NuevoAccesorioPage() {
       toast.success("Accesorio creado correctamente");
       // Redirigir a la página de variantes del accesorio recién creado
       router.push(`/admin/accesorios/${creado.id}/variantes`);
-    } catch (err: any) {
-      setError(err.message ?? "Error al crear el accesorio. Intentá de nuevo.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err) ?? "Error al crear el accesorio. Intentá de nuevo.");
     } finally {
       setLoading(false);
     }

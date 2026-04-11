@@ -35,8 +35,8 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
   //  1. variante.imagenes[0]        (array propio de la variante)
   //  2. accesorio.imagenes[0]       (array del accesorio)
   //  3. variante.fotoEstadoUrl      (foto de estado individual)
-  const rawVarianteImgs = (varianteMasBarata as any)?.imagenes;
-  const rawAccesorioImgs = (accesorio as any)?.imagenes;
+  const rawVarianteImgs = (varianteMasBarata as unknown as Record<string, any>)?.imagenes;
+  const rawAccesorioImgs = (accesorio as unknown as Record<string, any>)?.imagenes;
 
   const imagen =
     extractUrl(Array.isArray(rawVarianteImgs) ? rawVarianteImgs[0] : rawVarianteImgs) ??

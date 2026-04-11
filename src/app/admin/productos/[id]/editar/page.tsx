@@ -56,7 +56,7 @@ export default function EditarProductoPage() {
               : [{ url: "" }],
         });
       })
-      .catch((err) => setFetchError(err.message ?? "Error al cargar el producto"))
+      .catch((err) => setFetchError(err instanceof Error ? err.message : String(err) ?? "Error al cargar el producto"))
       .finally(() => setLoadingData(false));
   }, [id, reset]);
 
@@ -74,8 +74,8 @@ export default function EditarProductoPage() {
       });
       toast.success("Producto actualizado correctamente");
       router.push("/admin/productos");
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al guardar los cambios");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : String(err) ?? "Error al guardar los cambios");
     } finally {
       setSaving(false);
     }

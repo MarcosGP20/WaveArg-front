@@ -51,10 +51,10 @@ export function RegisterForm() {
       setTimeout(() => {
         router.push("/login");
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStatusMessage("");
       // Capturamos el mensaje de error que definimos en fetchFromApi
-      setServerError(error?.message || "Hubo un problema al crear la cuenta.");
+      setServerError(error instanceof Error ? error.message : "Hubo un problema al crear la cuenta.");
     }
   };
 
@@ -80,9 +80,9 @@ export function RegisterForm() {
         const isAdmin = user?.rol === "Admin";
         setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStatusMessage("");
-      setServerError(error.message || "Error al registrarse con Google.");
+      setServerError(error instanceof Error ? error.message : String(error) || "Error al registrarse con Google.");
     }
   };
 

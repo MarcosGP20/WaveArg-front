@@ -338,7 +338,7 @@ export default function GestionVariantesAccesorioPage() {
       },
       error: (err) => {
         setIsSubmitting(false);
-        return `Error: ${err.message || "Revisá la consola"}`;
+        return `Error: ${err instanceof Error ? err.message : String(err) || "Revisá la consola"}`;
       },
     });
   };

@@ -68,7 +68,7 @@ export default function CheckoutPage() {
     } catch (err: unknown) {
       const message =
         err instanceof Error
-          ? err.message
+          ? err instanceof Error ? err.message : String(err)
           : "Error al conectar con MercadoPago. Intentá de nuevo.";
 
       const msgLower = message.toLowerCase();

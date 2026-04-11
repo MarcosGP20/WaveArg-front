@@ -32,7 +32,7 @@ function needsDarkBorder(color: string): boolean {
 }
 
 function getGalleryImages(accesorio: Accesorio, variante: AccesorioVariante): string[] {
-  const varImgs = (variante as any).imagenes as string[] | undefined;
+  const varImgs = (variante as unknown as Record<string, any>)?.imagenes as string[] | undefined;
   if (varImgs && varImgs.length > 0) return varImgs;
   if (variante.fotoEstadoUrl) return [variante.fotoEstadoUrl];
   const stockImg = accesorio.imagenes?.[0];

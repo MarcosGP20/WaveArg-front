@@ -36,7 +36,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       setExito(true);
       setTimeout(() => router.push("/login"), 3000);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "";
+      const message = error instanceof Error ? error instanceof Error ? error.message : String(error) : "";
       if (message.includes("inválido") || message.includes("expiró")) {
         setServerError("El link expiró o ya fue usado. Pedí uno nuevo.");
       } else {
