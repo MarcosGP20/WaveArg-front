@@ -22,13 +22,15 @@ export const useAuthStore = create<AuthState>()(
         if (typeof document !== "undefined") {
           const sevenDaysInSeconds = 7 * 24 * 60 * 60;
           // JWT es seguro en cookie tal cual (no encodear) para que el middleware lo pueda decodificar.
-          document.cookie = `auth-token=${token}; path=/; max-age=${sevenDaysInSeconds}; SameSite=Strict`;
+          const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
+          document.cookie = `auth-token=${token}; path=/; max-age=${sevenDaysInSeconds}; SameSite=Strict${secureFlag}`;
         }
         return set({ token, user, isLoggedIn: true });
       },
       logout: () => {
         if (typeof document !== "undefined") {
-          document.cookie = "auth-token=; path=/; max-age=0; SameSite=Strict";
+          const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
+          document.cookie = `auth-token=; path=/; max-age=0; SameSite=Strict${secureFlag}`;
         }
         return set({ token: null, user: null, isLoggedIn: false });
       },

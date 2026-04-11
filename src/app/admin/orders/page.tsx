@@ -154,13 +154,6 @@ export default function OrdersPage() {
     setError(null);
     PedidosService.getAll(estado)
       .then((data) => {
-        if (data.length > 0) {
-          console.log("[Pedidos] Primer registro:", data[0]);
-          console.log("[Pedidos] Items del primer pedido:", data[0].items);
-          if (data[0].items?.length > 0) {
-            console.log("[Pedidos] Primer item:", data[0].items[0]);
-          }
-        }
         setPedidos(data);
       })
       .catch((err: Error) => setError(err.message))

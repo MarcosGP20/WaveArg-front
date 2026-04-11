@@ -41,7 +41,6 @@ export default function AdminHeader({
       onLogout();
     } else {
       // Fallback por defecto
-      console.log("Cerrando sesión...");
       // window.location.href = '/login';
     }
   };
