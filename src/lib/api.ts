@@ -1,5 +1,6 @@
 // lib/api.ts
-import { Producto, Variante, CreateProductoDTO } from "@/interfaces/producto";
+import { Producto, Variante, CreateProductoDTO, ImagenDetalle } from "@/interfaces/producto";
+export type { ImagenDetalle };
 import { LoginDTO, RegisterDTO, AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Accesorio, AccesorioVariante, AccesorioImagenDetalle, CategoriaAccesorio, CATEGORIA_LABELS, CreateAccesorioDTO } from "@/interfaces/accesorio";
@@ -27,7 +28,7 @@ export interface UpdateProductoDTO {
   nombre: string;
   modelo: string;
   descripcion: string;
-  imagenes: string[];
+  imagenesUrls: string[];
 }
 
 export interface UpdateAccesorioDTO {
@@ -252,6 +253,27 @@ export const AccesorioImagenesService = {
    */
   eliminar: (imagenId: number) =>
     fetchFromApi<void>(`/AccesorioImagenes/${imagenId}`, {
+      method: "DELETE",
+    }),
+};
+
+export const ImagenesService = {
+  /**
+   * Agrega una imagen a un producto existente.
+   * POST /api/Imagenes
+   */
+  agregar: (productoId: number, url: string) =>
+    fetchFromApi<{ message: string }>("/Imagenes", {
+      method: "POST",
+      body: JSON.stringify({ productoId, url }),
+    }),
+
+  /**
+   * Elimina una imagen de producto por su ID.
+   * DELETE /api/Imagenes/{id}
+   */
+  eliminar: (imagenId: number) =>
+    fetchFromApi<void>(`/Imagenes/${imagenId}`, {
       method: "DELETE",
     }),
 };

@@ -45,13 +45,14 @@ export default function EditarProductoPage() {
     if (!id) return;
     ProductService.getById(id)
       .then((p) => {
+        const urlsActuales = p.imagenes ?? [];
         reset({
           nombre: p.nombre,
           modelo: p.modelo,
           descripcion: p.descripcion,
           imagenesUrls:
-            p.imagenes?.length > 0
-              ? p.imagenes.map((url) => ({ url }))
+            urlsActuales.length > 0
+              ? urlsActuales.map((url) => ({ url }))
               : [{ url: "" }],
         });
       })
@@ -66,9 +67,10 @@ export default function EditarProductoPage() {
         nombre: data.nombre,
         modelo: data.modelo,
         descripcion: data.descripcion,
-        imagenes: data.imagenesUrls
-          .map((img) => img.url)
-          .filter((url) => url.trim() !== ""),
+        // Enviamos TODAS las URLs del formulario — el backend hace reemplazo completo
+        imagenesUrls: data.imagenesUrls
+          .map((img) => img.url.trim())
+          .filter((url) => url !== ""),
       });
       toast.success("Producto actualizado correctamente");
       router.push("/admin/productos");

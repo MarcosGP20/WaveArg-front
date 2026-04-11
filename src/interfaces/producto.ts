@@ -10,6 +10,11 @@ export interface Variante {
   imagenes?: string[];
 }
 
+export interface ImagenDetalle {
+  id: number;
+  url: string;
+}
+
 export interface Producto {
   id: number;
   nombre: string;
@@ -17,12 +22,14 @@ export interface Producto {
   descripcion: string;
   stockTotal: number;
   imagenes: string[];
+  imagenesDetalle?: ImagenDetalle[];
   variantes: Variante[];
 }
 
-export type CreateProductoDTO = Omit<
-  Producto,
-  "id" | "stockTotal" | "variantes"
-> & {
+export interface CreateProductoDTO {
+  nombre: string;
+  modelo: string;
+  descripcion: string;
+  imagenesUrls: string[];
   variantes: Omit<Variante, "id">[];
-};
+}
