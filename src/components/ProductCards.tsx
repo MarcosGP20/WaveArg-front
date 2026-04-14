@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { Battery } from "lucide-react";
 import { useCompare } from "@/context/CompareContext";
 import { Producto, Variante } from "@/lib/api";
 import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
@@ -35,6 +36,10 @@ export default function ProductCard({ product, className }: ProductCardProps) {
     product.imagenes?.[0] ??
     "/placeholder.png";
 
+  const stockColorActivo = product.variantes
+    .filter((v) => v.color === varianteActiva.color)
+    .reduce((sum, v) => sum + (v.stock ?? 0), 0);
+
   const seleccionado = compareList.some((p) => p.id === product.id);
   const atLimit = !seleccionado && compareList.length >= MAX_COMPARE;
 
@@ -66,6 +71,16 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             <span className="absolute top-2 right-2 bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
               Usado
             </span>
+          )}
+
+          {/* Urgency strip — solo cuando quedan pocas unidades */}
+          {stockColorActivo > 0 && stockColorActivo <= 3 && (
+            <div className="absolute bottom-0 inset-x-0 bg-amber-500/90 backdrop-blur-sm py-1.5 flex items-center justify-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-white text-[10px] font-bold uppercase tracking-wide">
+                {stockColorActivo === 1 ? "¡Queda 1 unidad!" : `¡Últimas ${stockColorActivo} unidades!`}
+              </span>
+            </div>
           )}
         </div>
       </Link>
@@ -116,8 +131,9 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             {varianteActiva.memoria}
           </span>
           {varianteActiva.esUsado && varianteActiva.detalleEstado && (
-            <span className="text-xs bg-amber-50 text-amber-600 px-2.5 py-0.5 rounded-full font-medium">
-              🔋 {varianteActiva.detalleEstado}
+            <span className="text-xs bg-amber-50 text-amber-600 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
+              <Battery size={11} strokeWidth={1.75} />
+              {varianteActiva.detalleEstado}
             </span>
           )}
         </div>

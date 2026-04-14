@@ -16,6 +16,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
   const [imgError, setImgError] = useState(false);
   // Precio desde la variante más barata disponible
   const variantesConStock = accesorio.variantes?.filter((v) => v.stock > 0) ?? [];
+  const stockTotal = accesorio.variantes?.reduce((sum, v) => sum + (v.stock ?? 0), 0) ?? 0;
   const varianteMasBarata: AccesorioVariante | undefined =
     variantesConStock.sort((a, b) => a.precio - b.precio)[0] ??
     accesorio.variantes?.[0];
@@ -89,6 +90,16 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
             <span className="absolute top-2 right-2 bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
               Usado
             </span>
+          )}
+
+          {/* Urgency strip */}
+          {stockTotal > 0 && stockTotal <= 3 && (
+            <div className="absolute bottom-0 inset-x-0 bg-amber-500/90 backdrop-blur-sm py-1.5 flex items-center justify-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-white text-[10px] font-bold uppercase tracking-wide">
+                {stockTotal === 1 ? "¡Queda 1 unidad!" : `¡Últimas ${stockTotal} unidades!`}
+              </span>
+            </div>
           )}
         </div>
       </Link>
