@@ -29,6 +29,8 @@ body {
   /* Brand colors */
   --color-color-principal: var(--color-principal);
   --color-color-principal-oscuro: var(--color-principal-oscuro);
+  --color-mp: #009EE3;
+  --color-mp-dark: #007ab8;
 
   /* Animations */
   --animate-fadeDown: fadeDown var(--duration-fast) ease-out forwards;
