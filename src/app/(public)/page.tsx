@@ -90,7 +90,9 @@ export default function HomePage() {
   useEffect(() => {
     getProductos()
       .then((productos) => setCarouselItems(productos.map(toCarouselItem)))
-      .catch((err) => console.error("Error cargando productos para carrusel:", err))
+      .catch((err) =>
+        console.error("Error cargando productos para carrusel:", err),
+      )
       .finally(() => setCarouselLoading(false));
   }, []);
 
@@ -110,7 +112,11 @@ export default function HomePage() {
     offset: ["start end", "end start"],
   });
   const scale2 = useTransform(scrollYProgress2, [0, 0.5, 1], [0.6, 1, 1.2]);
-  const opacity2 = useTransform(scrollYProgress2, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const opacity2 = useTransform(
+    scrollYProgress2,
+    [0, 0.2, 0.8, 1],
+    [0, 1, 1, 0],
+  );
 
   // 5. MODIFICA EL RETURN CON EL CONDICIONAL
   return (
@@ -122,7 +128,7 @@ export default function HomePage() {
         // Si 'isLoading' es false, muestra tu página normal
         <main>
           {/* Hero - Video */}
-          <section className="relative h-screen w-full">
+          <section className="relative h-screen w-full overflow-hidden">
             <video
               autoPlay
               muted
@@ -132,6 +138,38 @@ export default function HomePage() {
             >
               <source src={ASSET_PATHS.VIDEO} type="video/mp4" />
             </video>
+
+            {/* Overlay gradient + CTA */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end pb-16 px-6 md:px-16 lg:px-24">
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
+                className="max-w-2xl"
+              >
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/60 mb-3 font-medium">
+                  Tu próximo iPhone, al mejor precio
+                </p>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                  Tecnología Apple que <br className="hidden md:block" />{" "}
+                  acompaña tu ritmo.
+                </h1>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href="/products"
+                    className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Ver iPhones
+                  </Link>
+                  <Link
+                    href="/accesorios"
+                    className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-white/20 transition-colors duration-200"
+                  >
+                    Ver accesorios
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
           </section>
 
           {/* Carrusel de iPhones */}
