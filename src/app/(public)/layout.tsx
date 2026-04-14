@@ -4,6 +4,7 @@ import { CartProvider } from "@/context/CartContext";
 import { CompareProvider } from "@/context/CompareContext";
 import CompareBar from "@/components/CompareBar";
 import CartAbandonmentReminder from "@/components/CartAbandonmentReminder";
+import CartDrawer from "@/components/CartDrawer";
 
 export default function PublicLayout({
   children,
@@ -18,6 +19,7 @@ export default function PublicLayout({
           <main className="flex-1">{children}</main>
           <CompareBar />
           <CartAbandonmentReminder />
+          <CartDrawer />
           <Footer />
         </div>
       </CompareProvider>

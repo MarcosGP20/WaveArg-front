@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getProductoById, Producto, Variante } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
-import Toast from "@/components/ui/Toast";
 import Breadcrumb from "@/components/Breadcrumb";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
@@ -55,14 +54,13 @@ export default function ProductDetailContent({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
   const [product, setProduct] = useState<Producto | null>(null);
   const [selectedVariante, setSelectedVariante] = useState<Variante | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const [activeImage, setActiveImage] = useState<string | null>(null);
   const [fading, setFading] = useState(false);
 
@@ -145,12 +143,9 @@ export default function ProductDetailContent({
       image: activeImage ?? product.imagenes?.[0] ?? undefined,
       type: "producto",
     });
-    setShowToast(true);
+    openCart();
     setAdded(true);
-    setTimeout(() => {
-      setAdded(false);
-      setShowToast(false);
-    }, 1500);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   const isRealPhoto =
@@ -352,11 +347,6 @@ export default function ProductDetailContent({
         </div>
       </div>
 
-      <Toast
-        message="Producto agregado al carrito"
-        show={showToast}
-        onClose={() => setShowToast(false)}
-      />
     </div>
   );
 }
