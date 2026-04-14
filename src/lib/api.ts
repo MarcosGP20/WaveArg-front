@@ -315,6 +315,18 @@ export async function resetearContrasena(token: string, nuevaContrasena: string)
   });
 }
 
+export interface CambiarContrasenaDTO {
+  contrasenaActual: string;
+  nuevaContrasena: string;
+}
+
+export async function cambiarContrasena(data: CambiarContrasenaDTO) {
+  return fetchFromApi<{ message: string }>("/Auth/cambiar-contrasena", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 // Ejemplo de lo que necesitas para el catálogo
 // lib/api.ts
 export async function getProductos() {
@@ -403,8 +415,17 @@ export interface Usuario {
   fechaRegistro?: string;
 }
 
+export interface UpdateUsuarioDTO {
+  nombre: string;
+}
+
 export const UsuariosService = {
   getAll: () => fetchFromApi<Usuario[]>("/Usuarios"),
+  updateMe: (id: string | number, data: UpdateUsuarioDTO) =>
+    fetchFromApi<Usuario>(`/Usuarios/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
 };
 
 // --- MercadoPago ---

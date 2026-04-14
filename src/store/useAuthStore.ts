@@ -8,6 +8,7 @@ interface AuthState {
   user: User | null;
   isLoggedIn: boolean;
   setAuth: (token: string, user: User) => void;
+  updateUser: (partial: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -27,6 +28,10 @@ export const useAuthStore = create<AuthState>()(
         }
         return set({ token, user, isLoggedIn: true });
       },
+      updateUser: (partial: Partial<User>) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...partial } : state.user,
+        })),
       logout: () => {
         if (typeof document !== "undefined") {
           const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";

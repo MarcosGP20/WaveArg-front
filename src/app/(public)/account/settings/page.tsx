@@ -3,15 +3,24 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Bell, Shield, Trash2, ChevronRight, Loader2 } from "lucide-react";
+import { Bell, Shield, Trash2, ChevronRight, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { cambiarContrasena } from "@/lib/api";
+
+interface CambiarContrasenaForm {
+  contrasenaActual: string;
+  nuevaContrasena: string;
+  confirmarContrasena: string;
+}
 
 export default function SettingsPage() {
   const { token, user, logout } = useAuthStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -37,7 +46,6 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
         <Link href="/account" className="hover:text-color-principal transition-colors">
           Mi cuenta
@@ -49,15 +57,13 @@ export default function SettingsPage() {
       <h1 className="text-3xl font-bold text-color-principal mb-8">Ajustes</h1>
 
       <div className="space-y-4">
-        {/* Sección: Notificaciones */}
+        {/* Notificaciones */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-50 rounded-xl">
               <Bell className="text-color-principal" size={20} />
             </div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              Notificaciones
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-800">Notificaciones</h2>
           </div>
 
           <div className="space-y-4">
@@ -74,7 +80,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Sección: Seguridad */}
+        {/* Seguridad */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-green-50 rounded-xl">
@@ -83,31 +89,51 @@ export default function SettingsPage() {
             <h2 className="text-lg font-semibold text-gray-800">Seguridad</h2>
           </div>
 
-          <div className="space-y-4">
-            <SettingRow
-              label="Cambiar contraseña"
-              description="Actualizá tu contraseña periódicamente para mayor seguridad."
-              soon
-            />
+          <div className="py-3 border-t border-gray-50">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Cambiar contraseña</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Actualizá tu contraseña periódicamente para mayor seguridad.
+                </p>
+              </div>
+              {!showPasswordForm && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-full shrink-0"
+                  onClick={() => setShowPasswordForm(true)}
+                >
+                  Cambiar
+                </Button>
+              )}
+            </div>
+
+            {showPasswordForm && (
+              <PasswordForm
+                onClose={() => setShowPasswordForm(false)}
+                onSuccess={() => {
+                  setShowPasswordForm(false);
+                  logout();
+                  router.push("/login");
+                }}
+              />
+            )}
           </div>
         </div>
 
-        {/* Sección: Zona de peligro */}
+        {/* Zona de peligro */}
         <div className="bg-white rounded-2xl border border-red-100 shadow-sm p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-red-50 rounded-xl">
               <Trash2 className="text-red-500" size={20} />
             </div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              Zona de peligro
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-800">Zona de peligro</h2>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <p className="font-medium text-gray-700 text-sm">
-                Eliminar cuenta
-              </p>
+              <p className="font-medium text-gray-700 text-sm">Eliminar cuenta</p>
               <p className="text-xs text-gray-400 mt-0.5">
                 Esta acción es permanente e irreversible.
               </p>
@@ -124,7 +150,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Volver al perfil */}
       <div className="mt-8">
         <Link
           href="/account/profile"
@@ -137,7 +162,116 @@ export default function SettingsPage() {
   );
 }
 
-// Componente auxiliar para filas de ajuste con badge "Próximamente"
+function PasswordForm({
+  onClose,
+  onSuccess,
+}: {
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<CambiarContrasenaForm>();
+
+  const nuevaContrasena = watch("nuevaContrasena");
+
+  const onSubmit = async (data: CambiarContrasenaForm) => {
+    try {
+      await cambiarContrasena({
+        contrasenaActual: data.contrasenaActual,
+        nuevaContrasena: data.nuevaContrasena,
+      });
+      toast.success("Contraseña actualizada. Iniciá sesión nuevamente.");
+      onSuccess();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "No se pudo cambiar la contraseña";
+      toast.error(message);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
+      <div>
+        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+          Contraseña actual
+        </label>
+        <input
+          type="password"
+          {...register("contrasenaActual", { required: "Requerido" })}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          autoFocus
+        />
+        {errors.contrasenaActual && (
+          <p className="text-xs text-red-500 mt-1">{errors.contrasenaActual.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+          Nueva contraseña
+        </label>
+        <input
+          type="password"
+          {...register("nuevaContrasena", {
+            required: "Requerido",
+            minLength: { value: 6, message: "Mínimo 6 caracteres" },
+          })}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+        />
+        {errors.nuevaContrasena && (
+          <p className="text-xs text-red-500 mt-1">{errors.nuevaContrasena.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+          Confirmar nueva contraseña
+        </label>
+        <input
+          type="password"
+          {...register("confirmarContrasena", {
+            required: "Requerido",
+            validate: (v) => v === nuevaContrasena || "Las contraseñas no coinciden",
+          })}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+        />
+        {errors.confirmarContrasena && (
+          <p className="text-xs text-red-500 mt-1">{errors.confirmarContrasena.message}</p>
+        )}
+      </div>
+
+      <div className="flex justify-end gap-2 pt-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="rounded-full gap-2 text-gray-500"
+          onClick={onClose}
+          disabled={isSubmitting}
+        >
+          <X size={14} /> Cancelar
+        </Button>
+        <Button
+          type="submit"
+          size="sm"
+          className="rounded-full bg-color-principal text-white"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <><Loader2 size={14} className="animate-spin mr-1" /> Guardando...</>
+          ) : (
+            "Guardar"
+          )}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 function SettingRow({
   label,
   description,

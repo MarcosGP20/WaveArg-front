@@ -1,10 +1,10 @@
 // interfaces/auth.interface.ts
 
 export interface User {
-  id: string; // .NET suele usar strings para IDs si son GUIDs
+  id: string;
   email: string;
-  rol: string; // e.g., "Admin", "User"
-  // Agrega aquí si el login devuelve nombre u otros campos
+  rol: string;
+  nombre?: string | null;
 }
 
 export interface AuthResponse {
