@@ -32,6 +32,9 @@ body {
 
   /* Animations */
   --animate-fadeDown: fadeDown var(--duration-fast) ease-out forwards;
+  --animate-slideDown: slideDown 0.2s ease-out forwards;
+  --animate-scaleIn: scaleIn 0.15s ease-out forwards;
+  --animate-fadeUp: fadeUp 0.4s ease-out both;
   --animate-cartBump: cartBump var(--duration-slow) ease-out forwards;
   --animate-badgePop: badgePop var(--duration-base) ease-out forwards;
   --animate-bounce-once: bounceOnce var(--duration-slow) ease-out forwards;
@@ -168,6 +171,21 @@ body {
   0%   { transform: scale(0.5); opacity: 0; }
   70%  { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bounceOnce {

@@ -163,8 +163,14 @@ export default function AccesoriosContent() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <AccesorioCard key={product.id} accesorio={product} />
+              {filteredProducts.map((product, idx) => (
+                <div
+                  key={product.id}
+                  className="animate-fadeUp"
+                  style={{ animationDelay: `${Math.min(idx * 55, 330)}ms` }}
+                >
+                  <AccesorioCard accesorio={product} />
+                </div>
               ))}
             </div>
           )}

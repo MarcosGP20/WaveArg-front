@@ -187,8 +187,14 @@ export default function ProductsContent() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                  {filteredProducts.map((product, idx) => (
+                    <div
+                      key={product.id}
+                      className="animate-fadeUp"
+                      style={{ animationDelay: `${Math.min(idx * 55, 330)}ms` }}
+                    >
+                      <ProductCard product={product} />
+                    </div>
                   ))}
                 </div>
               )}
@@ -252,8 +258,14 @@ export default function ProductsContent() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredAccesorios.map((acc) => (
-                    <AccesorioCard key={acc.id} accesorio={acc} />
+                  {filteredAccesorios.map((acc, idx) => (
+                    <div
+                      key={acc.id}
+                      className="animate-fadeUp"
+                      style={{ animationDelay: `${Math.min(idx * 55, 330)}ms` }}
+                    >
+                      <AccesorioCard accesorio={acc} />
+                    </div>
                   ))}
                 </div>
               )}

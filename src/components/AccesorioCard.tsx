@@ -58,7 +58,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
 
   return (
     <div
-      className={`rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col bg-white group overflow-hidden ${className}`}
+      className={`rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col bg-white group overflow-hidden ${className}`}
     >
       {/* ── ZONA DE IMAGEN ── */}
       <Link href={`/accesorios/${accesorio.id}`} className="block relative">

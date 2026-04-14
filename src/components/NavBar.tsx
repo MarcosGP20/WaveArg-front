@@ -418,7 +418,7 @@ export default function NavBar() {
 
               {/* DROPDOWN MENU */}
               {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50 animate-scaleIn origin-top-right">
                   <div className="px-4 py-2 border-b border-gray-100">
                     <p className="text-xs text-gray-500 uppercase tracking-wide">
                       Cuenta
@@ -485,7 +485,7 @@ export default function NavBar() {
 
       {/* MENÚ MÓVIL DESPLEGABLE */}
       {menuOpen && (
-        <div id="mobile-menu" className="flex flex-col gap-2 mt-3 md:hidden px-2 pb-2">
+        <div id="mobile-menu" className="flex flex-col gap-2 mt-3 md:hidden px-2 pb-2 animate-slideDown">
           {mobileLinks}
         </div>
       )}
