@@ -171,7 +171,7 @@ export default function HomePage() {
           {/* Sección productos (Con animación 1) */}
           <section
             ref={containerRef}
-            className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4"
+            className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4 overflow-hidden"
           >
             <motion.div style={{ scale, opacity }} className="relative w-full">
               {/* ...el resto de tu div de producto... */}
@@ -204,30 +204,48 @@ export default function HomePage() {
             ref={containerRef2}
             className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20 overflow-hidden"
           >
-            <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+            <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               {/* --- LADO IZQUIERDO (Imágenes) --- */}
               <motion.div
                 style={{ scale: scale2, opacity: opacity2 }}
                 className="relative origin-left"
               >
-                <div className="absolute top-0 left-0 w-64 h-64 md:w-80 md:h-80">
+                {/* Mobile: flex side-by-side */}
+                <div className="flex lg:hidden gap-4 justify-center items-end">
                   <img
                     src={ASSET_PATHS.TRIPODE_IMG}
                     alt="Creador con trípode"
-                    className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
+                    className="w-1/2 h-48 object-cover rounded-[3rem] shadow-xl"
                     loading="lazy"
                   />
-                </div>
-                <div className="absolute top-20 right-10 md:top-40 w-56 h-56 md:w-72 md:h-72 z-10">
                   <img
                     src={ASSET_PATHS.MIC_IMG}
                     alt="Micrófono profesional"
-                    className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
+                    className="w-1/2 h-40 object-cover rounded-[3rem] shadow-xl"
                     loading="lazy"
                   />
                 </div>
-                {/* Espaciador */}
-                <div className="w-full h-96 md:h-[500px]"></div>
+
+                {/* Desktop: absolute overlapping layout */}
+                <div className="hidden lg:block">
+                  <div className="absolute top-0 left-0 w-80 h-80">
+                    <img
+                      src={ASSET_PATHS.TRIPODE_IMG}
+                      alt="Creador con trípode"
+                      className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute top-40 right-10 w-72 h-72 z-10">
+                    <img
+                      src={ASSET_PATHS.MIC_IMG}
+                      alt="Micrófono profesional"
+                      className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="w-full h-[500px]"></div>
+                </div>
               </motion.div>
 
               {/* --- LADO DERECHO (Texto) --- */}

@@ -35,7 +35,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/iso3.svg" />
       </head>
-      <body className={`${atkinson.variable} ${workSans.variable}`}>
+      <body className={`${atkinson.variable} ${workSans.variable} overflow-x-hidden`}>
         <GoogleProvider>
           {children}
         </GoogleProvider>

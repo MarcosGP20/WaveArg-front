@@ -8,14 +8,14 @@ import {
 export default function FAQSection() {
   return (
     <>
-      <h2 className="mt-14 text-3xl text-color-principal font-bold text-center">
+      <h2 className="mt-14 text-3xl text-color-principal font-bold text-center px-4">
         Preguntas frecuentes
       </h2>
-      <div className="w-full flex justify-center items-center py-10">
+      <div className="w-full flex justify-center items-center py-10 px-4">
         <Accordion
           type="single"
           collapsible
-          className=" w-full max-w-3xl  "
+          className="w-full max-w-3xl"
           defaultValue="item-1"
         >
           <AccordionItem
