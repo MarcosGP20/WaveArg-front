@@ -2,11 +2,22 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-/** "iphones"  → muestra Condición + Memoria + Modelo  (página /products)
- *  "accesorios" → muestra solo Condición               (página /accesorios) */
+/** "iphones"  → muestra Precio + Condición + Memoria + Modelo  (página /products)
+ *  "accesorios" → muestra Precio + Condición                   (página /accesorios) */
 type FilterMode = "iphones" | "accesorios";
 
-export default function FilterSidebar({ mode = "iphones" }: { mode?: FilterMode }) {
+interface FilterSidebarProps {
+  mode?: FilterMode;
+  priceRange?: { min: number; max: number };
+  /** Cuando se renderiza dentro de un bottom sheet, omite el card wrapper */
+  flat?: boolean;
+}
+
+export default function FilterSidebar({
+  mode = "iphones",
+  priceRange,
+  flat = false,
+}: FilterSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,8 +40,25 @@ export default function FilterSidebar({ mode = "iphones" }: { mode?: FilterMode 
 
   const hasActiveFilters = searchParams.toString() !== "";
 
-  return (
-    <aside className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4">
+  // Precio
+  const currentPrecioMin = priceRange
+    ? Number(searchParams.get("precioMin") ?? priceRange.min)
+    : null;
+  const currentPrecioMax = priceRange
+    ? Number(searchParams.get("precioMax") ?? priceRange.max)
+    : null;
+
+  const handlePriceChange = (key: "precioMin" | "precioMax", val: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const isDefault =
+      (key === "precioMin" && val === priceRange!.min) ||
+      (key === "precioMax" && val === priceRange!.max);
+    isDefault ? params.delete(key) : params.set(key, String(val));
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  const content = (
+    <>
       <div className="mb-6 flex justify-between items-center">
         <h2 className="font-bold text-xl text-color-principal dark:text-white">Filtros</h2>
         {hasActiveFilters && (
@@ -42,6 +70,23 @@ export default function FilterSidebar({ mode = "iphones" }: { mode?: FilterMode 
           </button>
         )}
       </div>
+
+      {/* Precio */}
+      {priceRange && currentPrecioMin !== null && currentPrecioMax !== null && (
+        <>
+          <FilterSection title="Precio">
+            <PriceRangeSlider
+              min={priceRange.min}
+              max={priceRange.max}
+              low={currentPrecioMin}
+              high={currentPrecioMax}
+              onChangeLow={(v) => handlePriceChange("precioMin", v)}
+              onChangeHigh={(v) => handlePriceChange("precioMax", v)}
+            />
+          </FilterSection>
+          <div className="border-t border-gray-100 dark:border-neutral-800 my-4" />
+        </>
+      )}
 
       {/* Condición — aplica a ambos modos */}
       <FilterSection title="Condición">
@@ -91,11 +136,95 @@ export default function FilterSidebar({ mode = "iphones" }: { mode?: FilterMode 
           </FilterSection>
         </>
       )}
+    </>
+  );
+
+  if (flat) return <div>{content}</div>;
+
+  return (
+    <aside className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4">
+      {content}
     </aside>
   );
 }
 
-// ─── componentes auxiliares ───────────────────────────────────────────────────
+// ─── PriceRangeSlider ─────────────────────────────────────────────────────────
+
+function PriceRangeSlider({
+  min,
+  max,
+  low,
+  high,
+  onChangeLow,
+  onChangeHigh,
+}: {
+  min: number;
+  max: number;
+  low: number;
+  high: number;
+  onChangeLow: (v: number) => void;
+  onChangeHigh: (v: number) => void;
+}) {
+  const range = max - min || 1;
+  const lowPct = ((low - min) / range) * 100;
+  const highPct = ((high - min) / range) * 100;
+  const step = Math.max(1000, Math.round((max - min) / 100 / 1000) * 1000);
+
+  return (
+    <div className="pt-1">
+      <div className="flex justify-between text-xs font-medium text-gray-600 mb-4">
+        <span>${low.toLocaleString("es-AR")}</span>
+        <span>${high.toLocaleString("es-AR")}</span>
+      </div>
+
+      <div className="relative h-5 flex items-center">
+        {/* Track background */}
+        <div className="absolute inset-x-0 h-1.5 bg-gray-200 rounded-full" />
+        {/* Active fill */}
+        <div
+          className="absolute h-1.5 bg-color-principal rounded-full"
+          style={{ left: `${lowPct}%`, right: `${100 - highPct}%` }}
+        />
+
+        {/* Min input — invisible but interactive */}
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={low}
+          onChange={(e) => onChangeLow(Math.min(Number(e.target.value), high - step))}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          style={{ zIndex: lowPct > 90 ? 5 : 3 }}
+        />
+        {/* Max input — invisible but interactive */}
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={high}
+          onChange={(e) => onChangeHigh(Math.max(Number(e.target.value), low + step))}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          style={{ zIndex: 4 }}
+        />
+
+        {/* Visual thumb — min */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none"
+          style={{ left: `${lowPct}%` }}
+        />
+        {/* Visual thumb — max */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none"
+          style={{ left: `${highPct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── FilterSection ────────────────────────────────────────────────────────────
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -105,6 +234,8 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
     </div>
   );
 }
+
+// ─── FilterOption ─────────────────────────────────────────────────────────────
 
 function FilterOption({
   label,

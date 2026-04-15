@@ -28,9 +28,18 @@ export default function AccesoriosContent() {
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Rango de precios derivado de los accesorios cargados
+  const priceRange = useMemo(() => {
+    const all = products.flatMap(
+      (p) => p.variantes?.map((v) => v.precio).filter((p) => p > 0) ?? []
+    );
+    if (all.length === 0) return undefined;
+    return { min: Math.min(...all), max: Math.max(...all) };
+  }, [products]);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    for (const key of ["estado", "memoria", "modelo", "familia"]) {
+    for (const key of ["estado", "memoria", "modelo", "familia", "precioMin", "precioMax"]) {
       if (searchParams.get(key)) count++;
     }
     return count;
@@ -87,6 +96,17 @@ export default function AccesoriosContent() {
         if (!matchMemoria) return false;
       }
 
+      const precioMin = searchParams.get("precioMin") ? Number(searchParams.get("precioMin")) : null;
+      const precioMax = searchParams.get("precioMax") ? Number(searchParams.get("precioMax")) : null;
+      if (precioMin !== null || precioMax !== null) {
+        const matchPrecio = product.variantes?.some((v) => {
+          if (precioMin !== null && v.precio < precioMin) return false;
+          if (precioMax !== null && v.precio > precioMax) return false;
+          return true;
+        });
+        if (!matchPrecio) return false;
+      }
+
       return true;
     });
   }, [products, searchParams]);
@@ -137,14 +157,45 @@ export default function AccesoriosContent() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        <aside
-          id="filter-sidebar"
-          className={`w-full lg:w-64 lg:block ${
-            showFilters ? "block" : "hidden"
-          }`}
-        >
-          <FilterSidebar mode="accesorios" />
+        {/* Sidebar — solo desktop */}
+        <aside className="hidden lg:block w-64 flex-shrink-0">
+          <FilterSidebar mode="accesorios" priceRange={priceRange} />
         </aside>
+
+        {/* Bottom sheet — solo mobile */}
+        {showFilters && (
+          <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowFilters(false)}
+            />
+            <div className="relative bg-white rounded-t-3xl max-h-[88vh] flex flex-col animate-slideUp">
+              <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 shrink-0">
+                <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-10 h-1 bg-gray-200 rounded-full" />
+                <span className="font-bold text-lg text-gray-900 mt-1">Filtros</span>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="overflow-y-auto flex-1 px-5 py-4">
+                <FilterSidebar mode="accesorios" priceRange={priceRange} flat />
+              </div>
+              <div className="px-5 py-4 border-t border-gray-100 shrink-0">
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="w-full bg-color-principal text-white py-3 rounded-full font-semibold text-sm hover:bg-color-principal-oscuro transition-colors"
+                >
+                  {activeFilterCount > 0
+                    ? `Aplicar filtros (${activeFilterCount})`
+                    : "Aplicar filtros"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <main className="flex-1">
           {filteredProducts.length === 0 ? (
