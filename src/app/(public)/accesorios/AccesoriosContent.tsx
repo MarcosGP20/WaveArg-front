@@ -2,12 +2,23 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { AccesoriosService } from "@/lib/api";
 import { Accesorio } from "@/interfaces/accesorio";
 import AccesorioCard from "@/components/AccesorioCard";
 import FilterSidebar from "@/components/FilterSide";
 import { SlidersHorizontal, X, Package } from "lucide-react";
 import Link from "next/link";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
+};
+
+const cardGrid = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } },
+};
 
 function toSlug(name: string): string {
   return name
@@ -113,10 +124,44 @@ export default function AccesoriosContent() {
 
   if (loading)
     return (
-      <div className="p-20 text-center">
-        <div className="inline-flex flex-col items-center gap-3 text-gray-500">
-          <div className="w-8 h-8 border-4 border-color-principal border-t-transparent rounded-full animate-spin" />
-          <span className="font-medium text-sm">Conectando con el servidor...</span>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div className="space-y-2">
+            <div className="h-8 w-48 bg-gray-200 rounded-full animate-pulse" />
+            <div className="h-4 w-32 bg-gray-100 rounded-full animate-pulse" />
+          </div>
+          <div className="h-9 w-28 bg-gray-200 rounded-full animate-pulse lg:hidden" />
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar skeleton */}
+          <div className="hidden lg:flex flex-col gap-3 w-64 flex-shrink-0">
+            <div className="h-5 w-20 bg-gray-200 rounded-full animate-pulse" />
+            {[75, 60, 80, 55, 70, 65].map((w, i) => (
+              <div key={i} className="h-4 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
+            ))}
+            <div className="h-px bg-gray-100 my-2" />
+            <div className="h-5 w-24 bg-gray-200 rounded-full animate-pulse" />
+            {[65, 50, 72, 58].map((w, i) => (
+              <div key={i} className="h-4 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+
+          {/* Cards skeleton */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100 flex flex-col animate-pulse">
+                <div className="h-52 bg-gray-200" />
+                <div className="p-5 flex flex-col gap-3">
+                  <div className="h-4 bg-gray-200 rounded-full w-2/3 mx-auto" />
+                  <div className="h-3 bg-gray-100 rounded-full w-1/2 mx-auto" />
+                  <div className="h-3 bg-gray-100 rounded-full w-3/4 mx-auto" />
+                  <div className="h-7 bg-gray-200 rounded-full w-1/3 mx-auto" />
+                  <div className="h-10 bg-gray-200 rounded-full mt-1" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -128,12 +173,25 @@ export default function AccesoriosContent() {
       {/* Cabecera: título + botón filtros (mobile) */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-color-principal">Nuestro Catálogo</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <motion.h1
+            className="text-3xl font-bold text-color-principal"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+          >
+            Nuestro Catálogo
+          </motion.h1>
+          <motion.p
+            className="text-gray-500 text-sm mt-1"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
             {filteredProducts.length === products.length
               ? `${products.length} accesorios disponibles`
               : `${filteredProducts.length} de ${products.length} accesorios`}
-          </p>
+          </motion.p>
         </div>
 
         <button
@@ -213,17 +271,18 @@ export default function AccesoriosContent() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredProducts.map((product, idx) => (
-                <div
-                  key={product.id}
-                  className="animate-fadeUp"
-                  style={{ animationDelay: `${Math.min(idx * 55, 330)}ms` }}
-                >
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+              variants={cardGrid}
+              initial="hidden"
+              animate="visible"
+            >
+              {filteredProducts.map((product) => (
+                <motion.div key={product.id} variants={fadeUp}>
                   <AccesorioCard accesorio={product} />
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </main>
       </div>
