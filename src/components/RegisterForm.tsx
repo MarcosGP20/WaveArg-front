@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { GoogleLogin } from "@react-oauth/google";
+import dynamic from "next/dynamic";
 import { useAuthStore } from "@/store/useAuthStore";
+
+const GoogleLoginButton = dynamic(() => import("@/components/GoogleLoginButton"), { ssr: false });
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 
 export function RegisterForm() {
@@ -181,14 +183,10 @@ export function RegisterForm() {
       </div>
 
       <div className="flex justify-center">
-        <GoogleLogin
+        <GoogleLoginButton
           onSuccess={handleGoogleSuccess}
           onError={() => setServerError("Error al conectar con Google. Intentá de nuevo.")}
           text="signup_with"
-          shape="rectangular"
-          theme="outline"
-          size="large"
-          width="350"
         />
       </div>
 

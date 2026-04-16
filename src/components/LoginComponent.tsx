@@ -12,7 +12,9 @@ import { loginUser, loginWithGoogle } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
-import { GoogleLogin } from "@react-oauth/google";
+import dynamic from "next/dynamic";
+
+const GoogleLoginButton = dynamic(() => import("@/components/GoogleLoginButton"), { ssr: false });
 
 export function LoginForm() {
   const [serverError, setServerError] = useState("");
@@ -201,14 +203,10 @@ export function LoginForm() {
       </div>
 
       <div className="flex justify-center">
-        <GoogleLogin
+        <GoogleLoginButton
           onSuccess={handleGoogleSuccess}
           onError={() => setServerError("Error al conectar con Google. Intentá de nuevo.")}
           text="continue_with"
-          shape="rectangular"
-          theme="outline"
-          size="large"
-          width="350"
         />
       </div>
 
