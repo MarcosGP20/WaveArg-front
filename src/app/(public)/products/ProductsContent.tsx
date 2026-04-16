@@ -42,6 +42,12 @@ export default function ProductsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [featuredId, setFeaturedId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("wave-featured-product-id");
+    if (stored) setFeaturedId(Number(stored));
+  }, []);
 
   // Filtro de categoría para accesorios (en la URL como ?cat=0,1,2)
   const catParam = searchParams.get("cat");
@@ -311,7 +317,7 @@ export default function ProductsContent() {
                 >
                   {filteredProducts.map((product) => (
                     <motion.div key={product.id} variants={fadeUp}>
-                      <ProductCard product={product} />
+                      <ProductCard product={product} featured={featuredId === product.id} />
                     </motion.div>
                   ))}
                 </motion.div>

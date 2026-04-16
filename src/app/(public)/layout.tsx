@@ -5,6 +5,8 @@ import { CompareProvider } from "@/context/CompareContext";
 import CompareBar from "@/components/CompareBar";
 import CartAbandonmentReminder from "@/components/CartAbandonmentReminder";
 import CartDrawer from "@/components/CartDrawer";
+import AdminFloatingButton from "@/components/AdminFloatingButton";
+import { GoogleProvider } from "@/components/GoogleProvider";
 
 export default function PublicLayout({
   children,
@@ -12,6 +14,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <GoogleProvider>
     <CartProvider>
       <CompareProvider>
         <div className="flex min-h-screen flex-col">
@@ -20,9 +23,11 @@ export default function PublicLayout({
           <CompareBar />
           <CartAbandonmentReminder />
           <CartDrawer />
+          <AdminFloatingButton />
           <Footer />
         </div>
       </CompareProvider>
     </CartProvider>
+    </GoogleProvider>
   );
 }

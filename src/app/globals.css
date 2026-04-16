@@ -204,3 +204,11 @@ body {
 .animate-slideUp {
   animation: slideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+@keyframes border-beam-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-border-beam {
+  animation: border-beam-spin 4s linear infinite;
+}

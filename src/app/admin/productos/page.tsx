@@ -4,8 +4,10 @@ import { useEffect, useState, useCallback } from "react";
 import { ProductService, Producto } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Trash2, Edit3, Image as ImageIcon, RefreshCw, AlertTriangle, Loader2, ChevronLeft } from "lucide-react";
+import { Plus, Trash2, Edit3, Image as ImageIcon, RefreshCw, AlertTriangle, Loader2, ChevronLeft, Star } from "lucide-react";
 import { toast } from "sonner";
+
+const FEATURED_KEY = "wave-featured-product-id";
 
 export default function InventarioPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -13,6 +15,24 @@ export default function InventarioPage() {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [featuredId, setFeaturedId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(FEATURED_KEY);
+    if (stored) setFeaturedId(Number(stored));
+  }, []);
+
+  const toggleFeatured = (id: number) => {
+    if (featuredId === id) {
+      localStorage.removeItem(FEATURED_KEY);
+      setFeaturedId(null);
+      toast.success("Producto destacado removido");
+    } else {
+      localStorage.setItem(FEATURED_KEY, String(id));
+      setFeaturedId(id);
+      toast.success("Producto marcado como destacado");
+    }
+  };
 
   const cargarProductos = useCallback(async () => {
     setLoading(true);
@@ -124,6 +144,7 @@ export default function InventarioPage() {
               <th className="px-6 py-4">Producto</th>
               <th className="px-6 py-4">Modelo</th>
               <th className="px-6 py-4">Stock Total</th>
+              <th className="px-6 py-4 text-center">Destacado</th>
               <th className="px-6 py-4 text-center">Acciones</th>
             </tr>
           </thead>
@@ -170,6 +191,23 @@ export default function InventarioPage() {
                     >
                       {stockCalculado} unidades
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <button
+                      onClick={() => toggleFeatured(p.id)}
+                      title={featuredId === p.id ? "Quitar destacado" : "Marcar como destacado"}
+                      className={`p-1.5 rounded-full transition-colors ${
+                        featuredId === p.id
+                          ? "text-amber-400 hover:text-amber-500"
+                          : "text-gray-300 hover:text-amber-400"
+                      }`}
+                    >
+                      <Star
+                        size={18}
+                        strokeWidth={1.75}
+                        fill={featuredId === p.id ? "currentColor" : "none"}
+                      />
+                    </button>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center gap-2">

@@ -11,11 +11,12 @@ import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
 type ProductCardProps = {
   product: Producto;
   className?: string;
+  featured?: boolean;
 };
 
 const MAX_COMPARE = 3;
 
-export default function ProductCard({ product, className }: ProductCardProps) {
+export default function ProductCard({ product, className, featured = false }: ProductCardProps) {
   const { toggleCompare, compareList } = useCompare();
 
   // Una variante representante por cada color único
@@ -52,9 +53,9 @@ export default function ProductCard({ product, className }: ProductCardProps) {
     setVarianteActiva(match);
   };
 
-  return (
+  const card = (
     <div
-      className={`rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col bg-white group overflow-hidden ${className}`}
+      className={`rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col bg-white group overflow-hidden ${featured ? "" : className}`}
     >
       {/* ── ZONA DE IMAGEN ── */}
       <Link href={`/products/${product.id}`} className="block relative">
@@ -172,6 +173,28 @@ export default function ProductCard({ product, className }: ProductCardProps) {
             Máximo {MAX_COMPARE} modelos
           </span>
         )}
+      </div>
+    </div>
+  );
+
+  if (!featured) return card;
+
+  return (
+    <div className={`relative rounded-2xl p-[1.5px] overflow-hidden ${className}`}>
+      {/* Beam giratorio — conic-gradient que rota detrás del card */}
+      <div
+        className="animate-border-beam absolute inset-[-100%] z-0"
+        style={{
+          background: "conic-gradient(transparent 270deg, #60a5fa 285deg, #05467D 295deg, transparent 310deg)",
+        }}
+      />
+      {/* Badge destacado */}
+      <div className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-[#05467D] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse" />
+        Destacado
+      </div>
+      <div className="relative z-10 rounded-[14px] overflow-hidden">
+        {card}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import FAQSection from "../../components/FAQSection";
 import VideoLoader from "../../components/VideoLoader";
 import { LazyVideoFacade } from "../../components/VideoPlayer";
 import IPhoneCarousel, { CarouselItem } from "../../components/IPhoneCarousel";
+import BentoCreadores from "../../components/BentoCreadores";
 
 // API
 import { getProductos } from "../../lib/api";
@@ -63,11 +64,7 @@ function toCarouselItem(p: Producto): CarouselItem {
 // Rutas de recursos
 const ASSET_PATHS = {
   VIDEO: "/wave-video-portada.mp4",
-  VIDEO_TEST: "/wave-testimonios.mp4",
   IPHONE_IMG: "/iphone-div-landing.jpg",
-  CREATORS_IMG: "/wave-imagen-web.png",
-  MIC_IMG: "mic.jpg",
-  TRIPODE_IMG: "tripode.jpg",
 };
 
 export default function HomePage() {
@@ -104,19 +101,6 @@ export default function HomePage() {
   });
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.6, 1, 1.2]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-
-  // Ref independiente para la segunda sección animada (creadores)
-  const containerRef2 = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: scrollYProgress2 } = useScroll({
-    target: containerRef2,
-    offset: ["start end", "end start"],
-  });
-  const scale2 = useTransform(scrollYProgress2, [0, 0.5, 1], [0.6, 1, 1.2]);
-  const opacity2 = useTransform(
-    scrollYProgress2,
-    [0, 0.2, 0.8, 1],
-    [0, 1, 1, 0],
-  );
 
   // 5. MODIFICA EL RETURN CON EL CONDICIONAL
   return (
@@ -238,77 +222,7 @@ export default function HomePage() {
             </motion.div>
           </section>
 
-          <section
-            ref={containerRef2}
-            className="relative min-h-screen bg-gray-50 flex items-center justify-center py-20 overflow-hidden"
-          >
-            <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-              {/* --- LADO IZQUIERDO (Imágenes) --- */}
-              <motion.div
-                style={{ scale: scale2, opacity: opacity2 }}
-                className="relative origin-left"
-              >
-                {/* Mobile: flex side-by-side */}
-                <div className="flex lg:hidden gap-4 justify-center items-end">
-                  <img
-                    src={ASSET_PATHS.TRIPODE_IMG}
-                    alt="Creador con trípode"
-                    className="w-1/2 h-48 object-cover rounded-[3rem] shadow-xl"
-                    loading="lazy"
-                  />
-                  <img
-                    src={ASSET_PATHS.MIC_IMG}
-                    alt="Micrófono profesional"
-                    className="w-1/2 h-40 object-cover rounded-[3rem] shadow-xl"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* Desktop: absolute overlapping layout */}
-                <div className="hidden lg:block">
-                  <div className="absolute top-0 left-0 w-80 h-80">
-                    <img
-                      src={ASSET_PATHS.TRIPODE_IMG}
-                      alt="Creador con trípode"
-                      className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="absolute top-40 right-10 w-72 h-72 z-10">
-                    <img
-                      src={ASSET_PATHS.MIC_IMG}
-                      alt="Micrófono profesional"
-                      className="w-full h-[300px] object-cover rounded-[85px] shadow-2xl"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="w-full h-[500px]"></div>
-                </div>
-              </motion.div>
-
-              {/* --- LADO DERECHO (Texto) --- */}
-              <motion.div
-                style={{ scale: scale2, opacity: opacity2 }}
-                className="space-y-8 origin-right"
-              >
-                <div>
-                  <h2 className="text-4xl md:text-4xl font-bold text-color-principal mb-6">
-                    Guía para creadores
-                  </h2>
-                  <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-8">
-                    Descubrí qué dispositivos y herramientas te ayudan a crear
-                    contenido de calidad y potenciar tus ideas. Tips prácticos,
-                    recomendaciones reales y asesoría pensada para creadores.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-color-principal text-white px-8 py-4 rounded-full hover:bg-color-principal-oscuro transition-colors text-lg font-medium cursor-pointer">
-                    <Link href="/creadores">Ver la guía</Link>
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          </section>
+          <BentoCreadores />
           <CommunitySection />
           <LazyVideoFacade
             mode="testimonial"
