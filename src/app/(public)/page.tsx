@@ -226,7 +226,7 @@ export default function HomePage() {
           <CommunitySection />
           <LazyVideoFacade
             mode="testimonial"
-            videoUrlMp4="/wave-testimonios.mp4"
+            videoUrlMp4="/Wave-testimonios.mp4"
             posterUrl="/posterURL.webp"
           />
           <FAQSection />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import type { FC } from "react";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
@@ -19,11 +19,19 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(mode === "creator");
   const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true); // autoPlay arranca en true
+  const [isPlaying, setIsPlaying] = useState(false);
   const [showIcon, setShowIcon] = useState(false);   // controla la animación del ícono central
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const iconTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Fix: React no setea correctamente el atributo muted en <video> via JSX.
+  // Setearlo directo en el DOM evita que el browser bloquee el autoplay.
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isLoaded, isMuted]);
 
   // Muestra el ícono central brevemente (estilo YouTube)
   const flashIcon = useCallback(() => {
@@ -86,11 +94,13 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
             className={`w-full h-full object-cover ${mode === "testimonial" ? "cursor-pointer" : ""}`}
             poster={posterUrl}
             autoPlay
-            muted={isMuted}
+            muted
             loop={mode === "creator"}
             playsInline
             controls={mode === "creator"}
             onClick={handleVideoClick}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
           >
             <source src={videoUrlMp4} type="video/mp4" />
             Tu navegador no soporta videos.
