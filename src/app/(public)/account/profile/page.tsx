@@ -39,6 +39,13 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    if (!token || !user) {
+      router.replace("/login");
+    }
+  }, [mounted, token, user, router]);
+
+  useEffect(() => {
     if (!mounted || !token) return;
     PedidosService.getMisPedidos()
       .then((pedidos) => {
@@ -82,17 +89,7 @@ export default function ProfilePage() {
   if (!mounted) return <ProfileSkeleton />;
 
   if (!token || !user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <p className="text-gray-500 mb-4">Iniciá sesión para continuar</p>
-        <Button
-          onClick={() => router.push("/login")}
-          className="bg-color-principal rounded-full p-6"
-        >
-          Login
-        </Button>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   const displayName = user.nombre || user.email.split("@")[0];
