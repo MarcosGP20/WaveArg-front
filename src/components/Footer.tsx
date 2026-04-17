@@ -11,7 +11,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 const navLinks = [
   { href: "/products", label: "Productos" },
   { href: "/cart", label: "Carrito" },
-  { href: "/guia-creadores", label: "Guía para creadores" },
+  { href: "/creadores", label: "Guía para creadores" },
 ];
 
 const contactLinks = [
@@ -20,8 +20,8 @@ const contactLinks = [
 ];
 
 const communityLinks = [
-  { href: "/sobre-nosotros", label: "Sobre nosotros" },
-  { href: "/comunidad", label: "Unite a nuestra comunidad" },
+  { href: "/nosotros", label: "Sobre nosotros" },
+  { href: "/creadores", label: "Unite a nuestra comunidad" },
 ];
 
 // CAMBIO 2: Actualizamos el array 'socialLinks' con los nuevos íconos
