@@ -6,6 +6,7 @@ import CompareBar from "@/components/CompareBar";
 import CartAbandonmentReminder from "@/components/CartAbandonmentReminder";
 import CartDrawer from "@/components/CartDrawer";
 import AdminFloatingButton from "@/components/AdminFloatingButton";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { GoogleProvider } from "@/components/GoogleProvider";
 
 export default function PublicLayout({
@@ -24,6 +25,7 @@ export default function PublicLayout({
           <CartAbandonmentReminder />
           <CartDrawer />
           <AdminFloatingButton />
+          <WhatsAppButton />
           <Footer />
         </div>
       </CompareProvider>
