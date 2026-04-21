@@ -178,7 +178,7 @@ export default function NavBar() {
   );
 
   return (
-    <nav className="p-4 border-b shadow-sm bg-white relative">
+    <nav className="sticky top-0 z-50 p-4 border-b border-gray-100 bg-white/95 backdrop-blur-md relative">
       <div className="flex justify-between items-center">
         {/* LOGO */}
         <Link href="/">

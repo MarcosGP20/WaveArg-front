@@ -55,7 +55,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
 
   const card = (
     <div
-      className={`rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col bg-white group overflow-hidden ${featured ? "" : className}`}
+      className={`rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 will-change-transform transition-all duration-300 flex flex-col bg-white group overflow-hidden ${featured ? "" : className}`}
     >
       {/* ── ZONA DE IMAGEN ── */}
       <Link href={`/products/${product.id}`} className="block relative">
@@ -87,7 +87,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
       </Link>
 
       {/* ── INFO + SELECTORES ── */}
-      <div className="flex flex-col flex-1 px-5 pt-4 pb-5 gap-3">
+      <div className="flex flex-col flex-1 px-5 pt-4 pb-5 gap-3 border-t border-gray-100">
 
         {/* Nombre y modelo */}
         <Link href={`/products/${product.id}`} className="block text-center">
