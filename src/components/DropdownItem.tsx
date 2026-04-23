@@ -9,9 +9,10 @@ type DropdownItemProps = {
   title: string;
   href: string;
   children: React.ReactNode;
+  transparent?: boolean;
 };
 
-const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children }) => {
+const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, transparent = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
@@ -34,9 +35,11 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children }) =>
       <div className="flex items-center">
         <Link
           href={href}
-          className={`px-3 py-2 rounded-full hover:bg-gray-200 transition text-color-principal ${
-            isActive ? "font-bold" : ""
-          }`}
+          className={`px-3 py-2 rounded-full transition-colors duration-200 ${
+            transparent
+              ? "text-white hover:bg-white/15"
+              : "text-color-principal hover:bg-gray-200"
+          } ${isActive ? "font-bold" : ""}`}
         >
           {title}
         </Link>
@@ -44,7 +47,11 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children }) =>
           onClick={() => setIsOpen((prev) => !prev)}
           aria-expanded={isOpen}
           aria-label={`${isOpen ? "Cerrar" : "Abrir"} menú de ${title}`}
-          className="p-1 rounded-full hover:bg-gray-200 transition text-color-principal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-principal focus-visible:ring-offset-1"
+          className={`p-1 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-principal focus-visible:ring-offset-1 ${
+            transparent
+              ? "text-white hover:bg-white/15"
+              : "text-color-principal hover:bg-gray-200"
+          }`}
         >
           <ChevronDown
             size={14}

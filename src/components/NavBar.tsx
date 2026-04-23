@@ -4,14 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  FaShoppingCart,
-  FaUserCircle,
-  FaBars,
-  FaTimes,
-  FaSignOutAlt,
-  FaCog,
-} from "react-icons/fa";
-import { useState, useEffect, useRef } from "react";
+  ShoppingCart,
+  UserCircle,
+  Menu,
+  X,
+  LogOut,
+  Settings,
+} from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import DropdownItem from "./DropdownItem";
@@ -62,10 +62,22 @@ export default function NavBar() {
   const { cart, removeFromCart, openCart } = useCart();
   const { user, token, logout, isLoggedIn } = useAuthStore();
 
+  // --- Scroll-aware glassmorphism ---
+  const [scrolled, setScrolled] = useState(false);
+  const isHome = pathname === "/";
+
+  const handleScroll = useCallback(() => {
+    setScrolled(window.scrollY > 50);
+  }, []);
+
   useEffect(() => {
     // Espera a que el estado se hidrate
     setIsLoading(false);
-  }, []);
+
+    handleScroll(); // set initial state
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -88,10 +100,16 @@ export default function NavBar() {
     router.push("/");
   };
 
+  // On homepage before scroll: white text on transparent bg
+  // Otherwise (scrolled or non-home): brand color on white/glass bg
+  const isTransparent = isHome && !scrolled;
+
   const linkStyle = (href: string) =>
-    `px-3 py-2 rounded-full hover:bg-gray-200 transition text-color-principal ${
-      pathname === href ? "font-bold " : ""
-    }`;
+    `px-3 py-2 rounded-full transition-colors duration-200 ${
+      isTransparent
+        ? "text-white hover:bg-white/15"
+        : "text-color-principal hover:bg-gray-200"
+    } ${pathname === href ? "font-bold" : ""}`;
 
   // --- MENÚ MÓVIL ---
   const mobileLinks = (
@@ -131,9 +149,10 @@ export default function NavBar() {
         aria-label="Abrir carrito"
       >
         <div className="relative inline-block">
-          <FaShoppingCart
-            size={24}
-            className={`text-color-principal transition-transform ${cartBump ? "animate-cartBump" : ""}`}
+          <ShoppingCart
+            size={22}
+            strokeWidth={1.75}
+            className={`transition-all duration-200 ${isTransparent ? "text-white" : "text-color-principal"} ${cartBump ? "animate-cartBump" : ""}`}
           />
           {cartCount > 0 && (
             <span
@@ -152,7 +171,7 @@ export default function NavBar() {
           className={linkStyle("/account/profile")}
           onClick={() => setMenuOpen(false)}
         >
-          <FaUserCircle className="inline mr-1" /> Mi cuenta
+          <UserCircle className="inline mr-1" size={18} strokeWidth={1.75} /> Mi cuenta
         </Link>
       ) : null}
       {!isLoading && isLoggedIn ? (
@@ -161,7 +180,7 @@ export default function NavBar() {
             handleLogout();
             setMenuOpen(false);
           }}
-          className="text-sm text-red-600 hover:underline ml-2 text-left px-3"
+          className={`text-sm hover:underline ml-2 text-left px-3 ${isTransparent ? "text-red-300" : "text-red-600"}`}
         >
           Cerrar sesión
         </button>
@@ -178,7 +197,15 @@ export default function NavBar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 p-4 border-b border-gray-100 bg-white/95 backdrop-blur-md relative">
+    <nav
+      className={`sticky top-0 z-50 transition-all duration-300 relative ${
+        scrolled ? "py-2 px-4 md:p-4" : "p-4"
+      } ${
+        isTransparent
+          ? "bg-transparent border-b border-white/10"
+          : "bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+      }`}
+    >
       <div className="flex justify-between items-center">
         {/* LOGO */}
         <Link href="/">
@@ -197,7 +224,7 @@ export default function NavBar() {
             alt="Wave Arg – ir al inicio"
             width={40}
             height={40}
-            className="md:hidden"
+            className={`md:hidden transition-all duration-300 ${scrolled ? "w-7 h-7" : "w-10 h-10"}`}
           />
         </Link>
 
@@ -208,7 +235,7 @@ export default function NavBar() {
           </Link>
 
           {/* DROPDOWN DINÁMICO */}
-          <DropdownItem title="Productos" href="/products">
+          <DropdownItem title="Productos" href="/products" transparent={isTransparent}>
             {/* AQUÍ ESTÁ EL CAMBIO CLAVE:
                 1. grid grid-cols-2: Divide en dos columnas.
                 2. min-w-[600px]: Fuerza el ancho para ocupar espacio.
@@ -304,9 +331,10 @@ export default function NavBar() {
               className="relative inline-block"
               aria-label="Abrir carrito"
             >
-              <FaShoppingCart
-                size={24}
-                className={`text-color-principal transition-transform ${cartBump ? "animate-cartBump" : ""}`}
+              <ShoppingCart
+                size={22}
+                strokeWidth={1.75}
+                className={`transition-all duration-200 ${isTransparent ? "text-white" : "text-color-principal"} ${cartBump ? "animate-cartBump" : ""}`}
               />
               {cartCount > 0 && (
                 <span
@@ -342,7 +370,7 @@ export default function NavBar() {
                 {/* Product list */}
                 {cart.length === 0 ? (
                   <div className="px-4 py-6 text-center text-gray-400 text-sm">
-                    <FaShoppingCart size={28} className="mx-auto mb-2 opacity-30" />
+                    <ShoppingCart size={28} strokeWidth={1.5} className="mx-auto mb-2 opacity-30" />
                     Tu carrito está vacío
                   </div>
                 ) : (
@@ -358,7 +386,7 @@ export default function NavBar() {
                             />
                           ) : (
                             <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                              <FaShoppingCart size={16} className="text-color-principal opacity-50" />
+                              <ShoppingCart size={16} strokeWidth={1.75} className="text-color-principal opacity-50" />
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
@@ -405,9 +433,13 @@ export default function NavBar() {
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 transition text-color-principal font-medium"
+                className={`flex items-center gap-2 px-3 py-2 rounded-full transition-colors duration-200 font-medium ${
+                  isTransparent
+                    ? "text-white hover:bg-white/15"
+                    : "text-color-principal hover:bg-gray-100"
+                }`}
               >
-                <FaUserCircle size={20} />
+                <UserCircle size={20} strokeWidth={1.75} />
                 <span className="text-sm">{user.email?.split("@")[0]}</span>
               </button>
 
@@ -434,7 +466,7 @@ export default function NavBar() {
                     className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
                     onClick={() => setUserDropdownOpen(false)}
                   >
-                    <FaUserCircle size={16} /> Mi Perfil
+                    <UserCircle size={16} strokeWidth={1.75} /> Mi Perfil
                   </Link>
 
                   {user.rol === "Admin" && (
@@ -443,7 +475,7 @@ export default function NavBar() {
                       className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
                       onClick={() => setUserDropdownOpen(false)}
                     >
-                      <FaCog size={16} /> Panel Admin
+                      <Settings size={16} strokeWidth={1.75} /> Panel Admin
                     </Link>
                   )}
 
@@ -454,7 +486,7 @@ export default function NavBar() {
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-red-50 text-sm text-red-600 transition flex items-center gap-2"
                   >
-                    <FaSignOutAlt size={16} /> Cerrar Sesión
+                    <LogOut size={16} strokeWidth={1.75} /> Cerrar Sesión
                   </button>
                 </div>
               )}
@@ -468,19 +500,24 @@ export default function NavBar() {
 
         {/* TOGGLE MÓVIL */}
         <button
-          className="md:hidden"
+          className="md:hidden transition-colors duration-200 text-color-principal"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           aria-label="Menú de navegación"
         >
-          {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          {menuOpen ? <X size={24} strokeWidth={1.75} /> : <Menu size={24} strokeWidth={1.75} />}
         </button>
       </div>
 
       {/* MENÚ MÓVIL DESPLEGABLE */}
       {menuOpen && (
-        <div id="mobile-menu" className="flex flex-col gap-2 mt-3 md:hidden px-2 pb-2 animate-slideDown">
+        <div
+          id="mobile-menu"
+          className={`flex flex-col gap-2 mt-3 md:hidden px-2 pb-2 animate-slideDown rounded-xl ${
+            isTransparent ? "bg-black/40 backdrop-blur-xl" : ""
+          }`}
+        >
           {mobileLinks}
         </div>
       )}

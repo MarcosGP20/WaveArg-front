@@ -188,7 +188,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
             <button
               onClick={prev}
               aria-label="iPhone anterior"
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
+              className="absolute left-4 top-[172px] md:top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
             >
               <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M10 3L5 8l5 5" strokeLinecap="round" strokeLinejoin="round" />
@@ -197,7 +197,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
             <button
               onClick={next}
               aria-label="iPhone siguiente"
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
+              className="absolute right-4 top-[172px] md:top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
             >
               <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M6 3l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
