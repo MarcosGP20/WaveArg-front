@@ -3,8 +3,34 @@
 import { useEffect, useState } from "react";
 import MetricCard from "./MetridCard";
 import DataGrid from "./DataGrid";
-import { AdminService, DashboardMetrics } from "@/lib/api";
+import { AdminService, DashboardMetrics, PedidosService } from "@/lib/api";
 import { DollarSign, ShoppingCart, Users, Package, AlertCircle } from "lucide-react";
+
+type PedidoRow = {
+  id: string;
+  cliente: string;
+  producto: string;
+  total: number;
+  estado: string;
+  fecha: string;
+};
+
+function formatFecha(iso: string) {
+  return new Date(iso).toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function resumeItems(items: { nombreProducto: string; color: string; memoria: string; cantidad: number }[]) {
+  if (!items?.length) return "—";
+  const { nombreProducto, color, memoria, cantidad } = items[0];
+  const variante = [color, memoria].filter(Boolean).join(" ");
+  const label = variante ? `${nombreProducto} — ${variante}` : nombreProducto;
+  const extra = items.length > 1 ? ` (+${items.length - 1} más)` : "";
+  return `${label} x${cantidad}${extra}`;
+}
 
 // ============================================================
 // SKELETON — se muestra mientras carga la API
@@ -30,14 +56,39 @@ function DashboardSkeleton() {
 // ============================================================
 export default function Dashboard() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [pedidosRows, setPedidosRows] = useState<PedidoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    AdminService.getDashboard()
-      .then(setMetrics)
-      .catch((err: Error) => setError(err instanceof Error ? err.message : String(err)))
-      .finally(() => setLoading(false));
+    Promise.allSettled([
+      AdminService.getDashboard(),
+      PedidosService.getAll(),
+    ]).then(([metricsResult, pedidosResult]) => {
+      if (metricsResult.status === "fulfilled") {
+        setMetrics(metricsResult.value);
+      } else {
+        const err = metricsResult.reason;
+        setError(err instanceof Error ? err.message : String(err));
+      }
+
+      if (pedidosResult.status === "fulfilled") {
+        const rows = [...pedidosResult.value]
+          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+          .slice(0, 8)
+          .map((p) => ({
+            id: `#${p.id}`,
+            cliente: p.usuario.nombre ?? p.usuario.email,
+            producto: resumeItems(p.items),
+            total: p.total,
+            estado: p.estado,
+            fecha: formatFecha(p.fecha),
+          }));
+        setPedidosRows(rows);
+      }
+
+      setLoading(false);
+    });
   }, []);
 
   if (loading) return <DashboardSkeleton />;
@@ -51,34 +102,31 @@ export default function Dashboard() {
     );
   }
 
-  // ============================================================
-  // CONFIGURACIÓN DE COLUMNAS (sin datos reales aún — se conecta en la Orders page)
-  // ============================================================
   const orderColumns = [
-    { key: "id", label: "ID" },
-    { key: "clienteNombre", label: "Cliente" },
-    { key: "productoDescripcion", label: "Producto" },
+    { key: "id", label: "#" },
+    { key: "cliente", label: "Cliente" },
+    { key: "producto", label: "Producto" },
     {
-      key: "monto",
-      label: "Monto",
-      render: (value: number) => `$${value.toLocaleString()}`,
+      key: "total",
+      label: "Total",
+      render: (value: number) => `$${value.toLocaleString("es-AR")}`,
     },
     {
       key: "estado",
       label: "Estado",
-      render: (value: string) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            value === "Entregado"
-              ? "bg-green-100 text-green-800"
-              : value === "Enviado"
-              ? "bg-blue-100 text-blue-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {value}
-        </span>
-      ),
+      render: (value: string) => {
+        const map: Record<string, string> = {
+          entregado: "bg-green-100 text-green-800",
+          enviado: "bg-blue-100 text-blue-800",
+          cancelado: "bg-red-100 text-red-800",
+        };
+        const style = map[value?.toLowerCase()] ?? "bg-yellow-100 text-yellow-800";
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${style}`}>
+            {value}
+          </span>
+        );
+      },
     },
     { key: "fecha", label: "Fecha" },
   ];
@@ -109,12 +157,11 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* ========== TABLA (se conectará con GET /Pedidos en el próximo paso) ========== */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DataGrid
           title="Pedidos Recientes"
           columns={orderColumns}
-          data={[]}
+          data={pedidosRows}
         />
         <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-gray-400 gap-2 min-h-[12rem]">
           <Package size={32} className="text-gray-300" />
