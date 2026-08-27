@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function AdminFloatingButton() {
   const user = useAuthStore((s) => s.user);
 
-  if (user?.rol !== "Admin") return null;
+  if (user?.rol?.toLowerCase() !== "admin") return null;
 
   return (
     <Link

@@ -22,7 +22,7 @@ export default function AccountPage() {
       return;
     }
     // Admins van al panel; el hub de cuenta es para usuarios
-    if (user.rol === "Admin") {
+    if (user.rol?.toLowerCase() === "admin") {
       router.replace("/admin");
     }
   }, [mounted, token, user, router]);
@@ -45,7 +45,7 @@ export default function AccountPage() {
     );
   }
 
-  if (user.rol === "Admin") {
+  if (user.rol?.toLowerCase() === "admin") {
     return null; // redirect en efecto
   }
 

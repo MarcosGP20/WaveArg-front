@@ -31,7 +31,7 @@ export default async function AdminLayout({
       redirect("/login");
     }
 
-    if (decoded.rol !== "Admin") {
+    if (decoded.rol?.toLowerCase() !== "admin") {
       redirect("/account/profile");
     }
   } catch (err) {

@@ -469,7 +469,7 @@ export default function NavBar() {
                     <UserCircle size={16} strokeWidth={1.75} /> Mi Perfil
                   </Link>
 
-                  {user.rol === "Admin" && (
+                  {user.rol?.toLowerCase() === "admin" && (
                     <Link
                       href="/admin"
                       className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"

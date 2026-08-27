@@ -59,11 +59,11 @@ export function LoginForm() {
           };
         }
 
-        setAuth(response.token, user);
+        await setAuth(response.token, user);
         setStatusMessage("Sesión iniciada con éxito. Redirigiendo...");
 
         // 3. Redirección basada en Rol (con validación)
-        const isAdmin = user?.rol === "Admin";
+        const isAdmin = user?.rol?.toLowerCase() === "admin";
 
         setTimeout(() => {
           router.push(isAdmin ? "/admin" : "/account/profile");
@@ -92,9 +92,9 @@ export function LoginForm() {
             rol: getRoleFromJWT(response.token) || "User",
           };
         }
-        setAuth(response.token, user);
+        await setAuth(response.token, user);
         setStatusMessage("Sesión iniciada con Google. Redirigiendo...");
-        const isAdmin = user?.rol === "Admin";
+        const isAdmin = user?.rol?.toLowerCase() === "admin";
         setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
       }
     } catch (error: unknown) {

@@ -77,9 +77,9 @@ export function RegisterForm() {
             rol: getRoleFromJWT(response.token) || "User",
           };
         }
-        setAuth(response.token, user);
+        await setAuth(response.token, user);
         setStatusMessage("¡Cuenta lista! Redirigiendo...");
-        const isAdmin = user?.rol === "Admin";
+        const isAdmin = user?.rol?.toLowerCase() === "admin";
         setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
       }
     } catch (error: unknown) {
