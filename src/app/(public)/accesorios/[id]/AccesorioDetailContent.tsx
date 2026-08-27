@@ -135,6 +135,7 @@ export default function AccesorioDetailContent({
       name: `${accesorio.nombre} (${selectedVariante.color}, ${selectedVariante.especificacion})`,
       price: selectedVariante.precio,
       quantity,
+      stock: selectedVariante.stock,
       image: activeImage ?? accesorio.imagenes?.[0] ?? undefined,
       type: "accesorio",
     });

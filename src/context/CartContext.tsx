@@ -13,6 +13,7 @@ export type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  stock?: number;
   image?: string;
   type?: "producto" | "accesorio";
 };
@@ -37,8 +38,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const closeCart = () => setIsCartOpen(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("cart");
-    if (stored) setCart(JSON.parse(stored));
+    try {
+      const stored = localStorage.getItem("cart");
+      if (stored) setCart(JSON.parse(stored));
+    } catch {
+      localStorage.removeItem("cart");
+    }
   }, []);
 
   useEffect(() => {

@@ -197,6 +197,7 @@ export default function ProductDetailContent({
       name: `${product.nombre} (${selectedVariante.color}, ${selectedVariante.memoria})`,
       price: selectedVariante.precio,
       quantity,
+      stock: selectedVariante.stock,
       image: activeImage ?? product.imagenes?.[0] ?? undefined,
       type: "producto",
     });

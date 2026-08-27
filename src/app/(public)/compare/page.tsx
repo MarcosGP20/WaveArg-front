@@ -272,6 +272,7 @@ export default function ComparePage() {
       name:     `${product.nombre} (${variant.color}, ${variant.memoria})`,
       price:    variant.precio,
       quantity: 1,
+      stock:    variant.stock,
       image:    product.imagenes?.[0],
       type:     "producto",
     });
