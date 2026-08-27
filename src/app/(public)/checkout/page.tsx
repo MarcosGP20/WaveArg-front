@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { cart, clearCart } = useCart();
+  const { cart } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,10 +60,8 @@ export default function CheckoutPage() {
         );
       }
 
-      // Limpiar el carrito antes de redirigir — el pago fue iniciado exitosamente
-      clearCart();
-
       // Redirigir al portal de pago de MercadoPago
+      // El carrito se limpia en /checkout/success solo si el pago fue aprobado
       window.location.href = urlPago;
     } catch (err: unknown) {
       const message =
