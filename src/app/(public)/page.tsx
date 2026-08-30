@@ -11,6 +11,7 @@ import VideoLoader from "../../components/VideoLoader";
 import { LazyVideoFacade } from "../../components/VideoPlayer";
 import IPhoneCarousel, { CarouselItem } from "../../components/IPhoneCarousel";
 import BentoCreadores from "../../components/BentoCreadores";
+import Ticker from "../../components/Ticker";
 
 // API
 import { getProductos } from "../../lib/api";
@@ -174,6 +175,8 @@ export default function HomePage() {
               </motion.div>
             </div>
           </section>
+
+          <Ticker />
 
           {/* Carrusel de iPhones */}
           <section className="bg-[#F5F5F5] py-14 px-4 md:px-8">
