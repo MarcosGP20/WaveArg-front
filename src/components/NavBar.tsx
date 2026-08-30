@@ -60,7 +60,7 @@ export default function NavBar() {
   const cartCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { cart, removeFromCart, openCart } = useCart();
-  const { user, token, logout, isLoggedIn } = useAuthStore();
+  const { user, logout, isLoggedIn } = useAuthStore();
 
   // --- Scroll-aware glassmorphism ---
   const [scrolled, setScrolled] = useState(false);
@@ -133,7 +133,7 @@ export default function NavBar() {
         className={linkStyle("/creadores")}
         onClick={() => setMenuOpen(false)}
       >
-        Guia creadores
+        Guía creadores
       </Link>
       <Link
         href="/contacto"
@@ -294,7 +294,7 @@ export default function NavBar() {
           {/* --- FIN DROPDOWN --- */}
 
           <Link href="/creadores" className={linkStyle("/creadores")}>
-            Guia creadores
+            Guía creadores
           </Link>
           <Link href="/nosotros" className={linkStyle("/nosotros")}>
             Nosotros
@@ -500,7 +500,7 @@ export default function NavBar() {
 
         {/* TOGGLE MÓVIL */}
         <button
-          className="md:hidden transition-colors duration-200 text-color-principal"
+          className={`md:hidden transition-colors duration-200 ${isTransparent ? "text-white" : "text-color-principal"}`}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"

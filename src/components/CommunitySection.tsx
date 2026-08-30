@@ -47,10 +47,10 @@ export default function CommunitySection() {
               <a
                 href="https://www.instagram.com/wavearg__?igsh=NWNxdXZjbDFkMHc4"
                 target="_blank"
+                rel="noopener noreferrer"
+                className="bg-color-principal hover:bg-color-principal-oscuro text-white px-8 py-3 rounded-full transition-colors text-center"
               >
-                <button className="bg-color-principal hover:bg-color-principal-oscuro text-white px-8 py-3 rounded-full transition-colors cursor-pointer">
-                  ¡Quiero unirme!
-                </button>
+                ¡Quiero unirme!
               </a>
             </div>
           </div>

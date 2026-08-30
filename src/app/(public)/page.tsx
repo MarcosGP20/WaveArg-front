@@ -220,10 +220,11 @@ export default function HomePage() {
             <motion.div style={{ scale, opacity }} className="relative w-full">
               {/* ...el resto de tu div de producto... */}
               <div className="relative h-[95vh] bg-gray-900 rounded-2xl md:rounded-2xl overflow-hidden">
-                <img
+                <Image
                   src={ASSET_PATHS.IPHONE_IMG}
                   alt="iPhone – conocé nuestros productos"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-end p-6 md:p-12">
@@ -232,11 +233,12 @@ export default function HomePage() {
                       Conocé nuestros productos
                     </h2>
                     <div className="flex gap-4">
-                      <a href="/products">
-                        <button className="bg-color-principal hover:bg-color-principal-oscuro text-white px-8 py-3 rounded-full cursor-pointer">
-                          Ver más
-                        </button>
-                      </a>
+                      <Link
+                        href="/products"
+                        className="bg-color-principal hover:bg-color-principal-oscuro text-white px-8 py-3 rounded-full"
+                      >
+                        Ver más
+                      </Link>
                     </div>
                   </div>
                 </div>
