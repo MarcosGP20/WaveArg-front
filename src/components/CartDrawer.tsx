@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { X, Minus, Plus, ShoppingBag } from "lucide-react";
-import { FaShoppingCart } from "react-icons/fa";
+import { X, Minus, Plus, ShoppingBag, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 export default function CartDrawer() {
@@ -99,7 +98,7 @@ export default function CartDrawer() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <FaShoppingCart size={18} className="text-gray-300" />
+                        <ShoppingCart size={18} strokeWidth={1.75} className="text-gray-300" />
                       </div>
                     )}
                   </div>

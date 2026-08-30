@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { WhatsAppIcon } from "@/components/icons/BrandIcons";
 
 // Número de WhatsApp con código de país (Argentina +54)
 const WA_NUMBER = "542233064666";
@@ -95,7 +95,7 @@ export default function ContactPage() {
             {enviado ? (
               <div className="flex flex-col items-center justify-center text-center py-10 gap-4">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                  <FaWhatsapp className="text-green-500 w-8 h-8" />
+                  <WhatsAppIcon className="text-green-500 w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-800">
                   ¡WhatsApp abierto!
@@ -249,7 +249,7 @@ export default function ContactPage() {
                   type="submit"
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full transition-colors flex items-center justify-center gap-2 font-semibold"
                 >
-                  <FaWhatsapp className="w-5 h-5" />
+                  <WhatsAppIcon className="w-5 h-5" />
                   Enviar por WhatsApp
                 </Button>
 
@@ -327,7 +327,7 @@ export default function ContactPage() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-full transition-colors shadow-md"
             >
-              <FaWhatsapp className="w-6 h-6" />
+              <WhatsAppIcon className="w-6 h-6" />
               Escribinos directo por WhatsApp
             </a>
           </div>

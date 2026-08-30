@@ -1,8 +1,7 @@
 "use client";
 
-// CAMBIO 1: Importamos los íconos de 'react-icons/fa' (Font Awesome)
-import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
-import { MdMailOutline } from "react-icons/md";
+import { Mail } from "lucide-react";
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/icons/BrandIcons";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -24,26 +23,25 @@ const communityLinks = [
   { href: "/creadores", label: "Unite a nuestra comunidad" },
 ];
 
-// CAMBIO 2: Actualizamos el array 'socialLinks' con los nuevos íconos
 const socialLinks = [
   {
-    href: "https://www.instagram.com/wavearg__?igsh=NWNxdXZjbDFkMHc4", // Poné tu URL
-    icon: FaInstagram, // <-- ÍCONO NUEVO
+    href: "https://www.instagram.com/wavearg__?igsh=NWNxdXZjbDFkMHc4",
+    icon: InstagramIcon,
     label: "Instagram",
   },
   {
-    href: "https://www.tiktok.com/@iphonewave.arg", // Poné tu URL
-    icon: FaTiktok, // <-- ÍCONO NUEVO
+    href: "https://www.tiktok.com/@iphonewave.arg",
+    icon: TikTokIcon,
     label: "TikTok",
   },
   {
-    href: "https://wa.me/2233064666", // Poné tu URL de WhatsApp
-    icon: FaWhatsapp, // <-- ÍCONO NUEVO
+    href: "https://wa.me/2233064666",
+    icon: WhatsAppIcon,
     label: "WhatsApp",
   },
   {
-    href: "mailto:soporte@wavearg.com", // Poné tu URL de WhatsApp
-    icon: MdMailOutline, // <-- ÍCONO NUEVO
+    href: "mailto:soporte@wavearg.com",
+    icon: Mail,
     label: "Email",
   },
 ];
@@ -151,7 +149,6 @@ export default function Footer() {
             reservados.
           </p>
 
-          {/* CAMBIO 3: Esto ahora funciona porque el array socialLinks se actualizó */}
           <div className="flex gap-4">
             {socialLinks.map((social) => (
               <a
