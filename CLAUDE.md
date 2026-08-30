@@ -7,9 +7,10 @@ E-commerce de iPhones y accesorios para el mercado argentino. Frontend en Next.j
 - **Next.js 16.2.2** (Turbopack), React 19, TypeScript
 - **Tailwind CSS v4** (`@import "tailwindcss"`), Radix UI, Sonner (toasts), react-hook-form, framer-motion
 - **Auth**: JWT en cookie `auth-token`, Zustand, Google OAuth
-- **API**: `src/lib/api.ts` — todos los servicios pasan por `fetchFromApi()`
+- **API**: `src/lib/api.ts` — todos los servicios pasan por `fetchFromApi()` → proxy `/api/backend`
 - **Backend**: .NET, producción en `https://waveargdefinitivo.onrender.com/api`, dev en `http://localhost:5075/api`
 - **Hosting**: Frontend → Vercel (`https://wavearg-front.vercel.app`), Backend → Render
+- **`react-icons` fue eliminado del proyecto** — no reinstalar
 
 ## Estructura clave
 ```
@@ -33,7 +34,10 @@ src/
       auth/session/         → POST/DELETE para manejar cookie auth-token (httpOnly)
       backend/[...path]/    → proxy universal hacia el backend .NET
       mercadopago/webhook/  → webhook MP con validación HMAC implementada ✅
-  components/     → componentes compartidos
+  components/
+    icons/
+      BrandIcons.tsx        → InstagramIcon, TikTokIcon, WhatsAppIcon (SVG inline — lucide no tiene íconos de marca)
+    Ticker.tsx              → ticker infinito framer-motion entre hero y carrusel de la landing
   hooks/          → custom hooks
   interfaces/     → tipos de dominio (producto.ts, accesorio.ts, auth.ts)
   schemas/        → validación con Zod (auth.schema.ts)
@@ -62,7 +66,7 @@ middleware.ts     → (raíz) protección de rutas por JWT y rol — NO en layou
 - Toasts con `sonner` — no usar `alert()`.
 - Módulo accesorios es paralelo al de productos — mismos patrones, con `CategoriaAccesorio` enum en vez de campos de iPhone.
 - **Tailwind v4**: custom colors SIEMPRE en `@theme inline` en globals.css con valores directos (hex), no en tailwind.config.js ni solo en `:root`.
-- Iconos: `lucide-react` con `strokeWidth=1.75` como estándar.
+- Iconos: `lucide-react` con `strokeWidth=1.75` como estándar. Para íconos de marca (Instagram, TikTok, WhatsApp) usar `src/components/icons/BrandIcons.tsx` — **no reinstalar react-icons**.
 - `GoogleLoginButton` siempre se importa con `dynamic(..., { ssr: false })` — no renderiza en servidor.
 - El proxy `/api/backend/[...path]` reenvía las requests al backend .NET incluyendo el token desde la cookie. **No llamar al backend directamente desde el cliente** — siempre pasar por `fetchFromApi()`.
 - Los productos destacados en la home se almacenan con `localStorage` key `wave-featured-product-id` (elegido desde admin).
@@ -93,15 +97,22 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - Comparación de rol case-insensitive en todo el proyecto (`rol?.toLowerCase() === "admin"`)
 - Checkout: `clearCart()` se ejecuta solo en `/checkout/success`, no al crear la preferencia de MP
 - Carrito: botón `+` respeta el stock de la variante — se deshabilita al alcanzar el límite
+- Auth proxy: `POST /api/auth/session` setea cookie httpOnly con maxAge derivado del `exp` del JWT; `DELETE` la borra. `useAuthStore.setAuth()` llama este endpoint, nunca persiste el token en localStorage
+- Proxy backend: `/api/backend/[...path]` reenvía todas las requests al .NET adjuntando el token de la cookie como `Authorization: Bearer`
+- Landing: `Ticker` (framer-motion, fondo azul Wave) entre hero y carrusel; sección parallax muestra 4 trust signals (Garantía, Plan canje, Envíos, Stock real) con cards glassmorphism en lugar del CTA genérico anterior
 
-### Pendiente de backend 📋
-- Notificaciones: toggles en settings muestran badge "Próximamente", contador en perfil hardcodeado a `0`
-- Eliminar cuenta: botón en settings llama `toast.info("Función disponible próximamente.")` — no implementado
-- Dirección de envío: el modelo `Pedido` tiene `direccionEnvio` pero no hay UI en el checkout para capturarla
+### Pendiente de backend 📋 (confirmado bloqueado — revisado con Swagger)
+- **Eliminar cuenta**: NO existe `DELETE /Usuarios/{id}` en el backend (solo `GET /Usuarios`). El botón en settings queda con `toast.info("Próximamente")` hasta que el backend lo implemente
+- **Dirección de envío**: El endpoint `POST /MercadoPago/crear-preferencia` solo acepta `ItemDto { productoId, nombre, cantidad, precio, esAccesorio }` — no hay campo de dirección. Sin cambio en backend no hay nada que hacer en el frontend
+- **Notificaciones**: No hay ningún endpoint en el backend. Los toggles en settings muestran badge "Próximamente", contador en perfil hardcodeado a `0`
 
 ### Bugs conocidos pendientes 🐛
 - Race condition en cambio rápido de variante en ProductDetailContent: `switchVariante` usa `setTimeout(150ms)` sin cancelar timeouts anteriores — el estado puede quedar desincronizado si el usuario cambia variantes muy rápido
 - Fetches de productos sin caché: `getProductos()` se llama de forma independiente en home, catálogo y detalle (para sugeridos) — cada navegación dispara un fetch nuevo al backend
+
+### Mejoras de UI pendientes 📋
+- **FAQSection**: sin container wrapper propio, título "Preguntas frecuentes" flotando sin padding consistente, estilos Tailwind duplicados en cada AccordionTrigger — candidato a refactor visual
+- **Sección parallax** ya reemplazada por trust signals ✅
 
 ### Decisiones de diseño para MVP 📋
 - Carrito queda en localStorage (sin sincronización con backend)
