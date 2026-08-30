@@ -12,6 +12,7 @@ import { LazyVideoFacade } from "../../components/VideoPlayer";
 import IPhoneCarousel, { CarouselItem } from "../../components/IPhoneCarousel";
 import BentoCreadores from "../../components/BentoCreadores";
 import Ticker from "../../components/Ticker";
+import { Shield, RefreshCw, Truck, PackageCheck } from "lucide-react";
 
 // API
 import { getProductos } from "../../lib/api";
@@ -212,34 +213,43 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Sección productos (Con animación 1) */}
+          {/* Sección trust signals con parallax */}
           <section
             ref={containerRef}
             className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4 overflow-hidden"
           >
             <motion.div style={{ scale, opacity }} className="relative w-full">
-              {/* ...el resto de tu div de producto... */}
-              <div className="relative h-[95vh] bg-gray-900 rounded-2xl md:rounded-2xl overflow-hidden">
+              <div className="relative h-[95vh] bg-gray-900 rounded-2xl overflow-hidden">
                 <Image
                   src={ASSET_PATHS.IPHONE_IMG}
-                  alt="iPhone – conocé nuestros productos"
+                  alt="Por qué elegir Wave"
                   fill
                   className="object-cover"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black/40 flex items-end p-6 md:p-12">
-                  <div className="text-white">
-                    <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                      Conocé nuestros productos
-                    </h2>
-                    <div className="flex gap-4">
-                      <Link
-                        href="/products"
-                        className="bg-color-principal hover:bg-color-principal-oscuro text-white px-8 py-3 rounded-full"
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/50 font-semibold mb-3">
+                    Por qué elegirnos
+                  </p>
+                  <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">
+                    La forma más confiable<br className="hidden md:block" /> de conseguir tu iPhone.
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      { icon: Shield,       title: "Garantía incluida",      desc: "3 meses en todos los equipos" },
+                      { icon: RefreshCw,    title: "Plan canje",             desc: "Tu iPhone como parte de pago" },
+                      { icon: Truck,        title: "Envíos a todo el país",  desc: "Con número de seguimiento" },
+                      { icon: PackageCheck, title: "Stock real",             desc: "Lo que ves está disponible" },
+                    ].map(({ icon: Icon, title, desc }) => (
+                      <div
+                        key={title}
+                        className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 md:p-5"
                       >
-                        Ver más
-                      </Link>
-                    </div>
+                        <Icon size={20} strokeWidth={1.75} className="text-white/70 mb-3" />
+                        <p className="text-white font-semibold text-sm leading-snug mb-1">{title}</p>
+                        <p className="text-white/50 text-xs leading-snug">{desc}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
