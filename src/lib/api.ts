@@ -51,34 +51,26 @@ export interface CreateAccesorioVarianteDTO {
 }
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
+  process.env.NEXT_PUBLIC_API_PROXY_BASE ?? "/api/backend";
 
 /**
  * Lee el token desde la cookie auth-token (misma que usa el middleware y Zustand).
  * Una sola fuente de verdad para autenticación.
  */
-function getAuthToken(): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(/auth-token=([^;]+)/);
-  return match ? decodeURIComponent(match[1].trim()) : null;
-}
-
 export async function fetchFromApi<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = getAuthToken();
-
   // Mezclamos los headers default con los que vengan en options
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
 
   const config: RequestInit = {
     ...options,
     headers,
+    credentials: "same-origin",
   };
 
   try {
@@ -451,10 +443,10 @@ export const MercadoPagoService = {
    * Crea una preferencia de pago en MercadoPago a través del backend.
    * Devuelve la URL de pago (initPoint o sandboxInitPoint).
    */
-  crearPreferencia: (items: MPPreferenciaItem[]) =>
+  crearPreferencia: (items: MPPreferenciaItem[], direccionEnvio: string) =>
     fetchFromApi<MPPreferenciaResponse>("/MercadoPago/crear-preferencia", {
       method: "POST",
-      body: JSON.stringify(items),
+      body: JSON.stringify({ items, direccionEnvio }),
     }),
 
   /**
