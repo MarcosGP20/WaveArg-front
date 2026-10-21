@@ -7,9 +7,9 @@ interface AuthState {
   token: string | null;
   user: User | null;
   isLoggedIn: boolean;
-  setAuth: (token: string, user: User) => void;
+  setAuth: (token: string, user: User) => Promise<void>;
   updateUser: (partial: Partial<User>) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -18,26 +18,26 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       user: null,
       isLoggedIn: false,
-      setAuth: (token: string, user: User) => {
-        // Cookie para que el middleware y la API lean el mismo token
-        if (typeof document !== "undefined") {
-          const sevenDaysInSeconds = 7 * 24 * 60 * 60;
-          // JWT es seguro en cookie tal cual (no encodear) para que el middleware lo pueda decodificar.
-          const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
-          document.cookie = `auth-token=${token}; path=/; max-age=${sevenDaysInSeconds}; SameSite=Strict${secureFlag}`;
+      setAuth: async (token: string, user: User) => {
+        const response = await fetch("/api/auth/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) {
+          throw new Error("No se pudo iniciar la sesion.");
         }
-        return set({ token, user, isLoggedIn: true });
+
+        set({ token, user, isLoggedIn: true });
       },
       updateUser: (partial: Partial<User>) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...partial } : state.user,
         })),
-      logout: () => {
-        if (typeof document !== "undefined") {
-          const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
-          document.cookie = `auth-token=; path=/; max-age=0; SameSite=Strict${secureFlag}`;
-        }
-        return set({ token: null, user: null, isLoggedIn: false });
+      logout: async () => {
+        set({ token: null, user: null, isLoggedIn: false });
+        await fetch("/api/auth/session", { method: "DELETE" }).catch(() => {});
       },
     }),
     {
@@ -52,4 +52,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-
