@@ -21,7 +21,10 @@ export function decodeJWT(token: string) {
         : null;
 
     if (atobFn) {
-      json = atobFn(padded);
+      // atob devuelve un byte por carácter: hay que decodificar esos bytes como UTF-8
+      // para que claims con ñ o acentos no queden como "Ã±".
+      const bytes = Uint8Array.from(atobFn(padded), (c) => c.charCodeAt(0));
+      json = new TextDecoder().decode(bytes);
     } else if (typeof Buffer !== "undefined") {
       // Node.js environment
       json = Buffer.from(padded, "base64").toString("utf8");
