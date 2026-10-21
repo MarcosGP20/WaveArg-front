@@ -7,6 +7,7 @@ E-commerce de iPhones y accesorios para el mercado argentino. Frontend en Next.j
 - **Next.js 16.2.2** (Turbopack), React 19, TypeScript
 - **Tailwind CSS v4** (`@import "tailwindcss"`), Radix UI, Sonner (toasts), react-hook-form, framer-motion
 - **Auth**: JWT en cookie `auth-token`, Zustand, Google OAuth
+- **Tests**: Vitest (`npm test`), archivos `src/**/*.test.ts`. Hoy cubren `lib/jwt.ts` y `middleware.ts`
 - **API**: `src/lib/api.ts` — todos los servicios pasan por `fetchFromApi()` → proxy `/api/backend`
 - **Backend**: .NET, producción en `https://waveargdefinitivo.onrender.com/api`, dev en `http://localhost:5075/api`
 - **Hosting**: Frontend → Vercel (`https://wavearg-front.vercel.app`), Backend → Render
