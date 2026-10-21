@@ -5,16 +5,17 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
 
 const MP_WEBHOOK_SECRET = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+const isProduction = process.env.NODE_ENV === "production";
 
 /**
  * Valida la firma HMAC-SHA256 enviada por MercadoPago en el header x-signature.
  * Formato del header: "ts=<timestamp>,v1=<hash>"
  * El mensaje firmado es: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;"
  *
- * Retorna true si el secret no está configurado (modo dev) o si la firma es válida.
+ * Sin secret configurado: en dev se omite la validación; en producción se rechaza (fail-closed).
  */
 function isValidSignature(req: NextRequest, dataId: string): boolean {
-  if (!MP_WEBHOOK_SECRET) return true; // sin secret configurado, se omite validación
+  if (!MP_WEBHOOK_SECRET) return !isProduction;
 
   const xSignature = req.headers.get("x-signature") ?? "";
   const xRequestId = req.headers.get("x-request-id") ?? "";
@@ -41,6 +42,14 @@ function isValidSignature(req: NextRequest, dataId: string): boolean {
  * Este handler valida la firma HMAC-SHA256 y reenvía la notificación al backend .NET.
  */
 export async function POST(req: NextRequest) {
+  if (isProduction && !MP_WEBHOOK_SECRET) {
+    console.error("[MP Webhook] MERCADOPAGO_WEBHOOK_SECRET no configurado");
+    return NextResponse.json(
+      { error: "Webhook secret not configured" },
+      { status: 500 }
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") ?? "";
   const dataId = searchParams.get("data.id") ?? "";
