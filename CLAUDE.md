@@ -49,11 +49,11 @@ src/
     colorMap.ts   → mapeo de nombres de colores a valores hex
   context/        → CartContext (localStorage), CompareContext (memoria)
   store/          → useAuthStore (Zustand)
-middleware.ts     → (raíz) protección de rutas por JWT y rol — NO en layout.tsx
+  middleware.ts   → protección de rutas por JWT y rol. Va en src/ (no en la raíz): con src/app, Next ignora un middleware en la raíz
 ```
 
 ## Autenticación y autorización
-- `middleware.ts` en la raíz valida JWT, maneja redirecciones y protege rutas por rol (primera capa)
+- `src/middleware.ts` valida JWT, maneja redirecciones y protege rutas por rol (primera capa)
 - `app/admin/layout.tsx` hace una segunda validación server-side (segunda capa) antes de renderizar el panel
 - El token vive **solo en la cookie** `auth-token` (httpOnly). Zustand persiste `user` e `isLoggedIn` en localStorage, pero **nunca el token** — la cookie es la única fuente de verdad para `fetchFromApi` y el middleware
 - Rutas públicas: `/`, `/login`, `/register`, `/products`, `/accesorios`, `/creadores`, `/nosotros`, `/contacto`, `/compare`
