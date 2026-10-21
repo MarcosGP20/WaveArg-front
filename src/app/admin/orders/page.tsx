@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PedidosService, Pedido, PedidoItem } from "@/lib/api";
+import { ESTADOS_PEDIDO, estadoClase, estadoLabel, requiereAtencion } from "@/lib/pedidos";
 import {
   Package,
   AlertCircle,
@@ -26,18 +27,6 @@ function formatFecha(iso: string) {
 function formatMonto(n: number | undefined | null) {
   if (n == null) return "-";
   return `$${n.toLocaleString("es-AR")}`;
-}
-
-// Estado → colores (fallback genérico para estados desconocidos)
-function estadoStyle(estado: string): string {
-  const map: Record<string, string> = {
-    procesando: "bg-yellow-100 text-yellow-800",
-    pendiente: "bg-yellow-100 text-yellow-800",
-    enviado: "bg-blue-100 text-blue-800",
-    entregado: "bg-green-100 text-green-800",
-    cancelado: "bg-red-100 text-red-800",
-  };
-  return map[estado.toLowerCase()] ?? "bg-gray-100 text-gray-700";
 }
 
 // Extrae un resumen de los items del pedido
@@ -68,22 +57,19 @@ function TableSkeleton() {
 
 // ================================================================
 // SELECTOR DE ESTADO (dropdown inline con PATCH)
+// Solo ofrece las transiciones que el backend permite para este pedido
+// (ver WAVEARGDEFINITIVO/docs/pedidos-estados.md).
 // ================================================================
-const ESTADOS_OPCIONES = [
-  "procesando",
-  "enviado",
-  "entregado",
-  "cancelado",
-];
-
 function EstadoSelector({
   pedidoId,
   estadoActual,
+  transiciones,
   onUpdated,
 }: {
   pedidoId: number;
   estadoActual: string;
-  onUpdated: (id: number, nuevoEstado: string) => void;
+  transiciones: string[];
+  onUpdated: () => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +81,7 @@ function EstadoSelector({
     setError(null);
     try {
       await PedidosService.updateEstado(pedidoId, nuevoEstado);
-      onUpdated(pedidoId, nuevoEstado);
+      onUpdated();
     } catch (err: unknown) {
       setError(err instanceof Error ? err instanceof Error ? err.message : String(err) : "Error al actualizar");
     } finally {
@@ -103,10 +89,16 @@ function EstadoSelector({
     }
   }
 
-  // Si el estado actual no está en la lista, lo añadimos dinámicamente
-  const opciones = ESTADOS_OPCIONES.includes(estadoActual.toLowerCase())
-    ? ESTADOS_OPCIONES
-    : [estadoActual, ...ESTADOS_OPCIONES];
+  // Sin transiciones manuales (p. ej. Vencido, Reembolsado): solo el badge.
+  if (transiciones.length === 0) {
+    return (
+      <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${estadoClase(estadoActual)}`}>
+        {estadoLabel(estadoActual)}
+      </span>
+    );
+  }
+
+  const opciones = [estadoActual, ...transiciones];
 
   return (
     <div className="flex flex-col gap-1">
@@ -118,11 +110,12 @@ function EstadoSelector({
             <select
               value={estadoActual}
               onChange={handleChange}
-              className={`appearance-none pr-7 pl-2 py-1 rounded-full text-xs font-semibold border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 capitalize ${estadoStyle(estadoActual)}`}
+              aria-label={`Estado del pedido ${pedidoId}`}
+              className={`appearance-none pr-7 pl-2 py-1 rounded-full text-xs font-semibold border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${estadoClase(estadoActual)}`}
             >
               {opciones.map((e) => (
                 <option key={e} value={e}>
-                  {e.charAt(0).toUpperCase() + e.slice(1)}
+                  {e === estadoActual ? estadoLabel(e) : `→ ${estadoLabel(e)}`}
                 </option>
               ))}
             </select>
@@ -164,12 +157,13 @@ export default function OrdersPage() {
     cargarPedidos(filtroEstado || undefined);
   }, [filtroEstado]);
 
-  // Actualización optimista
-  function handleEstadoUpdated(id: number, nuevoEstado: string) {
-    setPedidos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, estado: nuevoEstado } : p))
-    );
+  // Se recarga en vez de actualizar en el lugar: el cambio de estado modifica las
+  // transiciones permitidas (y puede sacar el pedido del filtro actual).
+  function handleEstadoUpdated() {
+    cargarPedidos(filtroEstado || undefined);
   }
+
+  const enRevision = pedidos.filter((p) => requiereAtencion(p.estado)).length;
 
   return (
     <div className="my-8 px-2 md:px-8">
@@ -181,6 +175,11 @@ export default function OrdersPage() {
             {loading
               ? "Cargando..."
               : `${pedidos.length} pedido${pedidos.length !== 1 ? "s" : ""}`}
+            {!loading && enRevision > 0 && (
+              <span className="ml-2 font-semibold text-orange-700">
+                · {enRevision} para revisar
+              </span>
+            )}
           </p>
         </div>
 
@@ -188,12 +187,13 @@ export default function OrdersPage() {
           <select
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 capitalize"
+            aria-label="Filtrar por estado"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
           >
             <option value="">Todos los estados</option>
-            {ESTADOS_OPCIONES.map((e) => (
+            {ESTADOS_PEDIDO.map((e) => (
               <option key={e} value={e}>
-                {e.charAt(0).toUpperCase() + e.slice(1)}
+                {estadoLabel(e)}
               </option>
             ))}
           </select>
@@ -232,7 +232,7 @@ export default function OrdersPage() {
           <Package size={40} className="text-gray-300" />
           <p className="text-sm">
             {filtroEstado
-              ? `No hay pedidos con estado "${filtroEstado}"`
+              ? `No hay pedidos con estado "${estadoLabel(filtroEstado)}"`
               : "No hay pedidos todavía"}
           </p>
         </div>
@@ -255,7 +255,10 @@ export default function OrdersPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {pedidos.map((pedido) => (
-                <tr key={pedido.id} className="hover:bg-gray-50 transition-colors">
+                <tr
+                  key={pedido.id}
+                  className={`transition-colors ${requiereAtencion(pedido.estado) ? "bg-orange-50 hover:bg-orange-100" : "hover:bg-gray-50"}`}
+                >
                   <td className="py-3 px-4 font-mono text-xs text-gray-400">
                     #{pedido.id}
                   </td>
@@ -283,6 +286,7 @@ export default function OrdersPage() {
                     <EstadoSelector
                       pedidoId={pedido.id}
                       estadoActual={pedido.estado}
+                      transiciones={pedido.transicionesPermitidas ?? []}
                       onUpdated={handleEstadoUpdated}
                     />
                   </td>

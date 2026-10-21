@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { esPedidoActivo } from "@/lib/pedidos";
 
 interface EditForm {
   nombre: string;
@@ -50,7 +51,7 @@ export default function ProfilePage() {
     PedidosService.getMisPedidos()
       .then((pedidos) => {
         const activos = pedidos.filter((p) =>
-          ["procesando", "pendiente", "enviado"].includes(p.estado.toLowerCase())
+          esPedidoActivo(p.estado)
         ).length;
         setPedidosActivos(activos);
       })

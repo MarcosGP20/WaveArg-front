@@ -350,7 +350,8 @@ export const AdminService = {
 // --- Pedidos ---
 
 // Estados tal como los devuelve el backend
-export type EstadoPedido = string;
+import type { EstadoPedido } from "@/lib/pedidos";
+export type { EstadoPedido };
 
 export interface PedidoUsuario {
   id: number;
@@ -372,7 +373,13 @@ export interface PedidoItem {
 export interface Pedido {
   id: number;
   direccionEnvio: string;
+  envioCalle?: string | null;
+  envioCiudad?: string | null;
+  envioProvincia?: string | null;
+  envioCodigoPostal?: string | null;
   estado: EstadoPedido;
+  /** Transiciones manuales que el admin puede hacer (solo en los endpoints de admin). */
+  transicionesPermitidas?: EstadoPedido[];
   fecha: string;
   items: PedidoItem[];
   mercadoPagoId?: string;

@@ -11,6 +11,7 @@ import {
   Package,
 } from "lucide-react";
 import Link from "next/link";
+import { estadoClase, estadoLabel } from "@/lib/pedidos";
 
 // ================================================================
 // HELPERS
@@ -42,17 +43,9 @@ function resumeItems(items: PedidoItem[]): string {
 }
 
 function EstadoBadge({ estado }: { estado: string }) {
-  const map: Record<string, string> = {
-    procesando: "bg-yellow-100 text-yellow-800",
-    pendiente: "bg-yellow-100 text-yellow-800",
-    enviado: "bg-blue-100 text-blue-800",
-    entregado: "bg-green-100 text-green-800",
-    cancelado: "bg-red-100 text-red-800",
-  };
-  const style = map[estado.toLowerCase()] ?? "bg-gray-100 text-gray-600";
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${style}`}>
-      {estado}
+    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${estadoClase(estado)}`}>
+      {estadoLabel(estado)}
     </span>
   );
 }
