@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authCookieOptions } from "@/lib/auth-cookie";
+import { decodeJWT } from "@/lib/jwt";
 
 function getTokenMaxAge(token: string): number {
-  try {
-    const payload = JSON.parse(
-      Buffer.from(token.split(".")[1] ?? "", "base64url").toString("utf8")
-    ) as { exp?: number };
+  const payload = decodeJWT(token) as { exp?: number } | null;
+  if (!payload?.exp) return 0;
 
-    if (!payload.exp) return 0;
-
-    return Math.max(0, payload.exp - Math.floor(Date.now() / 1000));
-  } catch {
-    return 0;
-  }
+  return Math.max(0, payload.exp - Math.floor(Date.now() / 1000));
 }
 
 export async function POST(req: NextRequest) {
