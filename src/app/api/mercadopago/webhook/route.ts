@@ -58,10 +58,13 @@ export async function POST(req: NextRequest) {
   try {
     const backendUrl = `${BACKEND_API_BASE}/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`;
 
+    // El backend valida la misma firma (fail-closed): hay que reenviarle los headers de MP.
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-signature": req.headers.get("x-signature") ?? "",
+        "x-request-id": req.headers.get("x-request-id") ?? "",
       },
     });
 

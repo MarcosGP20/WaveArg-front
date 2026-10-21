@@ -432,7 +432,15 @@ export interface MPPreferenciaItem {
   esAccesorio: boolean;
 }
 
+export interface DireccionEnvio {
+  calle: string;
+  ciudad: string;
+  provincia: string;
+  codigoPostal: string;
+}
+
 export interface MPPreferenciaResponse {
+  pedidoId?: number;
   url_real?: string;    // URL de pago producción
   url_prueba?: string;  // URL de pago sandbox
   [key: string]: unknown;
@@ -443,18 +451,9 @@ export const MercadoPagoService = {
    * Crea una preferencia de pago en MercadoPago a través del backend.
    * Devuelve la URL de pago (initPoint o sandboxInitPoint).
    */
-  crearPreferencia: (items: MPPreferenciaItem[], direccionEnvio: string) =>
+  crearPreferencia: (items: MPPreferenciaItem[], direccionEnvio: DireccionEnvio) =>
     fetchFromApi<MPPreferenciaResponse>("/MercadoPago/crear-preferencia", {
       method: "POST",
       body: JSON.stringify({ items, direccionEnvio }),
     }),
-
-  /**
-   * Reenvía una notificación de webhook de MercadoPago al backend.
-   */
-  procesarWebhook: (type: string, dataId: string) =>
-    fetchFromApi<unknown>(
-      `/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`,
-      { method: "POST" },
-    ),
 };

@@ -46,6 +46,9 @@ export default function CheckoutPage() {
     if (!direccion.ciudad.trim()) errors.ciudad = "Requerido";
     if (!direccion.provincia) errors.provincia = "Requerido";
     if (!direccion.codigoPostal.trim()) errors.codigoPostal = "Requerido";
+    // Mismo formato que valida el backend: CPA ("C1043AAB") o 4 dígitos, con o sin letra de provincia.
+    else if (!/^[A-Za-z]?\d{4}([A-Za-z]{3})?$/.test(direccion.codigoPostal.trim()))
+      errors.codigoPostal = "Código postal inválido";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -76,8 +79,12 @@ export default function CheckoutPage() {
         };
       });
 
-      const direccionCompleta = `${direccion.calle}, ${direccion.ciudad}, ${direccion.provincia} (CP ${direccion.codigoPostal})`;
-      const preferencia = await MercadoPagoService.crearPreferencia(items, direccionCompleta);
+      const preferencia = await MercadoPagoService.crearPreferencia(items, {
+        calle: direccion.calle.trim(),
+        ciudad: direccion.ciudad.trim(),
+        provincia: direccion.provincia,
+        codigoPostal: direccion.codigoPostal.trim(),
+      });
 
       const raw = preferencia as Record<string, unknown>;
       const urlPago =
