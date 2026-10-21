@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
+import { BACKEND_API_BASE } from "@/lib/backend";
 
-const BACKEND_API_BASE =
-  process.env.INTERNAL_API_BASE ??
-  process.env.NEXT_PUBLIC_API_BASE ??
-  "http://localhost:5075/api";
+// El backend ve todas las requests de este proxy con la IP de Vercel. Para que su rate limit
+// distinga usuarios, le pasamos la IP del navegador junto con un secreto compartido
+// (Proxy:ClientIpSecret en el backend); sin el secreto, el backend ignora el header.
+const BACKEND_PROXY_SECRET = process.env.BACKEND_PROXY_SECRET;
+
+// En Vercel, x-real-ip y el primer valor de x-forwarded-for los pone la plataforma.
+function getClientIp(req: NextRequest): string | null {
+  return (
+    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    null
+  );
+}
 
 type RouteContext = {
   params: Promise<{ path: string[] }>;
@@ -17,11 +28,16 @@ async function proxyRequest(req: NextRequest, context: RouteContext) {
   const headers = new Headers();
   const contentType = req.headers.get("content-type");
   const accept = req.headers.get("accept");
-  const token = req.cookies.get("auth-token")?.value;
+  const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
+  const clientIp = getClientIp(req);
 
   if (contentType) headers.set("content-type", contentType);
   if (accept) headers.set("accept", accept);
   if (token) headers.set("authorization", `Bearer ${token}`);
+  if (BACKEND_PROXY_SECRET && clientIp) {
+    headers.set("x-wave-client-ip", clientIp);
+    headers.set("x-wave-proxy-secret", BACKEND_PROXY_SECRET);
+  }
 
   const init: RequestInit = {
     method: req.method,

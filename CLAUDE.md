@@ -44,6 +44,8 @@ src/
   lib/
     api.ts        → todos los servicios y DTOs de la API
     jwt.ts        → decodificación JWT sin validación de firma (client-side)
+    auth-cookie.ts → nombre y opciones de la cookie auth-token (única definición)
+    backend.ts    → BACKEND_API_BASE para código server-side (route handlers, server components, sitemap)
     colorMap.ts   → mapeo de nombres de colores a valores hex
   context/        → CartContext (localStorage), CompareContext (memoria)
   store/          → useAuthStore (Zustand)
@@ -77,11 +79,14 @@ middleware.ts     → (raíz) protección de rutas por JWT y rol — NO en layou
 ## Variables de entorno
 ```
 NEXT_PUBLIC_API_BASE           # URL del backend (.NET)
+INTERNAL_API_BASE              # Opcional: URL del backend solo para el servidor de Next (pisa a la anterior)
+NEXT_PUBLIC_API_PROXY_BASE     # Opcional: base que usa el cliente (default /api/backend)
+BACKEND_PROXY_SECRET           # Secreto compartido con el backend (Proxy__ClientIpSecret) para reenviar la IP del cliente
 NEXT_PUBLIC_SITE_URL           # URL pública del frontend (para MercadoPago back_urls)
 NEXT_PUBLIC_GOOGLE_CLIENT_ID
 MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producción)
 ```
-`.env.production` ya existe con las URLs de Vercel y Render.
+`.env.production` ya existe con las URLs de Vercel y Render. Plantilla completa en `.env.example`.
 
 ## Estado de producción
 
