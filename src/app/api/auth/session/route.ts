@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const COOKIE_NAME = "auth-token";
+import { authCookieOptions } from "@/lib/auth-cookie";
 
 function getTokenMaxAge(token: string): number {
   try {
@@ -29,30 +28,14 @@ export async function POST(req: NextRequest) {
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set({
-    name: COOKIE_NAME,
-    value: token,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge,
-  });
+  response.cookies.set({ ...authCookieOptions(maxAge), value: token });
 
   return response;
 }
 
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
-  response.cookies.set({
-    name: COOKIE_NAME,
-    value: "",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge: 0,
-  });
+  response.cookies.set({ ...authCookieOptions(0), value: "" });
 
   return response;
 }

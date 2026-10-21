@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
+import { BACKEND_API_BASE } from "@/lib/backend";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wavearg.com.ar";
 
 const STATIC_ROUTES = [
@@ -14,7 +14,7 @@ const STATIC_ROUTES = [
 
 async function fetchIds(endpoint: string): Promise<number[]> {
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${BACKEND_API_BASE}${endpoint}`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const data = await res.json();
     return Array.isArray(data) ? data.map((item: { id: number }) => item.id) : [];

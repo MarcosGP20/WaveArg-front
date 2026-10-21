@@ -112,9 +112,9 @@ export default function SettingsPage() {
             {showPasswordForm && (
               <PasswordForm
                 onClose={() => setShowPasswordForm(false)}
-                onSuccess={() => {
+                onSuccess={async () => {
                   setShowPasswordForm(false);
-                  logout();
+                  await logout();
                   router.push("/login");
                 }}
               />

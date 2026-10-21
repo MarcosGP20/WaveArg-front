@@ -94,9 +94,9 @@ export default function NavBar() {
     prevCartCountRef.current = cartCount;
   }, [cartCount]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
     setUserDropdownOpen(false);
+    await logout();
     router.push("/");
   };
 

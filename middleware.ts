@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeJWT } from "@/lib/jwt";
+import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
 
 interface DecodedToken {
   id: string;
@@ -46,7 +47,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const token = request.cookies.get("auth-token")?.value;
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
   const isAuthenticated = token && !isTokenExpired(token);
   const decodedToken = isAuthenticated ? decodeToken(token!) : null;
 

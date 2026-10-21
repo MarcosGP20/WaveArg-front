@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { decodeJWT } from "@/lib/jwt";
+import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
 import AdminShell from "@/app/admin/components/AdminShell";
 
 interface DecodedToken {
@@ -16,7 +17,7 @@ export default async function AdminLayout({
 }) {
   // Server-side protection: validar cookie antes de renderizar
   const cookieStore = await cookies();
-  const tokenCookie = cookieStore.get("auth-token");
+  const tokenCookie = cookieStore.get(AUTH_COOKIE_NAME);
   const token = tokenCookie?.value;
 
   if (!token) {

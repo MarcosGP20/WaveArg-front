@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { Accesorio } from "@/interfaces/accesorio";
 import AccesorioDetailContent from "./AccesorioDetailContent";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
+import { BACKEND_API_BASE } from "@/lib/backend";
 
 export async function generateMetadata({
   params,
@@ -11,7 +11,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   try {
-    const res = await fetch(`${API_BASE}/Accesorios/${id}`, {
+    const res = await fetch(`${BACKEND_API_BASE}/Accesorios/${id}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return { title: "Accesorio | Wave ARG" };

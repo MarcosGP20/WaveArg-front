@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:5075/api";
+import { BACKEND_API_BASE } from "@/lib/backend";
 
 const MP_WEBHOOK_SECRET = process.env.MERCADOPAGO_WEBHOOK_SECRET;
 const isProduction = process.env.NODE_ENV === "production";
@@ -12,11 +10,8 @@ const isProduction = process.env.NODE_ENV === "production";
  * Formato del header: "ts=<timestamp>,v1=<hash>"
  * El mensaje firmado es: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;"
  *
- * Sin secret configurado: en dev se omite la validación; en producción se rechaza (fail-closed).
  */
-function isValidSignature(req: NextRequest, dataId: string): boolean {
-  if (!MP_WEBHOOK_SECRET) return !isProduction;
-
+function isValidSignature(req: NextRequest, dataId: string, secret: string): boolean {
   const xSignature = req.headers.get("x-signature") ?? "";
   const xRequestId = req.headers.get("x-request-id") ?? "";
 
@@ -26,7 +21,7 @@ function isValidSignature(req: NextRequest, dataId: string): boolean {
   if (!ts || !v1) return false;
 
   const message = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
-  const expected = createHmac("sha256", MP_WEBHOOK_SECRET)
+  const expected = createHmac("sha256", secret)
     .update(message)
     .digest("hex");
 
@@ -40,9 +35,10 @@ function isValidSignature(req: NextRequest, dataId: string): boolean {
  *   ?type=payment&data.id=<payment_id>
  *
  * Este handler valida la firma HMAC-SHA256 y reenvía la notificación al backend .NET.
+ * Sin secret configurado: en producción rechaza todo (fail-closed); en dev omite la validación.
  */
 export async function POST(req: NextRequest) {
-  if (isProduction && !MP_WEBHOOK_SECRET) {
+  if (!MP_WEBHOOK_SECRET && isProduction) {
     console.error("[MP Webhook] MERCADOPAGO_WEBHOOK_SECRET no configurado");
     return NextResponse.json(
       { error: "Webhook secret not configured" },
@@ -54,13 +50,13 @@ export async function POST(req: NextRequest) {
   const type = searchParams.get("type") ?? "";
   const dataId = searchParams.get("data.id") ?? "";
 
-  if (!isValidSignature(req, dataId)) {
+  if (MP_WEBHOOK_SECRET && !isValidSignature(req, dataId, MP_WEBHOOK_SECRET)) {
     console.warn("[MP Webhook] Firma inválida — request rechazado");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const backendUrl = `${API_BASE}/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`;
+    const backendUrl = `${BACKEND_API_BASE}/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`;
 
     const response = await fetch(backendUrl, {
       method: "POST",
