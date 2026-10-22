@@ -3,17 +3,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormValues } from "@/schemas/auth.schema";
-import { registerUser, loginWithGoogle } from "@/lib/api";
+import { registerUser } from "@/lib/api";
+import type { AuthResponse } from "@/interfaces/auth";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
+import GoogleAuth from "@/components/GoogleAuth";
 import { useAuthStore } from "@/store/useAuthStore";
-
-const GoogleLoginButton = dynamic(() => import("@/components/GoogleLoginButton"), { ssr: false });
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 
 export function RegisterForm() {
@@ -60,32 +59,20 @@ export function RegisterForm() {
     }
   };
 
-  // Registro/Login con Google — mismo endpoint que el login.
-  // El backend crea el usuario si no existe, o lo autentica si ya existe.
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
-    if (!credentialResponse.credential) return;
-    setServerError("");
-    setStatusMessage("Verificando cuenta de Google...");
-    try {
-      const response = await loginWithGoogle(credentialResponse.credential);
-      if (response?.token) {
-        let user = response.user;
-        if (!user) {
-          user = {
-            id: getUserIdFromJWT(response.token) || "unknown",
-            email: getEmailFromJWT(response.token) || "",
-            rol: getRoleFromJWT(response.token) || "User",
-          };
-        }
-        await setAuth(response.token, user);
-        setStatusMessage("¡Cuenta lista! Redirigiendo...");
-        const isAdmin = user?.rol?.toLowerCase() === "admin";
-        setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
-      }
-    } catch (error: unknown) {
-      setStatusMessage("");
-      setServerError(error instanceof Error ? error.message : String(error) || "Error al registrarse con Google.");
+  // Registro/Login con Google: el backend crea la cuenta si no existe. El caso "ya tenés una cuenta con contraseña" lo resuelve GoogleAuth.
+  const handleGoogleSuccess = async (response: AuthResponse) => {
+    let user = response.user;
+    if (!user) {
+      user = {
+        id: getUserIdFromJWT(response.token) || "unknown",
+        email: getEmailFromJWT(response.token) || "",
+        rol: getRoleFromJWT(response.token) || "User",
+      };
     }
+    await setAuth(response.token, user);
+    setStatusMessage("¡Cuenta lista! Redirigiendo...");
+    const isAdmin = user?.rol?.toLowerCase() === "admin";
+    setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
   };
 
   return (
@@ -183,9 +170,10 @@ export function RegisterForm() {
       </div>
 
       <div className="flex justify-center">
-        <GoogleLoginButton
+        <GoogleAuth
           onSuccess={handleGoogleSuccess}
-          onError={() => setServerError("Error al conectar con Google. Intentá de nuevo.")}
+          onStatus={setStatusMessage}
+          onError={setServerError}
           text="signup_with"
         />
       </div>

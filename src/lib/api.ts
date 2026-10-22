@@ -54,6 +54,21 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_PROXY_BASE ?? "/api/backend";
 
 /**
+ * Error de la API con el status y el cuerpo de la respuesta, para los casos que el front
+ * resuelve según el código (ej. 409 VINCULAR_GOOGLE). `message` es el texto para el usuario.
+ */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly data: Record<string, unknown> = {},
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+/**
  * Lee el token desde la cookie auth-token (misma que usa el middleware y Zustand).
  * Una sola fuente de verdad para autenticación.
  */
@@ -117,7 +132,7 @@ export async function fetchFromApi<T>(
         errorMessage = `${errorMessage} → ${detalles}`;
       }
 
-      throw new Error(errorMessage);
+      throw new ApiError(errorMessage, res.status, errorData);
     }
 
     // Para endpoints que devuelven 204 No Content (como un DELETE exitoso)
@@ -284,6 +299,17 @@ export async function loginWithGoogle(idToken: string) {
     body: JSON.stringify({ idToken }),
   });
 }
+
+// El usuario confirmó unificar su cuenta con contraseña con su cuenta de Google
+// (después de un 409 VINCULAR_GOOGLE de loginWithGoogle).
+export async function vincularGoogle(idToken: string) {
+  return fetchFromApi<AuthResponse>("/Auth/google/vincular", {
+    method: "POST",
+    body: JSON.stringify({ idToken }),
+  });
+}
+
+export const CODIGO_VINCULAR_GOOGLE = "VINCULAR_GOOGLE";
 
 export async function registerUser(data: RegisterDTO) {
   // Ahora usamos fetchFromApi para ser consistentes

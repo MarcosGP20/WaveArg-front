@@ -8,13 +8,12 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Loader2, LogIn, Mail, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { loginUser, loginWithGoogle } from "@/lib/api";
+import { loginUser } from "@/lib/api";
+import type { AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
-import dynamic from "next/dynamic";
-
-const GoogleLoginButton = dynamic(() => import("@/components/GoogleLoginButton"), { ssr: false });
+import GoogleAuth from "@/components/GoogleAuth";
 
 export function LoginForm() {
   const [serverError, setServerError] = useState("");
@@ -76,31 +75,20 @@ export function LoginForm() {
     }
   };
 
-  // Login con Google — maneja el credential (idToken) retornado por Google
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
-    if (!credentialResponse.credential) return;
-    setServerError("");
-    setStatusMessage("Verificando cuenta de Google...");
-    try {
-      const response = await loginWithGoogle(credentialResponse.credential);
-      if (response?.token) {
-        let user = response.user;
-        if (!user) {
-          user = {
-            id: getUserIdFromJWT(response.token) || "unknown",
-            email: getEmailFromJWT(response.token) || "",
-            rol: getRoleFromJWT(response.token) || "User",
-          };
-        }
-        await setAuth(response.token, user);
-        setStatusMessage("Sesión iniciada con Google. Redirigiendo...");
-        const isAdmin = user?.rol?.toLowerCase() === "admin";
-        setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
-      }
-    } catch (error: unknown) {
-      setStatusMessage("");
-      setServerError(error instanceof Error ? error.message : String(error) || "Error al iniciar sesión con Google.");
+  // Login con Google: llega acá con el token ya emitido. El caso "ya tenés una cuenta con contraseña" lo resuelve GoogleAuth.
+  const handleGoogleSuccess = async (response: AuthResponse) => {
+    let user = response.user;
+    if (!user) {
+      user = {
+        id: getUserIdFromJWT(response.token) || "unknown",
+        email: getEmailFromJWT(response.token) || "",
+        rol: getRoleFromJWT(response.token) || "User",
+      };
     }
+    await setAuth(response.token, user);
+    setStatusMessage("Sesión iniciada con Google. Redirigiendo...");
+    const isAdmin = user?.rol?.toLowerCase() === "admin";
+    setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
   };
 
   return (
@@ -203,9 +191,10 @@ export function LoginForm() {
       </div>
 
       <div className="flex justify-center">
-        <GoogleLoginButton
+        <GoogleAuth
           onSuccess={handleGoogleSuccess}
-          onError={() => setServerError("Error al conectar con Google. Intentá de nuevo.")}
+          onStatus={setStatusMessage}
+          onError={setServerError}
           text="continue_with"
         />
       </div>
