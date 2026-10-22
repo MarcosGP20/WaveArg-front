@@ -131,3 +131,17 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - `http2.mlstatic.com` (MercadoLibre)
 - `www.sagitariodigital.com.ar`
 - Agregar banco de fotos cuando se defina (Unsplash, Pexels, Cloudinary, etc.)
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues de `MarcosGP20/WaveArg-front` (los que tocan back y front van en `MarcosGP20/WAVEARGDEFINITIVO`), con `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Las cinco etiquetas por defecto: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` y `docs/adr/` en la raíz del repo. See `docs/agents/domain.md`.
