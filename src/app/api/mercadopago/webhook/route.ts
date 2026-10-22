@@ -9,7 +9,8 @@ const isProduction = process.env.NODE_ENV === "production";
  * Valida la firma HMAC-SHA256 enviada por MercadoPago en el header x-signature.
  * Formato del header: "ts=<timestamp>,v1=<hash>"
  * El mensaje firmado es: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;"
- *
+ * Si falta data.id o x-request-id, MP omite ese tramo entero (igual que el backend en
+ * FirmaWebhookMp.cs: los dos tienen que armar el mismo texto).
  */
 function isValidSignature(req: NextRequest, dataId: string, secret: string): boolean {
   const xSignature = req.headers.get("x-signature") ?? "";
@@ -20,7 +21,10 @@ function isValidSignature(req: NextRequest, dataId: string, secret: string): boo
 
   if (!ts || !v1) return false;
 
-  const message = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+  const message =
+    (dataId ? `id:${dataId};` : "") +
+    (xRequestId ? `request-id:${xRequestId};` : "") +
+    `ts:${ts};`;
   const expected = createHmac("sha256", secret)
     .update(message)
     .digest("hex");
@@ -59,14 +63,15 @@ export async function POST(req: NextRequest) {
     const backendUrl = `${BACKEND_API_BASE}/MercadoPago/webhook?type=${encodeURIComponent(type)}&data.id=${encodeURIComponent(dataId)}`;
 
     // El backend valida la misma firma (fail-closed): hay que reenviarle los headers de MP.
-    const response = await fetch(backendUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-signature": req.headers.get("x-signature") ?? "",
-        "x-request-id": req.headers.get("x-request-id") ?? "",
-      },
-    });
+    // x-request-id sólo si vino: vacío y ausente firman distinto en el backend.
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "x-signature": req.headers.get("x-signature") ?? "",
+    };
+    const xRequestId = req.headers.get("x-request-id");
+    if (xRequestId) headers["x-request-id"] = xRequestId;
+
+    const response = await fetch(backendUrl, { method: "POST", headers });
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => "");

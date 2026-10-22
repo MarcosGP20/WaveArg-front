@@ -4,8 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const SECRET = "secreto-de-test";
 
-function firmar(dataId: string, requestId: string, ts: string, secret = SECRET) {
-  const v1 = createHmac("sha256", secret).update(`id:${dataId};request-id:${requestId};ts:${ts};`).digest("hex");
+// Arma el texto firmado como MP: sin request-id, el tramo "request-id:...;" no va.
+function firmar(dataId: string, requestId: string | null, ts: string, secret = SECRET) {
+  const manifest = `id:${dataId};` + (requestId ? `request-id:${requestId};` : "") + `ts:${ts};`;
+  const v1 = createHmac("sha256", secret).update(manifest).digest("hex");
   return `ts=${ts},v1=${v1}`;
 }
 
@@ -42,6 +44,28 @@ describe("webhook de MercadoPago (route de Next)", () => {
     expect(String(url)).toContain("/MercadoPago/webhook?type=payment&data.id=123");
     expect(init.headers["x-signature"]).toBe(signature);
     expect(init.headers["x-request-id"]).toBe("req-1");
+  });
+
+  it("sin x-request-id valida la firma sin ese tramo y no le reenvía el header vacío al backend", async () => {
+    const { POST } = await import("./route");
+    const signature = firmar("123", null, "1700000000000");
+
+    const response = await POST(notificacion({ "x-signature": signature }));
+
+    expect(response.status).toBe(200);
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.headers["x-signature"]).toBe(signature);
+    expect(init.headers).not.toHaveProperty("x-request-id");
+  });
+
+  it("sin x-request-id rechaza una firma armada con el tramo request-id vacío", async () => {
+    const { POST } = await import("./route");
+    const v1 = createHmac("sha256", SECRET).update("id:123;request-id:;ts:1700000000000;").digest("hex");
+
+    const response = await POST(notificacion({ "x-signature": `ts=1700000000000,v1=${v1}` }));
+
+    expect(response.status).toBe(401);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("rechaza una firma inválida sin llamar al backend", async () => {
