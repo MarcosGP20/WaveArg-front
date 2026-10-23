@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError, CODIGO_VINCULAR_GOOGLE, loginWithGoogle, vincularGoogle } from "./api";
+import { ApiError, CODIGO_VINCULAR_GOOGLE, loginUser, loginWithGoogle, vincularGoogle } from "./api";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const fetchMock = vi.fn();
 
@@ -41,5 +42,41 @@ describe("login con Google y vinculación de cuentas (api.ts)", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(String(url)).toMatch(/\/Auth\/google\/vincular$/);
     expect(JSON.parse(init.body)).toEqual({ idToken: "id-token" });
+  });
+});
+
+describe("login con email y contraseña (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+    // fetchFromApi sólo desloguea en el navegador.
+    vi.stubGlobal("window", {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("un login fallido muestra el mensaje del back y no cierra la sesión", async () => {
+    const logout = vi.fn();
+    vi.spyOn(useAuthStore, "getState").mockReturnValue({ ...useAuthStore.getState(), logout });
+    fetchMock.mockResolvedValue(respuesta(400, { message: "Email o contraseña incorrectos." }));
+
+    const error = await loginUser({ email: "ana@test.local", contraseña: "mala" }).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ status: 400, message: "Email o contraseña incorrectos." });
+    expect(logout).not.toHaveBeenCalled();
+  });
+
+  it("un 401 de otro endpoint sí cierra la sesión", async () => {
+    const logout = vi.fn();
+    vi.spyOn(useAuthStore, "getState").mockReturnValue({ ...useAuthStore.getState(), logout });
+    fetchMock.mockResolvedValue(respuesta(401, {}));
+
+    await loginUser({ email: "ana@test.local", contraseña: "x" }).catch(() => {});
+
+    expect(logout).toHaveBeenCalledOnce();
   });
 });
