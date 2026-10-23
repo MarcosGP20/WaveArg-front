@@ -339,6 +339,13 @@ export async function vincularGoogle(idToken: string) {
 
 export const CODIGO_VINCULAR_GOOGLE = "VINCULAR_GOOGLE";
 
+// 503 de crear-preferencia cuando el checkout está apagado (Interruptores__CheckoutHabilitado).
+export const CODIGO_CHECKOUT_PAUSADO = "CHECKOUT_PAUSADO";
+
+export function esCheckoutPausado(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 503 && error.data.codigo === CODIGO_CHECKOUT_PAUSADO;
+}
+
 export async function registerUser(data: RegisterDTO) {
   // Ahora usamos fetchFromApi para ser consistentes
   return fetchFromApi<{ message: string }>("/Auth/register", {

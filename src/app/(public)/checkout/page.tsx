@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { MercadoPagoService } from "@/lib/api";
+import { esCheckoutPausado, MercadoPagoService } from "@/lib/api";
+import { useEstado } from "@/context/EstadoContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check, MapPin } from "lucide-react";
+import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check, MapPin, PauseCircle } from "lucide-react";
 
 interface DireccionForm {
   calle: string;
@@ -29,6 +30,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [authError, setAuthError] = useState(false);
+  // El estado llega del layout; si el checkout se apaga después, lo avisa el 503 del back.
+  const [pausado, setPausado] = useState(!useEstado().checkoutHabilitado);
   const [formErrors, setFormErrors] = useState<Partial<DireccionForm>>({});
 
   const [direccion, setDireccion] = useState<DireccionForm>({
@@ -99,6 +102,11 @@ export default function CheckoutPage() {
 
       window.location.href = urlPago;
     } catch (err: unknown) {
+      if (esCheckoutPausado(err)) {
+        setPausado(true);
+        setLoading(false);
+        return;
+      }
       const message =
         err instanceof Error
           ? err.message
@@ -365,6 +373,19 @@ export default function CheckoutPage() {
           </div>
         )}
 
+        {/* Interruptores__CheckoutHabilitado=false en el back */}
+        {pausado && (
+          <div role="status" className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
+            <PauseCircle className="text-amber-500 shrink-0 mt-0.5" size={22} />
+            <div>
+              <p className="font-semibold text-amber-800 mb-1">Las compras están pausadas</p>
+              <p className="text-amber-700 text-sm">
+                Volvemos a tomar pedidos en unos minutos. Tu carrito queda guardado.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Error genérico */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
@@ -379,7 +400,7 @@ export default function CheckoutPage() {
         {/* Botón de pago */}
         <button
           onClick={handlePagar}
-          disabled={loading}
+          disabled={loading || pausado}
           className="w-full bg-mp hover:bg-mp-dark active:bg-mp-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-200 shadow-lg shadow-mp/30"
         >
           {loading ? (

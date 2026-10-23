@@ -14,10 +14,12 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 import GoogleAuth from "@/components/GoogleAuth";
+import { useEstado } from "@/context/EstadoContext";
 
 export function LoginForm() {
   const [serverError, setServerError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const { googleHabilitado } = useEstado();
   const router = useRouter();
 
   // Obtenemos la función setAuth del estado global
@@ -181,23 +183,28 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <div className="relative my-8">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-4 text-gray-400">o continuar con</span>
-        </div>
-      </div>
+      {/* Interruptores__GoogleHabilitado=false en el back: sin botón de Google. */}
+      {googleHabilitado && (
+        <>
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-4 text-gray-400">o continuar con</span>
+            </div>
+          </div>
 
-      <div className="flex justify-center">
-        <GoogleAuth
-          onSuccess={handleGoogleSuccess}
-          onStatus={setStatusMessage}
-          onError={setServerError}
-          text="continue_with"
-        />
-      </div>
+          <div className="flex justify-center">
+            <GoogleAuth
+              onSuccess={handleGoogleSuccess}
+              onStatus={setStatusMessage}
+              onError={setServerError}
+              text="continue_with"
+            />
+          </div>
+        </>
+      )}
 
       <p className="text-sm text-center mt-6 text-gray-500">
         ¿Aún no eres parte?{" "}

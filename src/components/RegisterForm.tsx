@@ -12,12 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import GoogleAuth from "@/components/GoogleAuth";
+import { useEstado } from "@/context/EstadoContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 
 export function RegisterForm() {
   const [serverError, setServerError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const { googleHabilitado } = useEstado();
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -160,23 +162,28 @@ export function RegisterForm() {
         </Button>
       </form>
 
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-400">O también</span>
-        </div>
-      </div>
+      {/* Interruptores__GoogleHabilitado=false en el back: sin botón de Google. */}
+      {googleHabilitado && (
+        <>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-400">O también</span>
+            </div>
+          </div>
 
-      <div className="flex justify-center">
-        <GoogleAuth
-          onSuccess={handleGoogleSuccess}
-          onStatus={setStatusMessage}
-          onError={setServerError}
-          text="signup_with"
-        />
-      </div>
+          <div className="flex justify-center">
+            <GoogleAuth
+              onSuccess={handleGoogleSuccess}
+              onStatus={setStatusMessage}
+              onError={setServerError}
+              text="signup_with"
+            />
+          </div>
+        </>
+      )}
 
       <p className="text-sm text-center mt-4 text-gray-500">
         ¿Ya tenés cuenta?{" "}

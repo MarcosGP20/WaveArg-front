@@ -4,6 +4,9 @@ import { Atkinson_Hyperlegible } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import { GoogleProvider } from "@/components/GoogleProvider";
+import Mantenimiento from "@/components/Mantenimiento";
+import { EstadoProvider } from "@/context/EstadoContext";
+import { obtenerEstado } from "@/lib/estado";
 
 const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
@@ -25,20 +28,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const estado = await obtenerEstado();
+
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/iso3.svg" />
       </head>
       <body className={`${atkinson.variable} ${workSans.variable} overflow-x-hidden`}>
-        <GoogleProvider>
-          {children}
-        </GoogleProvider>
+        {estado.mantenimiento ? (
+          <Mantenimiento />
+        ) : (
+          <EstadoProvider estado={estado}>
+            <GoogleProvider>
+              {children}
+            </GoogleProvider>
+          </EstadoProvider>
+        )}
       </body>
     </html>
   );
