@@ -85,6 +85,7 @@ INTERNAL_API_BASE              # Opcional: URL del backend solo para el servidor
 NEXT_PUBLIC_API_PROXY_BASE     # Opcional: base que usa el cliente (default /api/backend)
 BACKEND_PROXY_SECRET           # Secreto compartido con el backend (Proxy__ClientIpSecret) para reenviar la IP del cliente
 JWT_SECRET                     # Misma clave que Jwt__Key del backend: middleware y layout de admin verifican la firma del token
+BACKEND_TIMEOUT_MS             # Opcional: timeout del proxy /api/backend en ms (default 30000); vencido responde 504
 NEXT_PUBLIC_SITE_URL           # URL pública del frontend (para MercadoPago back_urls)
 NEXT_PUBLIC_GOOGLE_CLIENT_ID
 MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producción)

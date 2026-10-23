@@ -16,6 +16,15 @@ function getClientIp(req: NextRequest): string | null {
   );
 }
 
+// Cuánto espera el proxy a que el back empiece a responder antes de cortar con 504
+// (BACKEND_TIMEOUT_MS). 30 s por defecto: en Render free el back puede tardar en despertar.
+const TIMEOUT_POR_DEFECTO_MS = 30_000;
+
+function timeoutMs(): number {
+  const valor = Number(process.env.BACKEND_TIMEOUT_MS);
+  return Number.isFinite(valor) && valor > 0 ? valor : TIMEOUT_POR_DEFECTO_MS;
+}
+
 type RouteContext = {
   params: Promise<{ path: string[] }>;
 };
@@ -49,7 +58,23 @@ async function proxyRequest(req: NextRequest, context: RouteContext) {
     init.body = await req.arrayBuffer();
   }
 
-  const backendResponse = await fetch(backendUrl, init);
+  // El timeout cubre hasta que llegan los headers; el cuerpo se sigue transmitiendo sin límite.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs());
+  let backendResponse: Response;
+  try {
+    backendResponse = await fetch(backendUrl, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      return NextResponse.json(
+        { message: "El servidor está tardando en responder. Probá de nuevo en unos segundos." },
+        { status: 504 },
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
   const responseHeaders = new Headers();
   const responseContentType = backendResponse.headers.get("content-type");
 
