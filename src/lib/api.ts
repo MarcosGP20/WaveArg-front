@@ -24,6 +24,24 @@ export interface CreateVarianteDTO {
   imagenes: string[];
 }
 
+// Edición de una variante desde el admin. `stockAnterior` es el stock que se vio al abrir el
+// formulario: si hubo ventas en el medio, el back responde 409 en vez de pisarlas.
+export interface UpdateVarianteDTO {
+  precio: number;
+  stock: number;
+  stockAnterior: number;
+  color: string;
+  memoria: string;
+}
+
+export interface UpdateAccesorioVarianteDTO {
+  precio: number;
+  stock: number;
+  stockAnterior: number;
+  color: string;
+  especificacion: string;
+}
+
 export interface UpdateProductoDTO {
   nombre: string;
   modelo: string;
@@ -66,6 +84,16 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
   }
+}
+
+/**
+ * Si el error es el 409 de editar una variante cuyo stock cambió mientras el admin editaba,
+ * devuelve el stock que hay ahora. Si no, null.
+ */
+export function stockActualSiCambio(error: unknown): number | null {
+  if (!(error instanceof ApiError) || error.status !== 409) return null;
+  const stock = error.data.stockActual;
+  return typeof stock === "number" ? stock : null;
 }
 
 /**
@@ -187,7 +215,7 @@ export const VariantesService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Partial<Variante>) =>
+  update: (id: number, data: UpdateVarianteDTO) =>
     fetchFromApi<Variante>(`/Variantes`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),
@@ -232,7 +260,7 @@ export const AccesorioVariantesService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Partial<AccesorioVariante>) =>
+  update: (id: number, data: UpdateAccesorioVarianteDTO) =>
     fetchFromApi<AccesorioVariante>(`/AccesorioVariantes`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),
