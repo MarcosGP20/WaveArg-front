@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Mic, Lightbulb, Sparkles, ArrowUpRight } from "lucide-react";
 
 // Colores de marca
@@ -119,11 +120,13 @@ export default function BentoCreadores() {
               </Link>
             </div>
             {/* Imagen decorativa */}
-            <div className="mx-8 mb-8 rounded-xl overflow-hidden">
-              <img
+            <div className="relative mx-8 mb-8 h-40 rounded-xl overflow-hidden">
+              <Image
                 src="/iphone-div-landing.jpg"
                 alt="iPhone para creadores"
-                className="w-full h-40 object-cover object-top opacity-60"
+                fill
+                sizes="(min-width: 768px) 33vw, 100vw"
+                className="object-cover object-top opacity-60"
               />
             </div>
           </SpotlightCard>

@@ -17,7 +17,9 @@ const creatorTools = [
       "Edición profesional.",
       "Trabajo intensivo.",
     ],
-    image: "/macbook-pro.png", // Asegurate de que estas rutas sean correctas en /public
+    image: "/macbook-pro.png",
+    width: 1200,
+    height: 630,
     button: false,
   },
   {
@@ -28,6 +30,8 @@ const creatorTools = [
       "Ideal para creadores.",
     ],
     image: "/macbook-air.webp",
+    width: 1200,
+    height: 630,
     button: false,
   },
   {
@@ -38,6 +42,8 @@ const creatorTools = [
       "Súper práctico para viajes.",
     ],
     image: "/ipad.jpg",
+    width: 550,
+    height: 600,
     button: true,
     buttonText: "Ver disponibles",
   },
@@ -115,10 +121,13 @@ export default function Creadores() {
             >
               {/* Contenedor de Imagen */}
               <div className="w-full md:w-1/2 flex justify-center">
-                <img
+                <Image
                   src={item.image}
                   alt={item.title}
-                  className="max-w-full h-auto object-contain transition-transform duration-500 hover:scale-105"
+                  width={item.width}
+                  height={item.height}
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="max-w-full h-auto w-auto object-contain transition-transform duration-500 hover:scale-105"
                   style={{ maxHeight: "350px" }}
                 />
               </div>
@@ -157,10 +166,12 @@ export default function Creadores() {
       <section className="max-w-full mx-auto px-6 py-10">
         <div className="relative w-full h-[70vh] md:h-[85vh] rounded-[2rem] overflow-hidden shadow-xl">
           {/* Imagen de fondo */}
-          <img
-            src="/accesorios.webp" // Reemplaza por tu ruta
+          <Image
+            src="/accesorios.webp"
             alt="Accesorios para creadores"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
 
           {/* Overlay oscuro para legibilidad (opcional pero recomendado) */}
