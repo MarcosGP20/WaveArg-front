@@ -7,7 +7,7 @@ import Link from "next/link";
 // componentes
 import CommunitySection from "../../components/CommunitySection";
 import FAQSection from "../../components/FAQSection";
-import VideoLoader from "../../components/VideoLoader";
+import HomeLoader from "../../components/HomeLoader";
 import { LazyVideoFacade } from "../../components/VideoPlayer";
 import IPhoneCarousel, { CarouselItem } from "../../components/IPhoneCarousel";
 import BentoCreadores from "../../components/BentoCreadores";
@@ -70,18 +70,6 @@ const ASSET_PATHS = {
 };
 
 export default function HomePage() {
-  // Loader solo se muestra la primera vez por sesión de navegador.
-  // La función inicializadora corre solo en el cliente (no en SSR).
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window === "undefined") return false; // SSR: nunca mostrar
-    return !sessionStorage.getItem("hasVisited"); // false si ya visitó
-  });
-
-  const handleVideoLoaded = () => {
-    setIsLoading(false);
-    sessionStorage.setItem("hasVisited", "true");
-  };
-
   // ── Carrusel: fetch de productos reales ──
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [carouselLoading, setCarouselLoading] = useState(true);
@@ -104,15 +92,10 @@ export default function HomePage() {
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.6, 1, 1.2]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
-  // 5. MODIFICA EL RETURN CON EL CONDICIONAL
   return (
     <>
-      {isLoading ? (
-        // Si 'isLoading' es true, muestra el loader
-        <VideoLoader onLoaded={handleVideoLoaded} />
-      ) : (
-        // Si 'isLoading' es false, muestra tu página normal
-        <main>
+      <HomeLoader />
+      <main>
           {/* Hero - Video */}
           <section className="relative h-screen w-full overflow-hidden">
             <video
@@ -264,8 +247,7 @@ export default function HomePage() {
             posterUrl="/posterURL.webp"
           />
           <FAQSection />
-        </main>
-      )}
+      </main>
     </>
   );
 }

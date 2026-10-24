@@ -39,6 +39,12 @@ export default async function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/iso3.svg" />
+        {/* Oculta la intro de la home antes de pintar si ya se vio en esta sesión (HomeLoader). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem("hasVisited")!==null)document.documentElement.classList.add("wave-sin-intro")}catch(e){}`,
+          }}
+        />
       </head>
       <body className={`${atkinson.variable} ${workSans.variable} overflow-x-hidden`}>
         {estado.mantenimiento ? (

@@ -212,3 +212,24 @@ body {
 .animate-border-beam {
   animation: border-beam-spin 4s linear infinite;
 }
+
+/* Intro de la home (HomeLoader). Se oculta sin esperar a React en visitas siguientes (clase
+   que pone el script del layout raíz) y con reduced-motion. Si el JS nunca llega, se retira
+   sola a los 6 s. */
+.wave-loader {
+  animation: wave-loader-fuera 0.3s ease-out 6s forwards;
+}
+.wave-sin-intro .wave-loader {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-loader {
+    display: none;
+  }
+}
+@keyframes wave-loader-fuera {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
