@@ -5,46 +5,36 @@
 import { Menu as MenuIcon } from "lucide-react";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import {
-  UserCircle,
-  LogOut,
-  Settings,
-  User,
-  Bell,
-  ChevronDown,
-  HelpCircle,
-  Shield,
-  ShoppingBag,
-} from "lucide-react";
+import { LogOut, Settings, User, ChevronDown, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usuarioAdmin } from "@/lib/usuario-admin";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const itemClass =
   "flex items-center px-4 py-2 text-sm text-gray-700 outline-none transition-colors data-[highlighted]:bg-gray-50";
 
 interface AdminHeaderProps {
-  user?: {
-    name: string;
-    email: string;
-    role?: string;
-    avatar?: string;
-  };
-  onLogout?: () => void;
+  // Sesión verificada en el servidor (app/admin/layout.tsx).
+  sesion: { email: string; rol: string };
   onMenuToggle?: () => void;
 }
 
-export default function AdminHeader({
-  user = { name: "Marcos", email: "marcos@admin.com", role: "Administrador" },
-  onLogout,
-  onMenuToggle,
-}: AdminHeaderProps) {
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    } else {
-      // Fallback por defecto
-      // window.location.href = '/login';
-    }
+export default function AdminHeader({ sesion, onMenuToggle }: AdminHeaderProps) {
+  const router = useRouter();
+  const { user: guardado, logout } = useAuthStore();
+
+  // Zustand se hidrata desde localStorage, que el servidor no tiene: el nombre guardado se usa
+  // recién después de montar, para que el primer render coincida con el HTML del servidor.
+  const [montado, setMontado] = useState(false);
+  useEffect(() => setMontado(true), []);
+  const usuario = usuarioAdmin(sesion, montado ? guardado : null);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
   };
 
   return (
@@ -79,40 +69,24 @@ export default function AdminHeader({
 
       {/* Lado Derecho */}
       <div className="flex items-center gap-3">
-        {/* Notificaciones */}
-        <button className="relative rounded-full p-2 text-gray-600 hover:bg-gray-100 transition-colors">
-          <Bell size={20} />
-          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-        </button>
-
         {/* Nombre del usuario (visible en desktop) */}
         <div className="hidden md:flex flex-col items-end">
-          <span className="text-sm font-medium text-gray-900">{user.name}</span>
-          {user.role && (
-            <span className="text-xs text-gray-500">{user.role}</span>
-          )}
+          <span className="text-sm font-medium text-gray-900">{usuario.nombre}</span>
+          <span className="text-xs text-gray-500">{usuario.rol}</span>
         </div>
 
         {/* Dropdown Menu del Usuario */}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger
             className="group flex items-center gap-2 rounded-full hover:bg-gray-100 p-1 pr-3 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            aria-label={`Menú de ${user.name}`}
+            aria-label={`Menú de ${usuario.nombre}`}
           >
             {/* Avatar */}
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt=""
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-gray-200"
-              />
-            ) : (
-              <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-gray-200">
-                <span className="text-white font-semibold text-sm">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-gray-200">
+              <span className="text-white font-semibold text-sm">
+                {usuario.inicial}
+              </span>
+            </div>
 
             {/* Chevron indicator */}
             <ChevronDown
@@ -131,10 +105,10 @@ export default function AdminHeader({
               {/* Header del menú con info del usuario */}
               <DropdownMenu.Label className="px-4 py-3">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {user.name}
+                  {usuario.nombre}
                 </p>
                 <p className="text-xs text-gray-500 truncate mt-0.5">
-                  {user.email}
+                  {usuario.email}
                 </p>
               </DropdownMenu.Label>
 
@@ -143,42 +117,24 @@ export default function AdminHeader({
               {/* Grupo 1: Cuenta */}
               <DropdownMenu.Group className="py-1">
                 <DropdownMenu.Item asChild className={itemClass}>
-                  <Link href="/admin/profile">
+                  <Link href="/account/profile">
                     <User size={16} className="mr-3 text-gray-400" />
                     Mi Perfil
                   </Link>
                 </DropdownMenu.Item>
 
                 <DropdownMenu.Item asChild className={itemClass}>
-                  <Link href="/admin/settings">
+                  <Link href="/account/settings">
                     <Settings size={16} className="mr-3 text-gray-400" />
                     Configuración
                   </Link>
                 </DropdownMenu.Item>
               </DropdownMenu.Group>
 
-              <DropdownMenu.Separator className="h-px bg-gray-100" />
-
-              {/* Grupo 2: Admin */}
-              <DropdownMenu.Group className="py-1">
-                <DropdownMenu.Item asChild className={itemClass}>
-                  <Link href="/admin/security">
-                    <Shield size={16} className="mr-3 text-gray-400" />
-                    Seguridad
-                  </Link>
-                </DropdownMenu.Item>
-
-                <DropdownMenu.Item asChild className={itemClass}>
-                  <Link href="/admin/help">
-                    <HelpCircle size={16} className="mr-3 text-gray-400" />
-                    Centro de Ayuda
-                  </Link>
-                </DropdownMenu.Item>
-              </DropdownMenu.Group>
 
               <DropdownMenu.Separator className="h-px bg-gray-100" />
 
-              {/* Grupo 3: Cerrar Sesión */}
+              {/* Grupo 2: Cerrar Sesión */}
               <DropdownMenu.Group className="py-1">
                 <DropdownMenu.Item
                   onSelect={handleLogout}

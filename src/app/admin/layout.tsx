@@ -22,5 +22,5 @@ export default async function AdminLayout({
     redirect("/account/profile");
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  return <AdminShell sesion={{ email: sesion.email, rol: sesion.rol }}>{children}</AdminShell>;
 }
