@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { NextRequest } from "next/server";
 import { beforeAll, describe, expect, it } from "vitest";
-import { middleware } from "@/middleware";
+import { proxy } from "@/proxy";
 import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
 import { SECRETO_TEST, tokenDe, tokenFirmado } from "@/test/jwt-fixtures";
 
@@ -11,15 +11,16 @@ beforeAll(() => {
 
 async function redireccion(path: string, token?: string): Promise<string | null> {
   const headers = token ? { cookie: `${AUTH_COOKIE_NAME}=${token}` } : undefined;
-  const response = await middleware(new NextRequest(new URL(path, "http://localhost:3000"), { headers }));
+  const response = await proxy(new NextRequest(new URL(path, "http://localhost:3000"), { headers }));
   const location = response.headers.get("location");
   return location ? new URL(location).pathname : null;
 }
 
-describe("middleware", () => {
-  it("vive en src/: con src/app, Next ignora un middleware en la raíz y nunca lo ejecuta", () => {
-    expect(existsSync("src/middleware.ts")).toBe(true);
-    expect(existsSync("middleware.ts")).toBe(false);
+describe("proxy.ts (ex middleware)", () => {
+  it("vive en src/: con src/app, Next ignora un proxy.ts en la raíz y nunca lo ejecuta", () => {
+    expect(existsSync("src/proxy.ts")).toBe(true);
+    expect(existsSync("proxy.ts")).toBe(false);
+    expect(existsSync("src/middleware.ts")).toBe(false);
   });
 
   describe("sin sesión", () => {

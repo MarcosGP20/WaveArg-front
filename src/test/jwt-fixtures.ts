@@ -1,6 +1,6 @@
 // Arma JWTs con los mismos claims que emite el backend (TokenService): id, email, rol.
 // fakeJwt/tokenDe tienen firma falsa: sirven para lo que sólo decodifica (lib/jwt.ts). Para lo
-// que verifica la firma (middleware) está tokenFirmado.
+// que verifica la firma (src/proxy.ts) está tokenFirmado.
 export function fakeJwt(payload: Record<string, unknown>): string {
   const b64url = (value: object) =>
     Buffer.from(JSON.stringify(value), "utf8").toString("base64url");
@@ -17,7 +17,7 @@ export function tokenDe(rol: string, opciones: { expiraEnSegundos?: number; emai
   });
 }
 
-// Clave con la que los tests firman tokens "del back". Los tests del middleware la ponen en
+// Clave con la que los tests firman tokens "del back". Los tests de proxy.ts la ponen en
 // JWT_SECRET, igual que en Vercel va la Jwt__Key del back.
 export const SECRETO_TEST = "clave-de-prueba-de-al-menos-32-bytes!!";
 

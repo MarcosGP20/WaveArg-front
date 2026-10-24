@@ -97,7 +97,7 @@ export function stockActualSiCambio(error: unknown): number | null {
 }
 
 /**
- * Lee el token desde la cookie auth-token (misma que usa el middleware y Zustand).
+ * Lee el token desde la cookie auth-token (misma que usa src/proxy.ts y Zustand).
  * Una sola fuente de verdad para autenticación.
  */
 export async function fetchFromApi<T>(

@@ -9,7 +9,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Segunda capa, además del middleware: verifica la firma del token antes de renderizar.
+  // Segunda capa, además de src/proxy.ts: verifica la firma del token antes de renderizar.
   // redirect() corta lanzando una excepción, así que no va dentro de un try/catch.
   const cookieStore = await cookies();
   const sesion = await verificarSesion(cookieStore.get(AUTH_COOKIE_NAME)?.value);

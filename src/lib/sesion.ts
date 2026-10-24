@@ -1,6 +1,6 @@
-// Verifica el JWT de la cookie auth-token del lado servidor (middleware y layout de admin), con
+// Verifica el JWT de la cookie auth-token del lado servidor (src/proxy.ts y layout de admin), con
 // la misma clave que lo firma el back (Jwt__Key → JWT_SECRET). Usa Web Crypto, disponible en el
-// runtime del middleware y en Node, sin dependencias.
+// runtime de proxy.ts y en Node, sin dependencias.
 //
 // Un token adulterado, firmado con otra clave, vencido o de otro tipo (ej. el de reset de
 // contraseña) es lo mismo que no tener sesión.

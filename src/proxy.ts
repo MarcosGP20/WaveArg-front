@@ -20,7 +20,7 @@ const PROTECTED_ROUTES = ["/account", "/admin", "/cart", "/checkout"];
 
 const isDev = process.env.NODE_ENV === "development";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
   // Firma, vencimiento, issuer y audience: un token adulterado es lo mismo que no tener sesión.
