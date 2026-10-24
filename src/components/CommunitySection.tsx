@@ -27,7 +27,7 @@ export default function CommunitySection() {
           className="relative rounded-2xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
         >
           <Image
-            src="/celu-wave-perfil-ig.png"
+            src="/celu-wave-perfil-ig.webp"
             alt="Comunidad móvil"
             fill
             className="object-cover"

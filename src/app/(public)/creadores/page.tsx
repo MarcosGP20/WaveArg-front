@@ -27,7 +27,7 @@ const creatorTools = [
       "Render rápido.",
       "Ideal para creadores.",
     ],
-    image: "/macbook-air.png",
+    image: "/macbook-air.webp",
     button: false,
   },
   {
@@ -158,7 +158,7 @@ export default function Creadores() {
         <div className="relative w-full h-[70vh] md:h-[85vh] rounded-[2rem] overflow-hidden shadow-xl">
           {/* Imagen de fondo */}
           <img
-            src="/accesorios.png" // Reemplaza por tu ruta
+            src="/accesorios.webp" // Reemplaza por tu ruta
             alt="Accesorios para creadores"
             className="absolute inset-0 w-full h-full object-cover"
           />
