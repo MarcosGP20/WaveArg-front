@@ -23,6 +23,7 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
   const [showIcon, setShowIcon] = useState(false);   // controla la animación del ícono central
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
   const iconTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fix: React no setea correctamente el atributo muted en <video> via JSX.
@@ -32,6 +33,11 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
       videoRef.current.muted = isMuted;
     }
   }, [isLoaded, isMuted]);
+
+  // La fachada se desmonta al hacer click: el foco pasa al botón de play/pausa del video.
+  useEffect(() => {
+    if (isLoaded && mode === "testimonial") toggleRef.current?.focus();
+  }, [isLoaded, mode]);
 
   // Muestra el ícono central brevemente (estilo YouTube)
   const flashIcon = useCallback(() => {
@@ -72,12 +78,14 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
       {!isLoaded ? (
         /* --- FACHADA: poster + botón play --- */
         <button
+          type="button"
           onClick={() => setIsLoaded(true)}
-          className="group relative w-full h-full"
+          aria-label={altText ? `Reproducir video: ${altText}` : "Reproducir video"}
+          className="group relative w-full h-full focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#05467D]"
         >
           <img
             src={posterUrl}
-            alt={altText}
+            alt=""
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -91,14 +99,13 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
           {/* Video */}
           <video
             ref={videoRef}
-            className={`w-full h-full object-cover ${mode === "testimonial" ? "cursor-pointer" : ""}`}
+            className="w-full h-full object-cover"
             poster={posterUrl}
             autoPlay
             muted
             loop={mode === "creator"}
             playsInline
             controls={mode === "creator"}
-            onClick={handleVideoClick}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
           >
@@ -106,9 +113,17 @@ export const LazyVideoFacade: FC<LazyVideoProps> = ({
             Tu navegador no soporta videos.
           </video>
 
-          {/* Overlay Play/Pause (solo modo testimonial) */}
+          {/* Overlay Play/Pause (solo modo testimonial). Es un botón para que también funcione
+              con teclado; los íconos de abajo son solo visuales. */}
           {mode === "testimonial" && (
             <>
+              <button
+                ref={toggleRef}
+                type="button"
+                onClick={handleVideoClick}
+                aria-label={isPlaying ? "Pausar video" : "Reproducir video"}
+                className="absolute inset-0 z-10 cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#05467D]"
+              />
               {/* Ícono central animado — aparece brevemente al hacer click */}
               <div
                 className={`

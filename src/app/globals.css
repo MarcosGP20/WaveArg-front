@@ -233,3 +233,19 @@ body {
     visibility: hidden;
   }
 }
+
+/* Marquee del Ticker de la home: la pista está duplicada, así que -50% vuelve al inicio. */
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee[data-pausado="true"] {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
