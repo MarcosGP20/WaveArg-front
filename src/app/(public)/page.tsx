@@ -1,67 +1,20 @@
-"use client";
-import { m, useScroll, useTransform } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
-// componentes
-import CommunitySection from "../../components/CommunitySection";
-import FAQSection from "../../components/FAQSection";
-import HomeLoader from "../../components/HomeLoader";
-import { LazyVideoFacade } from "../../components/VideoPlayer";
-import IPhoneCarousel, { CarouselItem } from "../../components/IPhoneCarousel";
-import BentoCreadores from "../../components/BentoCreadores";
-import Ticker from "../../components/Ticker";
 import { Shield, RefreshCw, Truck, PackageCheck } from "lucide-react";
 
-// API
-import { getProductos } from "../../lib/api";
-import type { Producto } from "../../interfaces/producto";
+import CommunitySection from "@/components/CommunitySection";
+import FAQSection from "@/components/FAQSection";
+import HomeLoader from "@/components/HomeLoader";
+import { LazyVideoFacade } from "@/components/VideoPlayer";
+import BentoCreadores from "@/components/BentoCreadores";
+import Ticker from "@/components/Ticker";
+import HeroVideo from "@/components/home/HeroVideo";
+import HomeCarousel from "@/components/home/HomeCarousel";
+import ParallaxReveal from "@/components/home/ParallaxReveal";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Deriva 2-3 specs clave a partir del nombre/modelo del producto
-// ─────────────────────────────────────────────────────────────────────────────
-function toSpecs(p: Producto): CarouselItem["specs"] {
-  const name = p.nombre.toLowerCase();
-  const specs: CarouselItem["specs"] = [];
-
-  // Cámara: Pro tiene Fusion 48MP; base tiene 12MP
-  if (name.includes("pro")) {
-    specs.push({ icon: "📷", label: "Cámara 48MP Fusion" });
-  } else {
-    specs.push({ icon: "📷", label: "Cámara 12MP avanzada" });
-  }
-
-  // ProRes / video: solo modelos Pro
-  if (name.includes("pro max")) {
-    specs.push({ icon: "🎬", label: "4K 120fps ProRes" });
-  } else if (name.includes("pro")) {
-    specs.push({ icon: "🎥", label: "Video ProRes 4K" });
-  } else {
-    specs.push({ icon: "🎥", label: "Video Dolby Vision HDR" });
-  }
-
-  // Conectividad / pantalla: siempre
-  specs.push({ icon: "⚡", label: "5G + Face ID" });
-
-  return specs;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Transforma un Producto de la API en un CarouselItem
-// ─────────────────────────────────────────────────────────────────────────────
-function toCarouselItem(p: Producto): CarouselItem {
-  const hasStock = p.variantes.some((v) => v.stock > 0);
-  return {
-    id: p.id,
-    model: p.nombre,
-    description: p.descripcion,
-    image: p.imagenes?.[0] ?? "",
-    badge: hasStock ? "En stock" : null,
-    specs: toSpecs(p),
-    href: `/products/${p.id}`,
-  };
-}
+// Server Component (front#15): el HTML inicial trae todo el contenido de la home. Lo animado o
+// interactivo vive en islas cliente (HomeLoader, HeroVideo, HomeCarousel, ParallaxReveal y las
+// secciones de components/).
 
 // Rutas de recursos
 const ASSET_PATHS = {
@@ -69,184 +22,121 @@ const ASSET_PATHS = {
   IPHONE_IMG: "/iphone-div-landing.jpg",
 };
 
+const TRUST_SIGNALS = [
+  { icon: Shield,       title: "Garantía incluida",      desc: "3 meses en todos los equipos" },
+  { icon: RefreshCw,    title: "Plan canje",             desc: "Tu iPhone como parte de pago" },
+  { icon: Truck,        title: "Envíos a todo el país",  desc: "Con número de seguimiento" },
+  { icon: PackageCheck, title: "Stock real",             desc: "Lo que ves está disponible" },
+];
+
 export default function HomePage() {
-  // ── Carrusel: fetch de productos reales ──
-  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
-  const [carouselLoading, setCarouselLoading] = useState(true);
-
-  useEffect(() => {
-    getProductos()
-      .then((productos) => setCarouselItems(productos.map(toCarouselItem)))
-      .catch((err) =>
-        console.error("Error cargando productos para carrusel:", err),
-      )
-      .finally(() => setCarouselLoading(false));
-  }, []);
-
-  // --- Tu código de animaciones (sin cambios) ---
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.6, 1, 1.2]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-
   return (
     <>
       <HomeLoader />
       <main>
-          {/* Hero - Video */}
-          <section className="relative h-screen w-full overflow-hidden">
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full h-full object-cover"
-            >
-              <source src={ASSET_PATHS.VIDEO} type="video/mp4" />
-            </video>
+        {/* Hero - Video */}
+        <section className="relative h-screen w-full overflow-hidden">
+          <HeroVideo src={ASSET_PATHS.VIDEO} />
 
-            {/* Overlay gradient + CTA */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end pb-16 px-6 md:px-16 lg:px-24">
-              <m.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
-                className="max-w-2xl"
-              >
-                <p className="text-[11px] uppercase tracking-[0.18em] text-white/60 mb-3 font-medium">
-                  Tu próximo iPhone, al mejor precio
-                </p>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                  Tecnología Apple que <br className="hidden md:block" />{" "}
-                  acompaña tu ritmo.
-                </h1>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/products"
-                    className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors duration-200"
-                  >
-                    Ver iPhones
-                  </Link>
-                  <Link
-                    href="/accesorios"
-                    className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-white/20 transition-colors duration-200"
-                  >
-                    Ver accesorios
-                  </Link>
-                </div>
-              </m.div>
-
-              {/* Scroll indicator */}
-              <m.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-              >
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">
-                  Scroll
-                </span>
-                <div className="w-[22px] h-[36px] rounded-full border border-white/30 flex items-start justify-center pt-[6px]">
-                  <m.div
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="w-[3px] h-[6px] rounded-full bg-white/60"
-                  />
-                </div>
-              </m.div>
-            </div>
-          </section>
-
-          <Ticker />
-
-          {/* Carrusel de iPhones */}
-          <section className="bg-[#F5F5F5] py-14 px-4 md:px-8">
-            <div className="w-[90%] max-w-6xl mx-auto">
-              <p className="text-center text-xs font-semibold uppercase tracking-[0.15em] text-[#05467D]/60 mb-2">
-                Nuestros modelos
+          {/* Overlay gradient + CTA. La entrada es CSS: el texto se ve aunque el JS no haya llegado. */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end pb-16 px-6 md:px-16 lg:px-24">
+            <div className="pointer-events-auto max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 ease-out fill-mode-both motion-reduce:animate-none">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/60 mb-3 font-medium">
+                Tu próximo iPhone, al mejor precio
               </p>
-              <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-                Encontrá tu iPhone ideal
-              </h2>
-              {carouselLoading ? (
-                /* Skeleton — misma forma que la card real */
-                <div className="w-full rounded-2xl border border-gray-100 shadow-md overflow-hidden flex flex-col md:flex-row min-h-[360px] md:min-h-[500px] animate-pulse">
-                  <div className="md:w-[42%] bg-gray-100 min-h-[260px] md:min-h-0" />
-                  <div className="md:w-[58%] flex flex-col justify-center gap-4 px-7 py-8 md:px-12 md:py-12 bg-white">
-                    <div className="h-3 w-16 bg-gray-200 rounded-full" />
-                    <div className="h-7 w-48 bg-gray-200 rounded-full" />
-                    <div className="space-y-2">
-                      <div className="h-4 w-full bg-gray-100 rounded-full" />
-                      <div className="h-4 w-4/5 bg-gray-100 rounded-full" />
-                    </div>
-                    <div className="flex gap-2 flex-wrap">
-                      <div className="h-7 w-28 bg-gray-100 rounded-full" />
-                      <div className="h-7 w-24 bg-gray-100 rounded-full" />
-                      <div className="h-7 w-20 bg-gray-100 rounded-full" />
-                    </div>
-                    <div className="h-10 w-32 bg-gray-200 rounded-full" />
-                  </div>
-                </div>
-              ) : (
-                <IPhoneCarousel items={carouselItems} />
-              )}
-            </div>
-          </section>
-
-          {/* Sección trust signals con parallax */}
-          <section
-            ref={containerRef}
-            className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4 overflow-hidden"
-          >
-            <m.div style={{ scale, opacity }} className="relative w-full">
-              <div className="relative h-[95vh] bg-gray-900 rounded-2xl overflow-hidden">
-                <Image
-                  src={ASSET_PATHS.IPHONE_IMG}
-                  alt="Por qué elegir Wave"
-                  fill
-                  className="object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/50 font-semibold mb-3">
-                    Por qué elegirnos
-                  </p>
-                  <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">
-                    La forma más confiable<br className="hidden md:block" /> de conseguir tu iPhone.
-                  </h2>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[
-                      { icon: Shield,       title: "Garantía incluida",      desc: "3 meses en todos los equipos" },
-                      { icon: RefreshCw,    title: "Plan canje",             desc: "Tu iPhone como parte de pago" },
-                      { icon: Truck,        title: "Envíos a todo el país",  desc: "Con número de seguimiento" },
-                      { icon: PackageCheck, title: "Stock real",             desc: "Lo que ves está disponible" },
-                    ].map(({ icon: Icon, title, desc }) => (
-                      <div
-                        key={title}
-                        className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 md:p-5"
-                      >
-                        <Icon size={20} strokeWidth={1.75} className="text-white/70 mb-3" />
-                        <p className="text-white font-semibold text-sm leading-snug mb-1">{title}</p>
-                        <p className="text-white/50 text-xs leading-snug">{desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                Tecnología Apple que <br className="hidden md:block" />{" "}
+                acompaña tu ritmo.
+              </h1>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/products"
+                  className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors duration-200"
+                >
+                  Ver iPhones
+                </Link>
+                <Link
+                  href="/accesorios"
+                  className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-white/20 transition-colors duration-200"
+                >
+                  Ver accesorios
+                </Link>
               </div>
-            </m.div>
-          </section>
+            </div>
 
-          <BentoCreadores />
-          <CommunitySection />
-          <LazyVideoFacade
-            mode="testimonial"
-            videoUrlMp4="/Wave-testimonios.mp4"
-            posterUrl="/posterURL.webp"
-          />
-          <FAQSection />
+            {/* Scroll indicator */}
+            <div
+              aria-hidden="true"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-in fade-in duration-700 delay-1000 fill-mode-both motion-reduce:animate-none"
+            >
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">
+                Scroll
+              </span>
+              <div className="w-[22px] h-[36px] rounded-full border border-white/30 flex items-start justify-center pt-[6px]">
+                <div className="w-[3px] h-[6px] rounded-full bg-white/60 animate-bounce motion-reduce:animate-none" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <Ticker />
+
+        {/* Carrusel de iPhones */}
+        <section className="bg-[#F5F5F5] py-14 px-4 md:px-8">
+          <div className="w-[90%] max-w-6xl mx-auto">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.15em] text-[#05467D]/60 mb-2">
+              Nuestros modelos
+            </p>
+            <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+              Encontrá tu iPhone ideal
+            </h2>
+            <HomeCarousel />
+          </div>
+        </section>
+
+        {/* Sección trust signals con parallax */}
+        <ParallaxReveal className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4 overflow-hidden">
+          <div className="relative h-[95vh] bg-gray-900 rounded-2xl overflow-hidden">
+            <Image
+              src={ASSET_PATHS.IPHONE_IMG}
+              alt="Por qué elegir Wave"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-white/50 font-semibold mb-3">
+                Por qué elegirnos
+              </p>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">
+                La forma más confiable<br className="hidden md:block" /> de conseguir tu iPhone.
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {TRUST_SIGNALS.map(({ icon: Icon, title, desc }) => (
+                  <div
+                    key={title}
+                    className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 md:p-5"
+                  >
+                    <Icon size={20} strokeWidth={1.75} className="text-white/70 mb-3" />
+                    <p className="text-white font-semibold text-sm leading-snug mb-1">{title}</p>
+                    <p className="text-white/50 text-xs leading-snug">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ParallaxReveal>
+
+        <BentoCreadores />
+        <CommunitySection />
+        <LazyVideoFacade
+          mode="testimonial"
+          altText="Testimonios de clientes de Wave"
+          videoUrlMp4="/Wave-testimonios.mp4"
+          posterUrl="/posterURL.webp"
+        />
+        <FAQSection />
       </main>
     </>
   );
