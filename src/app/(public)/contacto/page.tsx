@@ -182,7 +182,7 @@ export default function ContactPage() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Teléfono{" "}
-                    <span className="text-gray-400 font-normal">
+                    <span className="text-gray-500 font-normal">
                       (opcional)
                     </span>
                   </label>
@@ -247,13 +247,13 @@ export default function ContactPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full transition-colors flex items-center justify-center gap-2 font-semibold"
+                  className="w-full bg-green-700 hover:bg-green-800 text-white py-3 px-6 rounded-full transition-colors flex items-center justify-center gap-2 font-semibold"
                 >
                   <WhatsAppIcon className="w-5 h-5" />
                   Enviar por WhatsApp
                 </Button>
 
-                <p className="text-xs text-center text-gray-400">
+                <p className="text-xs text-center text-gray-500">
                   Al enviar, se abrirá WhatsApp con tu mensaje listo para
                   confirmar.
                 </p>
@@ -325,7 +325,7 @@ export default function ContactPage() {
               href={`https://wa.me/${WA_NUMBER}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-3 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-full transition-colors shadow-md"
+              className="flex items-center justify-center gap-3 w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-4 px-6 rounded-full transition-colors shadow-md"
             >
               <WhatsAppIcon className="w-6 h-6" />
               Escribinos directo por WhatsApp

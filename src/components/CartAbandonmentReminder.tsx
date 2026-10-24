@@ -112,7 +112,7 @@ export default function CartAbandonmentReminder() {
 
       {/* Body */}
       <div className="px-4 pt-3 pb-1">
-        <p className="text-xs text-gray-400 mb-3">
+        <p className="text-xs text-gray-500 mb-3">
           Tenés{" "}
           <span className="font-semibold text-gray-700">
             {cartCount} {cartCount === 1 ? "producto" : "productos"}
@@ -140,14 +140,14 @@ export default function CartAbandonmentReminder() {
                 <p className="text-sm font-medium text-gray-800 truncate">
                   {item.name}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500">
                   x{item.quantity} · ${(item.price * item.quantity).toLocaleString("es-AR")}
                 </p>
               </div>
             </li>
           ))}
           {remaining > 0 && (
-            <li className="text-xs text-gray-400 pl-1">
+            <li className="text-xs text-gray-500 pl-1">
               + {remaining} producto{remaining > 1 ? "s" : ""} más
             </li>
           )}
@@ -175,7 +175,7 @@ export default function CartAbandonmentReminder() {
         </Link>
         <button
           onClick={handleDismiss}
-          className="text-xs text-gray-400 hover:text-gray-600 transition-colors py-1"
+          className="text-xs text-gray-500 hover:text-gray-600 transition-colors py-1"
         >
           Ahora no, gracias
         </button>

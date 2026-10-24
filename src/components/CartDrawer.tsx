@@ -73,7 +73,7 @@ export default function CartDrawer() {
           <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-8">
             <ShoppingBag size={52} className="text-gray-200" />
             <p className="font-semibold text-gray-500">Tu carrito está vacío</p>
-            <p className="text-sm text-gray-400">Agregá productos para empezar</p>
+            <p className="text-sm text-gray-500">Agregá productos para empezar</p>
             <button
               onClick={closeCart}
               className="mt-2 text-sm text-color-principal font-semibold hover:underline"
@@ -171,7 +171,7 @@ export default function CartDrawer() {
               </Link>
               <button
                 onClick={closeCart}
-                className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors mt-3 py-1"
+                className="w-full text-center text-sm text-gray-500 hover:text-gray-600 transition-colors mt-3 py-1"
               >
                 Seguir comprando
               </button>

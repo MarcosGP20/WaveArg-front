@@ -164,7 +164,7 @@ export const TableAccesorioVariants = ({
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => startEdit(v)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
                         title="Editar variante"
                       >
                         <Edit3 size={16} />
@@ -172,7 +172,7 @@ export const TableAccesorioVariants = ({
                       <button
                         disabled={!onDelete}
                         onClick={() => onDelete?.(v.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600"
+                        className="p-1.5 text-gray-500 hover:text-red-600"
                         title="Eliminar variante"
                       >
                         <Trash2 size={16} />

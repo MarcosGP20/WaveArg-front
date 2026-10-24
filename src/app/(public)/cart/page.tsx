@@ -14,7 +14,7 @@ export default function CartPage() {
   if (cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
-        <ShoppingCart size={64} className="text-gray-400 mb-4" />
+        <ShoppingCart size={64} className="text-gray-500 mb-4" />
         <h1 className="text-2xl font-bold mb-2">Tu carrito está vacío</h1>
         <p className="text-gray-500 mb-6">
           Aún no agregaste productos. ¡Descubrí lo mejor en iPhones ahora!
@@ -89,7 +89,7 @@ export default function CartPage() {
       </div>
       <div className="flex gap-2">
         <button
-          className="bg-gray-100 text-gray-500 px-4 py-2 rounded-full hover:bg-gray-200"
+          className="bg-gray-100 text-gray-600 px-4 py-2 rounded-full hover:bg-gray-200"
           onClick={clearCart}
         >
           Vaciar carrito

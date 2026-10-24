@@ -95,7 +95,7 @@ function UrlListField({
   return (
     <div className="space-y-2">
       <p className={`text-sm font-bold ${s.label}`}>{label}</p>
-      <p className="text-xs text-gray-400 leading-relaxed">{hint}</p>
+      <p className="text-xs text-gray-500 leading-relaxed">{hint}</p>
 
       <div className="flex gap-2">
         <input
@@ -125,7 +125,7 @@ function UrlListField({
                 </div>
               </div>
               <span className="flex-1 truncate font-mono text-[10px] opacity-60">{url}</span>
-              <button type="button" onClick={() => remove(i)} className="text-gray-400 hover:text-red-500 flex-shrink-0 transition-colors">
+              <button type="button" onClick={() => remove(i)} className="text-gray-500 hover:text-red-500 flex-shrink-0 transition-colors">
                 <X size={14} />
               </button>
             </li>
@@ -163,7 +163,7 @@ function VarianteCard({
         <button
           type="button"
           onClick={onRemove}
-          className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded"
+          className="text-gray-500 hover:text-red-500 transition-colors p-1 rounded"
           title="Eliminar variante"
         >
           <Trash2 size={16} />
@@ -174,7 +174,7 @@ function VarianteCard({
         {/* Fila color + especificacion + condición + bateria */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Color *</label>
+            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Color *</label>
             <input
               {...register(`variantes.${index}.color`)}
               placeholder="ej: Negro"
@@ -184,7 +184,7 @@ function VarianteCard({
           </div>
 
           <div className="space-y-1 lg:col-span-2">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Especificación *</label>
+            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Especificación *</label>
             <input
               {...register(`variantes.${index}.especificacion`)}
               placeholder="ej: Compatible iPhone 14/15, Tipo-C, 65W..."
@@ -194,7 +194,7 @@ function VarianteCard({
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Condición</label>
+            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Condición</label>
             <select
               {...register(`variantes.${index}.esUsado`, {
                 setValueAs: (v: string) => v === "true",
@@ -210,9 +210,9 @@ function VarianteCard({
         {/* Precio + Stock */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Precio (USD) *</label>
+            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Precio (USD) *</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">$</span>
               <input
                 type="number"
                 {...register(`variantes.${index}.precio`)}
@@ -224,7 +224,7 @@ function VarianteCard({
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Stock (u.) *</label>
+            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Stock (u.) *</label>
             <input
               type="number"
               {...register(`variantes.${index}.stock`)}
@@ -366,14 +366,14 @@ export default function GestionVariantesAccesorioPage() {
     <div className="p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/accesorios" className="text-gray-400 hover:text-color-principal transition-colors">
+        <Link href="/admin/accesorios" className="text-gray-500 hover:text-color-principal transition-colors">
           <ArrowLeft size={22} />
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-color-principal">
             {loadingAccesorio ? "Cargando..." : `Variantes de "${accesorio?.nombre} ${accesorio?.modelo}"`}
           </h1>
-          {!loadingAccesorio && <p className="text-xs text-gray-400 mt-0.5">ID Base: #{id}</p>}
+          {!loadingAccesorio && <p className="text-xs text-gray-500 mt-0.5">ID Base: #{id}</p>}
         </div>
       </div>
 
@@ -393,7 +393,7 @@ export default function GestionVariantesAccesorioPage() {
         <button
           type="button"
           onClick={() => append({ ...VARIANTE_DEFAULT })}
-          className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-400 hover:border-color-principal hover:text-color-principal transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-500 hover:border-color-principal hover:text-color-principal transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={16} />
           Agregar otra variante

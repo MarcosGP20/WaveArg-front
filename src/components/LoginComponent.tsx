@@ -104,7 +104,7 @@ export function LoginForm() {
         <div>
           <Label htmlFor="email">Email</Label>
           <div className="flex items-center gap-2 py-2">
-            <Mail size={16} className="text-gray-400" />
+            <Mail size={16} className="text-gray-500" />
             <Input
               id="email"
               type="email"
@@ -134,7 +134,7 @@ export function LoginForm() {
             </a>
           </div>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-400" />
+            <Lock size={16} className="text-gray-500" />
             <Input
               id="password"
               type="password"
@@ -191,7 +191,7 @@ export function LoginForm() {
               <span className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-4 text-gray-400">o continuar con</span>
+              <span className="bg-white px-4 text-gray-500">o continuar con</span>
             </div>
           </div>
 

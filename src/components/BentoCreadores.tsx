@@ -65,7 +65,7 @@ export default function BentoCreadores() {
     <section style={{ backgroundColor: BRAND }} className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Section label */}
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-white/40 mb-3">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-white/70 mb-3">
           Creadores de contenido
         </p>
         <h2 className="text-center text-3xl md:text-4xl font-bold text-white mb-12">
@@ -79,14 +79,14 @@ export default function BentoCreadores() {
           <SpotlightCard className="md:col-span-2 min-h-[220px]" bg={CARD_BG}>
             <div className="p-8 h-full flex flex-col justify-between">
               <div>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-white/50 mb-4">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-white/75 mb-4">
                   <Sparkles size={11} strokeWidth={2} />
                   Guía completa
                 </span>
                 <h3 className="text-2xl md:text-3xl font-bold text-white leading-snug mb-3">
                   Todo lo que necesitás para<br className="hidden md:block" /> crear contenido de calidad
                 </h3>
-                <p className="text-white/60 text-sm leading-relaxed max-w-sm">
+                <p className="text-white/75 text-sm leading-relaxed max-w-sm">
                   iPhone, Mac, accesorios y tips reales de creadores que usan estos equipos todos los días.
                 </p>
               </div>
@@ -103,13 +103,13 @@ export default function BentoCreadores() {
           {/* Card 2 — iPhone (1 col, 2 rows) */}
           <SpotlightCard className="md:row-span-2 min-h-[280px] flex flex-col" bg={CARD_BG_ALT}>
             <div className="flex-1 flex flex-col p-8">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-white/50 mb-4">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-white/75 mb-4">
                 iPhone 16 Pro
               </span>
               <h3 className="text-xl font-bold text-white leading-snug mb-2">
                 La cámara que redefine el contenido
               </h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-6">
+              <p className="text-white/75 text-sm leading-relaxed mb-6">
                 4K 120fps · ProRes · Audio espacial · Chip A18 Pro
               </p>
               <Link
@@ -141,7 +141,7 @@ export default function BentoCreadores() {
                 <h3 className="text-lg font-bold text-white mb-1">
                   Accesorios para creadores
                 </h3>
-                <p className="text-white/50 text-sm">
+                <p className="text-white/75 text-sm">
                   Trípodes, micrófonos, cargadores y más.
                 </p>
               </div>
@@ -164,7 +164,7 @@ export default function BentoCreadores() {
                 <h3 className="text-lg font-bold text-white mb-1">
                   Asesoría personalizada
                 </h3>
-                <p className="text-white/50 text-sm">
+                <p className="text-white/75 text-sm">
                   Te ayudamos a armar tu setup ideal sin gastar de más.
                 </p>
               </div>

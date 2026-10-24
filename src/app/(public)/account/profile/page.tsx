@@ -128,7 +128,7 @@ export default function ProfilePage() {
         </aside>
 
         {/* MAIN */}
-        <main className="flex-1 space-y-6">
+        <div className="flex-1 space-y-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-color-principal">
@@ -152,7 +152,7 @@ export default function ProfilePage() {
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="flex flex-col gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">
                         Nombre
                       </label>
                       <input
@@ -198,11 +198,11 @@ export default function ProfilePage() {
                     <User className="text-color-principal" size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                       Nombre
                     </p>
                     <p className="font-semibold text-gray-800">
-                      {user.nombre || <span className="text-gray-400 font-normal">Sin nombre</span>}
+                      {user.nombre || <span className="text-gray-500 font-normal">Sin nombre</span>}
                     </p>
                   </div>
                 </div>
@@ -214,7 +214,7 @@ export default function ProfilePage() {
                   <Mail className="text-color-principal" size={20} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                     Correo electrónico
                   </p>
                   <p className="font-semibold text-gray-800">{user.email}</p>
@@ -253,7 +253,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );

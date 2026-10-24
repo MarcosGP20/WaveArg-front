@@ -176,9 +176,9 @@ export default function CheckoutPage() {
 
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400 text-xs font-bold">3</span>
+              <span className="text-gray-500 text-xs font-bold">3</span>
             </div>
-            <span className="text-[11px] text-gray-400 font-medium mt-1.5">Pago</span>
+            <span className="text-[11px] text-gray-500 font-medium mt-1.5">Pago</span>
           </div>
         </div>
 
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
                   />
                 ) : (
                   <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
-                    <ShoppingCart size={24} className="text-gray-400" />
+                    <ShoppingCart size={24} className="text-gray-500" />
                   </div>
                 )}
 
@@ -422,7 +422,7 @@ export default function CheckoutPage() {
           )}
         </button>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-gray-500 mt-4">
           Al continuar aceptás los{" "}
           <a href="#" className="underline hover:text-gray-600">
             términos y condiciones

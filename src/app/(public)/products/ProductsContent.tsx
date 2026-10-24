@@ -259,7 +259,7 @@ export default function ProductsContent() {
                 <span className="font-bold text-lg text-gray-900 mt-1">Filtros</span>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
+                  className="p-1.5 text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   <X size={20} />
                 </button>
@@ -283,7 +283,7 @@ export default function ProductsContent() {
           </div>
         )}
 
-        <main className="flex-1 space-y-12">
+        <div className="flex-1 space-y-12">
           {/* ── SECCIÓN IPHONES ─────────────────────────────────────────── */}
           {!hayFiltrosDeProducto || filteredProducts.length > 0 ? (
             <section>
@@ -396,7 +396,7 @@ export default function ProductsContent() {
               )}
             </section>
           )}
-        </main>
+        </div>
       </div>
     </div>
   );

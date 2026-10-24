@@ -233,7 +233,7 @@ export default function AccesoriosContent() {
                 <span className="font-bold text-lg text-gray-900 mt-1">Filtros</span>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
+                  className="p-1.5 text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   <X size={20} />
                 </button>
@@ -255,9 +255,9 @@ export default function AccesoriosContent() {
           </div>
         )}
 
-        <main className="flex-1">
+        <div className="flex-1">
           {filteredProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-4 text-gray-400">
+            <div className="flex flex-col items-center justify-center py-16 gap-4 text-gray-500">
               <Package size={48} className="text-gray-200" />
               <div className="text-center">
                 <p className="font-medium text-gray-600">Ningún accesorio coincide con los filtros</p>
@@ -284,7 +284,7 @@ export default function AccesoriosContent() {
               ))}
             </m.div>
           )}
-        </main>
+        </div>
       </div>
     </div>
   );

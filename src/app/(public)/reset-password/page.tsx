@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ResetPasswordPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
       <Suspense
         fallback={
           <div className="flex items-center gap-2 text-gray-600">
@@ -21,6 +21,6 @@ export default function ResetPasswordPage() {
       >
         <ResetPasswordContent />
       </Suspense>
-    </main>
+    </div>
   );
 }

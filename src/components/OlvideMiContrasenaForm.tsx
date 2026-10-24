@@ -37,7 +37,7 @@ export function OlvideMiContrasenaForm() {
           Si el email está registrado, recibirás un enlace para restablecer tu
           contraseña en los próximos minutos.
         </p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-500">
           El link expira en 30 minutos. Si no lo ves, revisá la carpeta de spam.
         </p>
         <Link
@@ -66,7 +66,7 @@ export function OlvideMiContrasenaForm() {
         <div>
           <Label htmlFor="email">Email</Label>
           <div className="flex items-center gap-2 py-2">
-            <Mail size={16} className="text-gray-400" />
+            <Mail size={16} className="text-gray-500" />
             <Input
               id="email"
               type="email"

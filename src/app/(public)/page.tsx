@@ -33,7 +33,7 @@ export default function HomePage() {
   return (
     <>
       <HomeLoader />
-      <main>
+      <div>
         {/* Hero - Video */}
         <section className="relative h-screen w-full overflow-hidden">
           <HeroVideo src={ASSET_PATHS.VIDEO} />
@@ -84,7 +84,7 @@ export default function HomePage() {
         {/* Carrusel de iPhones */}
         <section className="bg-[#F5F5F5] py-14 px-4 md:px-8">
           <div className="w-[90%] max-w-6xl mx-auto">
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.15em] text-[#05467D]/60 mb-2">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.15em] text-[#05467D]/80 mb-2">
               Nuestros modelos
             </p>
             <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">
@@ -137,7 +137,7 @@ export default function HomePage() {
           posterUrl="/posterURL.webp"
         />
         <FAQSection />
-      </main>
+      </div>
     </>
   );
 }

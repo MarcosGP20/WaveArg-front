@@ -24,29 +24,29 @@ export default function LoginPage() {
 
   if (!mounted) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
         <div className="flex items-center gap-2 text-gray-600">
           <Loader2 className="animate-spin w-6 h-6" />
           <span>Cargando...</span>
         </div>
-      </main>
+      </div>
     );
   }
 
   if (isLoggedIn && (token || user)) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
         <div className="flex items-center gap-2 text-gray-600">
           <Loader2 className="animate-spin w-6 h-6" />
           <span>Redirigiendo a tu cuenta...</span>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
       <LoginForm />
-    </main>
+    </div>
   );
 }

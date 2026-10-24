@@ -136,7 +136,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
                 ) : (
                   /* Placeholder estilizado */
                   <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50">
-                    <span className="text-gray-400 text-sm font-medium">Imagen próximamente</span>
+                    <span className="text-gray-500 text-sm font-medium">Imagen próximamente</span>
                   </div>
                 )}
               </div>
@@ -154,7 +154,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
             >
-              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">
+              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">
                 {current + 1} / {total}
               </p>
 

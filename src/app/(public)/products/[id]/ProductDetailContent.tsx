@@ -146,7 +146,7 @@ export default function ProductDetailContent({
 
   if (loading)
     return (
-      <div className="py-20 text-center text-gray-400 text-sm animate-pulse">
+      <div className="py-20 text-center text-gray-500 text-sm animate-pulse">
         Cargando producto...
       </div>
     );
@@ -292,7 +292,7 @@ export default function ProductDetailContent({
             ]} />
 
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">{product.nombre}</h1>
-            <p className="text-gray-400 text-xs uppercase tracking-widest mt-1 mb-2">
+            <p className="text-gray-500 text-xs uppercase tracking-widest mt-1 mb-2">
               {product.modelo}
             </p>
             <p className="text-gray-500 text-sm leading-relaxed">{product.descripcion}</p>
@@ -309,7 +309,7 @@ export default function ProductDetailContent({
                     : "Sin stock"}
                 </span>
                 {selectedVariante.stock > 0 && selectedVariante.stock <= 3 && (
-                  <span className="bg-red-50 text-red-600 border border-red-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
                     ¡Últimas unidades!
                   </span>
                 )}
@@ -331,7 +331,7 @@ export default function ProductDetailContent({
 
             {coloresUnicos.length > 1 && (
               <div className="mt-7">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                   Color —{" "}
                   <span className="text-gray-700 normal-case font-semibold">
                     {selectedVariante.color}
@@ -358,7 +358,7 @@ export default function ProductDetailContent({
 
             {memoriasParaColor.length > 0 && (
               <div className="mt-7">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                   Capacidad
                 </p>
                 <div className="flex gap-2 flex-wrap">
@@ -417,7 +417,7 @@ export default function ProductDetailContent({
 
         {/* ════ SPECS GRID ════ */}
         <section className="mt-16">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/50 mb-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/80 mb-3">
             Especificaciones
           </p>
           <h2 className="text-2xl font-bold text-gray-900 mb-10">
@@ -445,7 +445,7 @@ export default function ProductDetailContent({
                   </div>
 
                   {/* Label */}
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1.5 relative z-10">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-500 mb-1.5 relative z-10">
                     {spec.label}
                   </p>
 
@@ -477,7 +477,7 @@ export default function ProductDetailContent({
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{sub}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{sub}</p>
                 </div>
               </div>
             ))}
@@ -487,7 +487,7 @@ export default function ProductDetailContent({
         {/* ════ RELATED PRODUCTS ════ */}
         {relatedProducts.length > 0 && (
           <section className="mt-20">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/50 mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/80 mb-3">
               Seguí explorando
             </p>
             <h2 className="text-2xl font-bold text-gray-900 mb-10">
@@ -554,7 +554,7 @@ export default function ProductDetailContent({
             )}
             <div className="min-w-0">
               <p className="text-sm font-bold text-gray-900 truncate">{product.nombre}</p>
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-gray-500 truncate">
                 {selectedVariante.color} · {selectedVariante.memoria}
               </p>
             </div>

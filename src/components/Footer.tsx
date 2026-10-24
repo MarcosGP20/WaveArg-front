@@ -67,7 +67,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
           {/* 1. Marca y Tagline */}
           <div className="md:col-span-2 space-y-2">
-            <Link href="/">
+            <Link href="/" className="inline-block">
               <Image
                 src="/waves6.svg"
                 alt="Logo Wave Arg"

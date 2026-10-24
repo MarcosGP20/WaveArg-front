@@ -249,3 +249,14 @@ body {
     animation: none;
   }
 }
+
+/* Foco visible en todo el sitio (front#14): outline azul (5.2:1 sobre blanco) con un halo
+   blanco en el hueco del offset, para que también se vea sobre fondos oscuros o el azul de
+   marca. Los componentes con su propio ring (focus-visible:ring-*) lo pisan desde utilities. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff;
+  }
+}

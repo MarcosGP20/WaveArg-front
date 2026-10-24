@@ -209,21 +209,20 @@ export default function NavBar() {
       }`}
     >
       <div className="flex justify-between items-center">
-        {/* LOGO */}
-        <Link href="/">
+        {/* LOGO: un solo link; cada tamaño muestra su imagen. Antes eran dos links y en desktop
+            quedaba uno vacío en el orden de tabulación. */}
+        <Link href="/" aria-label="Wave Arg – ir al inicio">
           <Image
             src="/waves5.svg"
-            alt="Wave Arg – ir al inicio"
+            alt=""
             width={120}
             height={120}
             className="hidden md:block"
             priority
           />
-        </Link>
-        <Link href="/">
           <Image
             src="/iso3.svg"
-            alt="Wave Arg – ir al inicio"
+            alt=""
             width={40}
             height={40}
             className={`md:hidden transition-all duration-300 ${scrolled ? "w-7 h-7" : "w-10 h-10"}`}
@@ -371,7 +370,7 @@ export default function NavBar() {
 
                 {/* Product list */}
                 {cart.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-gray-400 text-sm">
+                  <div className="px-4 py-6 text-center text-gray-500 text-sm">
                     <ShoppingCart size={28} strokeWidth={1.5} className="mx-auto mb-2 opacity-30" />
                     Tu carrito está vacío
                   </div>
@@ -393,7 +392,7 @@ export default function NavBar() {
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className="text-xs text-gray-500 mt-0.5">
                               Cant: <span className="font-semibold text-gray-600">{item.quantity}</span>
                             </p>
                           </div>
@@ -403,7 +402,7 @@ export default function NavBar() {
                           <button
                             onClick={() => removeFromCart(item.id)}
                             title="Eliminar del carrito"
-                            className="ml-1 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:bg-red-100 hover:text-red-500 transition-colors text-base leading-none"
+                            className="ml-1 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors text-base leading-none"
                           >
                             ×
                           </button>

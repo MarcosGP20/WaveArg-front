@@ -228,7 +228,7 @@ export default function OrdersPage() {
 
       {/* EMPTY */}
       {!loading && !error && pedidos.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-48 gap-3 text-gray-400">
+        <div className="flex flex-col items-center justify-center h-48 gap-3 text-gray-500">
           <Package size={40} className="text-gray-300" />
           <p className="text-sm">
             {filtroEstado
@@ -259,14 +259,14 @@ export default function OrdersPage() {
                   key={pedido.id}
                   className={`transition-colors ${requiereAtencion(pedido.estado) ? "bg-orange-50 hover:bg-orange-100" : "hover:bg-gray-50"}`}
                 >
-                  <td className="py-3 px-4 font-mono text-xs text-gray-400">
+                  <td className="py-3 px-4 font-mono text-xs text-gray-500">
                     #{pedido.id}
                   </td>
                   <td className="py-3 px-4">
                     <p className="font-medium text-gray-800">
                       {pedido.usuario?.nombre ?? "—"}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {pedido.usuario?.email ?? "—"}
                     </p>
                   </td>

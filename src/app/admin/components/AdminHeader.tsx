@@ -118,14 +118,14 @@ export default function AdminHeader({ sesion, onMenuToggle }: AdminHeaderProps) 
               <DropdownMenu.Group className="py-1">
                 <DropdownMenu.Item asChild className={itemClass}>
                   <Link href="/account/profile">
-                    <User size={16} className="mr-3 text-gray-400" />
+                    <User size={16} className="mr-3 text-gray-500" />
                     Mi Perfil
                   </Link>
                 </DropdownMenu.Item>
 
                 <DropdownMenu.Item asChild className={itemClass}>
                   <Link href="/account/settings">
-                    <Settings size={16} className="mr-3 text-gray-400" />
+                    <Settings size={16} className="mr-3 text-gray-500" />
                     Configuración
                   </Link>
                 </DropdownMenu.Item>

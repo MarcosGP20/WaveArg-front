@@ -91,7 +91,7 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
+            <Mail className="absolute left-3 top-3 text-gray-500" size={18} />
             <Input
               id="email"
               type="email"
@@ -113,7 +113,7 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="password">Contraseña</Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
+            <Lock className="absolute left-3 top-3 text-gray-500" size={18} />
             <Input
               id="password"
               type="password"
@@ -170,7 +170,7 @@ export function RegisterForm() {
               <span className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-400">O también</span>
+              <span className="bg-white px-2 text-gray-500">O también</span>
             </div>
           </div>
 

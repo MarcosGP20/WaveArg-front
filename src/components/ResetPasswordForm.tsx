@@ -73,7 +73,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <p className="text-gray-600 text-sm">
           Ya podés iniciar sesión con tu nueva contraseña.
         </p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-500">
           Redirigiendo al inicio de sesión...
         </p>
       </div>
@@ -95,7 +95,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <div>
           <Label htmlFor="nuevaContrasena">Nueva contraseña</Label>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-400" />
+            <Lock size={16} className="text-gray-500" />
             <Input
               id="nuevaContrasena"
               type="password"
@@ -114,7 +114,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <div>
           <Label htmlFor="confirmarContrasena">Confirmá la contraseña</Label>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-400" />
+            <Lock size={16} className="text-gray-500" />
             <Input
               id="confirmarContrasena"
               type="password"

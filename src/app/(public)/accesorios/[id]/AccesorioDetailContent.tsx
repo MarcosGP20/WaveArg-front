@@ -78,7 +78,7 @@ export default function AccesorioDetailContent({
 
   if (loading)
     return (
-      <div className="py-20 text-center text-gray-400 text-sm animate-pulse">
+      <div className="py-20 text-center text-gray-500 text-sm animate-pulse">
         Cargando accesorio...
       </div>
     );
@@ -221,7 +221,7 @@ export default function AccesorioDetailContent({
             {categoriaLabel}
           </span>
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">{accesorio.nombre}</h1>
-          <p className="text-gray-400 text-xs uppercase tracking-widest mt-1 mb-2">
+          <p className="text-gray-500 text-xs uppercase tracking-widest mt-1 mb-2">
             {accesorio.modelo}
           </p>
           <p className="text-gray-500 text-sm leading-relaxed">{accesorio.descripcion}</p>
@@ -251,7 +251,7 @@ export default function AccesorioDetailContent({
 
           {coloresUnicos.length > 1 && (
             <div className="mt-7">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                 Color —{" "}
                 <span className="text-gray-700 normal-case font-semibold">
                   {selectedVariante.color}
@@ -280,7 +280,7 @@ export default function AccesorioDetailContent({
 
           {especificacionesParaColor.length > 0 && (
             <div className="mt-7">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                 Especificación
               </p>
               <div className="flex gap-2 flex-wrap">

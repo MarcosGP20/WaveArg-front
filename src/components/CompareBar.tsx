@@ -65,18 +65,19 @@ function SlotDropdown({ currentId, excludedIds, onSelect, onClose }: SlotDropdow
       className="absolute bottom-full mb-2 left-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
     >
       {/* Buscador */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
-        <Search size={14} className="text-gray-400 shrink-0" />
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 focus-within:ring-2 focus-within:ring-inset focus-within:ring-[#2563eb]">
+        <Search size={14} className="text-gray-500 shrink-0" aria-hidden="true" />
         <input
           ref={inputRef}
           type="text"
           placeholder="Buscar modelo..."
+          aria-label="Buscar modelo"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 text-sm outline-none placeholder:text-gray-400"
+          className="flex-1 text-sm focus:outline-none placeholder:text-gray-500"
         />
         {query && (
-          <button onClick={() => setQuery("")} className="text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={() => setQuery("")} aria-label="Borrar búsqueda" className="text-gray-500 hover:text-gray-600">
             <X size={12} />
           </button>
         )}
@@ -85,12 +86,12 @@ function SlotDropdown({ currentId, excludedIds, onSelect, onClose }: SlotDropdow
       {/* Lista */}
       <ul className="max-h-56 overflow-y-auto">
         {loading ? (
-          <li className="flex items-center justify-center gap-2 py-6 text-gray-400 text-sm">
+          <li className="flex items-center justify-center gap-2 py-6 text-gray-500 text-sm">
             <Loader2 size={16} className="animate-spin" />
             Cargando...
           </li>
         ) : filtered.length === 0 ? (
-          <li className="py-6 text-center text-sm text-gray-400">
+          <li className="py-6 text-center text-sm text-gray-500">
             Sin resultados
           </li>
         ) : (
@@ -160,7 +161,7 @@ function ProductChip({ product, slotIndex, excludedIds, onRemove, onSwap }: Prod
         {/* Nombre + swap hint */}
         <div className="min-w-0 text-left">
           <p className="text-xs font-semibold text-gray-800 truncate leading-tight">{product.nombre}</p>
-          <p className="text-[10px] text-gray-400 flex items-center gap-0.5 leading-tight">
+          <p className="text-[10px] text-gray-500 flex items-center gap-0.5 leading-tight">
             <ArrowLeftRight size={9} />
             Cambiar
           </p>
@@ -171,7 +172,7 @@ function ProductChip({ product, slotIndex, excludedIds, onRemove, onSwap }: Prod
       <button
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
         aria-label={`Quitar ${product.nombre}`}
-        className="ml-1 w-5 h-5 flex items-center justify-center rounded-full text-gray-400 hover:bg-red-100 hover:text-red-500 transition-colors shrink-0"
+        className="ml-1 w-5 h-5 flex items-center justify-center rounded-full text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors shrink-0"
       >
         <X size={11} />
       </button>
@@ -208,7 +209,7 @@ function EmptySlot({ slotIndex, excludedIds, onAdd, disabled }: EmptySlotProps) 
     <div className="relative">
       <button
         onClick={() => setDropdownOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-gray-300 hover:border-color-principal hover:text-color-principal text-gray-400 rounded-full text-xs font-medium transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-gray-300 hover:border-color-principal hover:text-color-principal text-gray-500 rounded-full text-xs font-medium transition-colors"
       >
         <Plus size={13} />
         <span className="hidden sm:inline">Agregar</span>
@@ -246,7 +247,8 @@ export default function CompareBar() {
   };
 
   return (
-    <div
+    <aside
+      aria-label="Comparador de productos"
       className="fixed inset-x-0 bottom-0 z-40 flex justify-center pointer-events-none"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
@@ -306,7 +308,7 @@ export default function CompareBar() {
             <button
               onClick={cancelarSeleccion}
               aria-label="Cancelar comparación"
-              className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors shrink-0"
+              className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors shrink-0"
             >
               <X size={16} />
             </button>
@@ -314,6 +316,6 @@ export default function CompareBar() {
 
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

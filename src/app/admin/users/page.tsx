@@ -149,7 +149,7 @@ export default function UsersPage() {
 
       {/* EMPTY */}
       {!loading && !error && usuariosFiltrados.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-48 gap-3 text-gray-400">
+        <div className="flex flex-col items-center justify-center h-48 gap-3 text-gray-500">
           <Users size={40} className="text-gray-300" />
           <p className="text-sm">
             {busqueda || filtroRol
@@ -178,7 +178,7 @@ export default function UsersPage() {
                   key={usuario.id}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-3 px-4 font-mono text-xs text-gray-400">
+                  <td className="py-3 px-4 font-mono text-xs text-gray-500">
                     {usuario.id}
                   </td>
                   <td className="py-3 px-4">
