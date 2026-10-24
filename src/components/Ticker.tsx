@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Image from "next/image";
 
 const ITEMS = [
@@ -37,14 +37,14 @@ function TickerTrack() {
 export default function Ticker() {
   return (
     <div className="bg-[#05467D] py-5 overflow-hidden select-none">
-      <motion.div
+      <m.div
         className="flex gap-8 w-max"
         animate={{ x: ["0%", "-50%"] }}
         transition={{ duration: 30, ease: "linear", repeat: Infinity }}
       >
         <TickerTrack />
         <TickerTrack />
-      </motion.div>
+      </m.div>
     </div>
   );
 }

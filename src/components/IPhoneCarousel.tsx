@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -97,7 +97,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
         {/* ── Panel de Imagen: Ahora con más aire y protagonismo ── */}
         <div className="relative md:w-[45%] bg-[#F8F9FA] flex items-center justify-center p-8 md:p-12">
           <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
+            <m.div
               key={current}
               custom={direction}
               variants={variants}
@@ -131,14 +131,14 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
 
         {/* ── Panel de Contenido ── */}
         <div className="md:w-[55%] flex flex-col justify-center px-8 py-10 md:px-16 md:py-16">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={current}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -178,7 +178,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
                   <path d="M1 7h12M8 2l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
 

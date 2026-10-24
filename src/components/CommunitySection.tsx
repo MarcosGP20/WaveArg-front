@@ -1,6 +1,6 @@
 // src/components/CommunitySection.tsx
 "use client"; // Necesario para los hooks
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image"; // Buena práctica usar Next/Image
 
@@ -22,7 +22,7 @@ export default function CommunitySection() {
     <section ref={sectionRef} className="py-20 bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* 4. Aplicamos la animación al div que contiene la imagen y el texto */}
-        <motion.div
+        <m.div
           style={{ scale, opacity }}
           className="relative rounded-2xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
         >
@@ -54,7 +54,7 @@ export default function CommunitySection() {
               </a>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { getProductos, AccesoriosService } from "@/lib/api";
 import { Producto } from "@/interfaces/producto";
 import { Accesorio, CATEGORIA_LABELS, CategoriaAccesorio } from "@/interfaces/accesorio";
@@ -202,15 +202,15 @@ export default function ProductsContent() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <motion.h1
+          <m.h1
             className="text-3xl font-bold text-color-principal"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
           >
             Nuestro Catálogo
-          </motion.h1>
-          <motion.p
+          </m.h1>
+          <m.p
             className="text-gray-500 text-sm mt-1"
             variants={fadeUp}
             initial="hidden"
@@ -219,7 +219,7 @@ export default function ProductsContent() {
           >
             {filteredProducts.length} iPhone{filteredProducts.length !== 1 ? "s" : ""} ·{" "}
             {filteredAccesorios.length} accesorio{filteredAccesorios.length !== 1 ? "s" : ""}
-          </motion.p>
+          </m.p>
         </div>
 
         <button
@@ -309,18 +309,18 @@ export default function ProductsContent() {
                   </Link>
                 </div>
               ) : (
-                <motion.div
+                <m.div
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
                   variants={cardGrid}
                   initial="hidden"
                   animate="visible"
                 >
                   {filteredProducts.map((product) => (
-                    <motion.div key={product.id} variants={fadeUp}>
+                    <m.div key={product.id} variants={fadeUp}>
                       <ProductCard product={product} featured={featuredId === product.id} />
-                    </motion.div>
+                    </m.div>
                   ))}
-                </motion.div>
+                </m.div>
               )}
             </section>
           ) : null}
@@ -381,18 +381,18 @@ export default function ProductsContent() {
                   <p className="font-medium">No hay accesorios en esa categoría</p>
                 </div>
               ) : (
-                <motion.div
+                <m.div
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
                   variants={cardGrid}
                   initial="hidden"
                   animate="visible"
                 >
                   {filteredAccesorios.map((acc) => (
-                    <motion.div key={acc.id} variants={fadeUp}>
+                    <m.div key={acc.id} variants={fadeUp}>
                       <AccesorioCard accesorio={acc} />
-                    </motion.div>
+                    </m.div>
                   ))}
-                </motion.div>
+                </m.div>
               )}
             </section>
           )}

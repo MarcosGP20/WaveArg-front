@@ -1,5 +1,5 @@
 "use client";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -127,7 +127,7 @@ export default function HomePage() {
 
             {/* Overlay gradient + CTA */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end pb-16 px-6 md:px-16 lg:px-24">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
@@ -154,10 +154,10 @@ export default function HomePage() {
                     Ver accesorios
                   </Link>
                 </div>
-              </motion.div>
+              </m.div>
 
               {/* Scroll indicator */}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
@@ -167,13 +167,13 @@ export default function HomePage() {
                   Scroll
                 </span>
                 <div className="w-[22px] h-[36px] rounded-full border border-white/30 flex items-start justify-center pt-[6px]">
-                  <motion.div
+                  <m.div
                     animate={{ y: [0, 10, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                     className="w-[3px] h-[6px] rounded-full bg-white/60"
                   />
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           </section>
 
@@ -218,7 +218,7 @@ export default function HomePage() {
             ref={containerRef}
             className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4 overflow-hidden"
           >
-            <motion.div style={{ scale, opacity }} className="relative w-full">
+            <m.div style={{ scale, opacity }} className="relative w-full">
               <div className="relative h-[95vh] bg-gray-900 rounded-2xl overflow-hidden">
                 <Image
                   src={ASSET_PATHS.IPHONE_IMG}
@@ -253,7 +253,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </section>
 
           <BentoCreadores />

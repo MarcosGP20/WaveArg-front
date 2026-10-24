@@ -8,6 +8,7 @@ import CartDrawer from "@/components/CartDrawer";
 import AdminFloatingButton from "@/components/AdminFloatingButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GoogleProvider } from "@/components/GoogleProvider";
+import MotionProvider from "@/components/MotionProvider";
 
 export default function PublicLayout({
   children,
@@ -16,6 +17,7 @@ export default function PublicLayout({
 }>) {
   return (
     <GoogleProvider>
+    <MotionProvider>
     <CartProvider>
       <CompareProvider>
         <div className="flex min-h-screen flex-col">
@@ -30,6 +32,7 @@ export default function PublicLayout({
         </div>
       </CompareProvider>
     </CartProvider>
+    </MotionProvider>
     </GoogleProvider>
   );
 }

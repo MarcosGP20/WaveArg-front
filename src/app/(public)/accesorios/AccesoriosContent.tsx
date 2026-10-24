@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { AccesoriosService } from "@/lib/api";
 import { Accesorio } from "@/interfaces/accesorio";
 import AccesorioCard from "@/components/AccesorioCard";
@@ -173,15 +173,15 @@ export default function AccesoriosContent() {
       {/* Cabecera: título + botón filtros (mobile) */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <motion.h1
+          <m.h1
             className="text-3xl font-bold text-color-principal"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
           >
             Nuestro Catálogo
-          </motion.h1>
-          <motion.p
+          </m.h1>
+          <m.p
             className="text-gray-500 text-sm mt-1"
             variants={fadeUp}
             initial="hidden"
@@ -191,7 +191,7 @@ export default function AccesoriosContent() {
             {filteredProducts.length === products.length
               ? `${products.length} accesorios disponibles`
               : `${filteredProducts.length} de ${products.length} accesorios`}
-          </motion.p>
+          </m.p>
         </div>
 
         <button
@@ -271,18 +271,18 @@ export default function AccesoriosContent() {
               </Link>
             </div>
           ) : (
-            <motion.div
+            <m.div
               className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
               variants={cardGrid}
               initial="hidden"
               animate="visible"
             >
               {filteredProducts.map((product) => (
-                <motion.div key={product.id} variants={fadeUp}>
+                <m.div key={product.id} variants={fadeUp}>
                   <AccesorioCard accesorio={product} />
-                </motion.div>
+                </m.div>
               ))}
-            </motion.div>
+            </m.div>
           )}
         </main>
       </div>
