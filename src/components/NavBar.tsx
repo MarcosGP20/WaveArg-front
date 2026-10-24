@@ -198,7 +198,9 @@ export default function NavBar() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 relative ${
+      // En la home va fixed, encima del video de portada (transparente hasta scrollear); en el
+      // resto, sticky en el flujo. Sticky en la home la dejaba arriba del hero, blanca sobre blanco.
+      className={`top-0 z-50 transition-all duration-300 ${isHome ? "fixed inset-x-0" : "sticky"} ${
         scrolled ? "py-2 px-4 md:p-4" : "p-4"
       } ${
         isTransparent

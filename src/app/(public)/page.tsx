@@ -67,7 +67,7 @@ export default function HomePage() {
             {/* Scroll indicator */}
             <div
               aria-hidden="true"
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-in fade-in duration-700 delay-1000 fill-mode-both motion-reduce:animate-none"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 animate-in fade-in duration-700 delay-1000 fill-mode-both motion-reduce:animate-none"
             >
               <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">
                 Scroll
