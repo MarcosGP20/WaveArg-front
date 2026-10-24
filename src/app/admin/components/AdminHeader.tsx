@@ -4,7 +4,7 @@
 
 import { Menu as MenuIcon } from "lucide-react";
 
-import { Menu, Transition } from "@headlessui/react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   UserCircle,
   LogOut,
@@ -18,7 +18,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+
+const itemClass =
+  "flex items-center px-4 py-2 text-sm text-gray-700 outline-none transition-colors data-[highlighted]:bg-gray-50";
 
 interface AdminHeaderProps {
   user?: {
@@ -92,142 +94,103 @@ export default function AdminHeader({
         </div>
 
         {/* Dropdown Menu del Usuario */}
-        <Menu as="div" className="relative z-50">
-          {({ open }) => (
-            <>
-              <Menu.Button className="flex items-center gap-2 rounded-full hover:bg-gray-100 p-1 pr-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                {/* Avatar */}
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={`Avatar de ${user.name}`}
-                    className="h-9 w-9 rounded-full object-cover ring-2 ring-gray-200"
-                  />
-                ) : (
-                  <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-gray-200">
-                    <span className="text-white font-semibold text-sm">
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger
+            className="group flex items-center gap-2 rounded-full hover:bg-gray-100 p-1 pr-3 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            aria-label={`Menú de ${user.name}`}
+          >
+            {/* Avatar */}
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt=""
+                className="h-9 w-9 rounded-full object-cover ring-2 ring-gray-200"
+              />
+            ) : (
+              <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-gray-200">
+                <span className="text-white font-semibold text-sm">
+                  {user.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
 
-                {/* Chevron indicator */}
-                <ChevronDown
-                  size={16}
-                  className={`text-gray-500 transition-transform duration-200 ${
-                    open ? "rotate-180" : ""
-                  }`}
-                />
-              </Menu.Button>
+            {/* Chevron indicator */}
+            <ChevronDown
+              size={16}
+              className="text-gray-500 transition-transform duration-200 group-data-[state=open]:rotate-180"
+            />
+          </DropdownMenu.Trigger>
 
-              {/* Dropdown Panel */}
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100 z-50">
-                  {/* Header del menú con info del usuario */}
-                  <div className="px-4 py-3">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {user.name}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate mt-0.5">
-                      {user.email}
-                    </p>
-                  </div>
+          {/* Dropdown Panel */}
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              align="end"
+              sideOffset={8}
+              className="z-50 w-56 rounded-xl bg-white shadow-lg ring-1 ring-black/5 focus:outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+            >
+              {/* Header del menú con info del usuario */}
+              <DropdownMenu.Label className="px-4 py-3">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user.name}
+                </p>
+                <p className="text-xs text-gray-500 truncate mt-0.5">
+                  {user.email}
+                </p>
+              </DropdownMenu.Label>
 
-                  {/* Grupo 1: Cuenta */}
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/admin/profile"
-                          className={`${
-                            active ? "bg-gray-50" : ""
-                          } flex items-center px-4 py-2 text-sm text-gray-700 transition-colors`}
-                        >
-                          <User size={16} className="mr-3 text-gray-400" />
-                          Mi Perfil
-                        </Link>
-                      )}
-                    </Menu.Item>
+              <DropdownMenu.Separator className="h-px bg-gray-100" />
 
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/admin/settings"
-                          className={`${
-                            active ? "bg-gray-50" : ""
-                          } flex items-center px-4 py-2 text-sm text-gray-700 transition-colors`}
-                        >
-                          <Settings size={16} className="mr-3 text-gray-400" />
-                          Configuración
-                        </Link>
-                      )}
-                    </Menu.Item>
-                  </div>
+              {/* Grupo 1: Cuenta */}
+              <DropdownMenu.Group className="py-1">
+                <DropdownMenu.Item asChild className={itemClass}>
+                  <Link href="/admin/profile">
+                    <User size={16} className="mr-3 text-gray-400" />
+                    Mi Perfil
+                  </Link>
+                </DropdownMenu.Item>
 
-                  {/* Grupo 2: Admin */}
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/admin/security"
-                          className={`${
-                            active ? "bg-gray-50" : ""
-                          } flex items-center px-4 py-2 text-sm text-gray-700 transition-colors`}
-                        >
-                          <Shield size={16} className="mr-3 text-gray-400" />
-                          Seguridad
-                        </Link>
-                      )}
-                    </Menu.Item>
+                <DropdownMenu.Item asChild className={itemClass}>
+                  <Link href="/admin/settings">
+                    <Settings size={16} className="mr-3 text-gray-400" />
+                    Configuración
+                  </Link>
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
 
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/admin/help"
-                          className={`${
-                            active ? "bg-gray-50" : ""
-                          } flex items-center px-4 py-2 text-sm text-gray-700 transition-colors`}
-                        >
-                          <HelpCircle
-                            size={16}
-                            className="mr-3 text-gray-400"
-                          />
-                          Centro de Ayuda
-                        </Link>
-                      )}
-                    </Menu.Item>
-                  </div>
+              <DropdownMenu.Separator className="h-px bg-gray-100" />
 
-                  {/* Grupo 3: Cerrar Sesión */}
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          type="button"
-                          onClick={handleLogout}
-                          className={`${
-                            active ? "bg-red-50" : ""
-                          } flex w-full items-center px-4 py-2 text-sm text-red-600 transition-colors`}
-                        >
-                          <LogOut size={16} className="mr-3" />
-                          Cerrar Sesión
-                        </button>
-                      )}
-                    </Menu.Item>
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </>
-          )}
-        </Menu>
+              {/* Grupo 2: Admin */}
+              <DropdownMenu.Group className="py-1">
+                <DropdownMenu.Item asChild className={itemClass}>
+                  <Link href="/admin/security">
+                    <Shield size={16} className="mr-3 text-gray-400" />
+                    Seguridad
+                  </Link>
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Item asChild className={itemClass}>
+                  <Link href="/admin/help">
+                    <HelpCircle size={16} className="mr-3 text-gray-400" />
+                    Centro de Ayuda
+                  </Link>
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
+
+              <DropdownMenu.Separator className="h-px bg-gray-100" />
+
+              {/* Grupo 3: Cerrar Sesión */}
+              <DropdownMenu.Group className="py-1">
+                <DropdownMenu.Item
+                  onSelect={handleLogout}
+                  className="flex w-full cursor-pointer items-center px-4 py-2 text-sm text-red-600 outline-none transition-colors data-[highlighted]:bg-red-50"
+                >
+                  <LogOut size={16} className="mr-3" />
+                  Cerrar Sesión
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
       </div>
     </header>
   );
