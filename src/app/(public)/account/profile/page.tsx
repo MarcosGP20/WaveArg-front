@@ -98,13 +98,16 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* ASIDE */}
-        <aside className="w-full lg:w-1/3">
+        {/* Columna lateral */}
+        <div className="w-full lg:w-1/3">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center sticky top-24">
             <div className="w-24 h-24 bg-color-principal rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <User className="text-white" size={48} />
+              <User className="text-white" size={48} aria-hidden="true" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-5">{displayName}</h2>
+            <h1 className="text-xl font-bold text-gray-900 mb-5">
+              <span className="sr-only">Mi perfil: </span>
+              {displayName}
+            </h1>
 
             <div className="space-y-2">
               <Button
@@ -119,21 +122,21 @@ export default function ProfilePage() {
               <Button
                 onClick={handleLogout}
                 variant="ghost"
-                className="w-full justify-start gap-3 rounded-full text-red-500 hover:bg-red-50"
+                className="w-full justify-start gap-3 rounded-full text-red-600 hover:bg-red-50"
               >
                 <LogOut size={16} /> Salir
               </Button>
             </div>
           </div>
-        </aside>
+        </div>
 
         {/* MAIN */}
         <div className="flex-1 space-y-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-color-principal">
+              <h2 className="text-lg font-bold text-color-principal">
                 Datos de contacto
-              </h3>
+              </h2>
               {!editing && (
                 <Button
                   variant="ghost"
