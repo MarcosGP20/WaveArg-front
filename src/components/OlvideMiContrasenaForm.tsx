@@ -32,7 +32,7 @@ export function OlvideMiContrasenaForm() {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <CheckCircle className="mx-auto text-green-500" size={48} />
-        <h2 className="text-xl font-bold text-color-principal">Revisá tu email</h2>
+        <h1 className="text-xl font-bold text-color-principal">Revisá tu email</h1>
         <p className="text-gray-600 text-sm">
           Si el email está registrado, recibirás un enlace para restablecer tu
           contraseña en los próximos minutos.
@@ -53,9 +53,9 @@ export function OlvideMiContrasenaForm() {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div>
-        <h2 className="text-2xl font-bold text-center text-color-principal">
+        <h1 className="text-2xl font-bold text-center text-color-principal">
           Olvidé mi contraseña
-        </h2>
+        </h1>
         <p className="text-sm text-center text-gray-500 mt-2">
           Ingresá tu email y te enviaremos un link para restablecer tu
           contraseña.

@@ -55,9 +55,9 @@ export default function Creadores() {
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center text-center mt-20  px-4 py-20">
         <div className="max-w-4xl">
-          <h2 className="text-center text-color-principal text-5xl font-bold mb-6">
+          <h1 className="text-center text-color-principal text-5xl font-bold mb-6">
             Guía para creadores de contenido
-          </h2>
+          </h1>
           <p className="text-center text-2xl text-color-principal mt-4 mb-10 px-4 md:px-0">
             Todo lo que necesitas para crear contenido de calidad, elegir el
             equipo correcto y sacarle máximo provecho a tu iPhone o Mac
@@ -83,11 +83,11 @@ export default function Creadores() {
           </div>
         </div>
         <div className="w-full md:w-1/2 text-center md:text-left">
-          <h3 className="text-3xl font-normal text-[#004a80] mb-6">
+          <h2 className="text-3xl font-normal text-[#004a80] mb-6">
             Trabajamos con <span className="font-bold">creadores reales</span>{" "}
             que usan estos equipos todos los dias para
             <span className="font-bold"> grabar, editar y trabajar.</span>
-          </h3>
+          </h2>
           <a
             href="#equipos"
             className="bg-color-principal text-white px-8 py-3 rounded-full hover:bg-color-principal-oscuro transition-colors inline-block"
@@ -99,17 +99,17 @@ export default function Creadores() {
 
       {/* iPhone Selection Section (Espacio para el carrusel futuro) */}
       <section className="flex flex-col items-center justify-center text-center mt-10 px-4 py-10 w-full">
-        <h3 className="text-color-principal text-3xl font-bold mb-10">
+        <h2 className="text-color-principal text-3xl font-bold mb-10">
           ¿Qué iPhone elegir para crear contenido?
-        </h3>
+        </h2>
         <IPhoneCarouselWithData />
       </section>
 
       {/* Zig-Zag Section: ¿Con qué editar? */}
       <section id="equipos" className="max-w-5xl mx-auto px-6 py-20">
-        <h3 className="text-color-principal text-3xl font-bold text-center mb-16">
+        <h2 className="text-color-principal text-3xl font-bold text-center mb-16">
           ¿Con qué editar tu contenido?
-        </h3>
+        </h2>
 
         <div className="space-y-24">
           {creatorTools.map((item, index) => (
@@ -134,9 +134,9 @@ export default function Creadores() {
 
               {/* Contenedor de Texto */}
               <div className="w-full md:w-1/2 flex flex-col items-start text-left">
-                <h4 className="text-color-principal text-2xl md:text-3xl font-bold mb-4">
+                <h3 className="text-color-principal text-2xl md:text-3xl font-bold mb-4">
                   {item.title}
-                </h4>
+                </h3>
                 <ul className="space-y-3 mb-8">
                   {item.description.map((line, i) => (
                     <li
@@ -179,9 +179,9 @@ export default function Creadores() {
 
           {/* Contenido arriba de la imagen */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-            <h3 className="text-white text-3xl md:text-4xl font-bold mb-4 drop-shadow-md">
+            <h2 className="text-white text-3xl md:text-4xl font-bold mb-4 drop-shadow-md">
               Accesorios que hacen la diferencia
-            </h3>
+            </h2>
             <p className="text-white text-lg md:text-xl max-w-xl mb-8 drop-shadow-sm">
               No se trata solo del iPhone. Los accesorios correctos elevan tu
               contenido al siguiente nivel.

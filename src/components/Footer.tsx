@@ -47,7 +47,7 @@ const socialLinks = [
 ];
 
 // --- Clases reutilizables (Sin cambios) ---
-const h3Styles = "text-lg font-semibold mb-3";
+const tituloColumna = "text-lg font-semibold mb-3";
 const textStyles = "text-sm text-gray-200";
 const linkStyles = `text-sm text-gray-200 hover:underline`;
 const iconStyles = "w-5 h-5 text-white hover:text-gray-300 transition";
@@ -80,7 +80,7 @@ export default function Footer() {
 
           {/* 2. Inicio */}
           <div>
-            <h3 className={h3Styles}>Inicio</h3>
+            <h2 className={tituloColumna}>Inicio</h2>
             <ul className="space-y-2">
               {navLinks.map((link) => (
                 <li key={link.href}>
@@ -94,7 +94,7 @@ export default function Footer() {
 
           {/* 3. Contacto */}
           <div>
-            <h3 className={h3Styles}>Contacto</h3>
+            <h2 className={tituloColumna}>Contacto</h2>
             <ul className="space-y-2">
               {contactLinks.map((link) => (
                 <li key={link.href}>
@@ -108,7 +108,7 @@ export default function Footer() {
 
           {/* 4. Comunidad */}
           <div>
-            <h3 className={h3Styles}>Comunidad</h3>
+            <h2 className={tituloColumna}>Comunidad</h2>
             <ul className="space-y-2">
               {communityLinks.map((link) => (
                 <li key={link.href}>
