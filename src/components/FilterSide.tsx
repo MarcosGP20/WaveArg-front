@@ -1,6 +1,8 @@
 "use client";
 
+import { useId } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { formatearPrecio } from "@/lib/precio";
 
 /** "iphones"  → muestra Precio + Condición + Memoria + Modelo  (página /products)
  *  "accesorios" → muestra Precio + Condición                   (página /accesorios) */
@@ -20,6 +22,7 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const tituloId = useId();
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -60,11 +63,12 @@ export default function FilterSidebar({
   const content = (
     <>
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="font-bold text-xl text-color-principal dark:text-white">Filtros</h2>
+        <h2 id={tituloId} className="font-bold text-xl text-color-principal dark:text-white">Filtros</h2>
         {hasActiveFilters && (
           <button
+            type="button"
             onClick={() => router.push("?", { scroll: false })}
-            className="text-xs text-red-500 hover:underline"
+            className="text-xs text-red-700 hover:underline"
           >
             Limpiar todo
           </button>
@@ -142,9 +146,12 @@ export default function FilterSidebar({
   if (flat) return <div>{content}</div>;
 
   return (
-    <aside className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4">
+    <section
+      aria-labelledby={tituloId}
+      className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4"
+    >
       {content}
-    </aside>
+    </section>
   );
 }
 
@@ -172,9 +179,9 @@ function PriceRangeSlider({
 
   return (
     <div className="pt-1">
-      <div className="flex justify-between text-xs font-medium text-gray-600 mb-4">
-        <span>${low.toLocaleString("es-AR")}</span>
-        <span>${high.toLocaleString("es-AR")}</span>
+      <div className="flex justify-between text-xs font-medium text-gray-600 mb-4" aria-hidden="true">
+        <span>{formatearPrecio(low)}</span>
+        <span>{formatearPrecio(high)}</span>
       </div>
 
       <div className="relative h-5 flex items-center">
@@ -186,37 +193,42 @@ function PriceRangeSlider({
           style={{ left: `${lowPct}%`, right: `${100 - highPct}%` }}
         />
 
-        {/* Min input — invisible but interactive */}
+        {/* Min input — invisible pero interactivo. Nombre y valor legibles para el lector; el foco
+            se muestra en el thumb visual (peer-focus-visible), porque el input es transparente. */}
         <input
           type="range"
+          aria-label="Precio mínimo"
+          aria-valuetext={formatearPrecio(low)}
           min={min}
           max={max}
           step={step}
           value={low}
           onChange={(e) => onChangeLow(Math.min(Number(e.target.value), high - step))}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="peer/min absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           style={{ zIndex: lowPct > 90 ? 5 : 3 }}
         />
-        {/* Max input — invisible but interactive */}
+        {/* Max input — invisible pero interactivo */}
         <input
           type="range"
+          aria-label="Precio máximo"
+          aria-valuetext={formatearPrecio(high)}
           min={min}
           max={max}
           step={step}
           value={high}
           onChange={(e) => onChangeHigh(Math.max(Number(e.target.value), low + step))}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="peer/max absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           style={{ zIndex: 4 }}
         />
 
         {/* Visual thumb — min */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none"
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none peer-focus-visible/min:ring-2 peer-focus-visible/min:ring-[#2563eb] peer-focus-visible/min:ring-offset-2"
           style={{ left: `${lowPct}%` }}
         />
         {/* Visual thumb — max */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none"
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none peer-focus-visible/max:ring-2 peer-focus-visible/max:ring-[#2563eb] peer-focus-visible/max:ring-offset-2"
           style={{ left: `${highPct}%` }}
         />
       </div>
@@ -228,10 +240,10 @@ function PriceRangeSlider({
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2">
-      <h3 className="font-bold text-sm mb-1 dark:text-gray-200">{title}</h3>
+    <fieldset className="flex flex-col gap-2">
+      <legend className="font-bold text-sm mb-1 dark:text-gray-200">{title}</legend>
       {children}
-    </div>
+    </fieldset>
   );
 }
 
@@ -251,11 +263,12 @@ function FilterOption({
       <div className="relative flex items-center justify-center w-5 h-5 flex-shrink-0">
         <input
           type="checkbox"
-          className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded checked:bg-color-principal checked:border-color-principal transition-all cursor-pointer"
+          className="peer appearance-none w-5 h-5 border-2 border-gray-500 rounded checked:bg-color-principal checked:border-color-principal transition-all cursor-pointer"
           checked={checked}
           onChange={onChange}
         />
         <svg
+          aria-hidden="true"
           className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
           viewBox="0 0 12 12"
           fill="none"
