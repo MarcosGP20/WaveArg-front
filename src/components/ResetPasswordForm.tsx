@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Lock, CheckCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,12 @@ interface ResetPasswordFormProps {
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [exito, setExito] = useState(false);
   const [serverError, setServerError] = useState("");
+  // Al pasar a la pantalla de éxito el formulario desaparece: el foco va al título, que el
+  // lector de pantalla anuncia (front#11).
+  const tituloExitoRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (exito) tituloExitoRef.current?.focus();
+  }, [exito]);
   const router = useRouter();
 
   const {
@@ -49,7 +55,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <AlertTriangle className="mx-auto text-yellow-500" size={48} />
-        <h2 className="text-xl font-bold text-color-principal">Link inválido</h2>
+        <h1 className="text-xl font-bold text-color-principal">Link inválido</h1>
         <p className="text-gray-600 text-sm">
           Este link de recuperación no es válido.
         </p>
@@ -67,9 +73,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <CheckCircle className="mx-auto text-green-500" size={48} />
-        <h2 className="text-xl font-bold text-color-principal">
+        <h1 ref={tituloExitoRef} tabIndex={-1} className="text-xl font-bold text-color-principal focus:outline-none">
           ¡Contraseña actualizada!
-        </h2>
+        </h1>
         <p className="text-gray-600 text-sm">
           Ya podés iniciar sesión con tu nueva contraseña.
         </p>
@@ -83,9 +89,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div>
-        <h2 className="text-2xl font-bold text-center text-color-principal">
+        <h1 className="text-2xl font-bold text-center text-color-principal">
           Nueva contraseña
-        </h2>
+        </h1>
         <p className="text-sm text-center text-gray-500 mt-2">
           Elegí una contraseña nueva para tu cuenta.
         </p>
@@ -95,17 +101,20 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <div>
           <Label htmlFor="nuevaContrasena">Nueva contraseña</Label>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-500" />
+            <Lock size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="nuevaContrasena"
               type="password"
+              autoComplete="new-password"
               placeholder="Mínimo 6 caracteres"
               className={errors.nuevaContrasena ? "border-red-500" : ""}
+              aria-invalid={!!errors.nuevaContrasena}
+              aria-describedby={errors.nuevaContrasena ? "nuevaContrasena-error" : undefined}
               {...register("nuevaContrasena")}
             />
           </div>
           {errors.nuevaContrasena && (
-            <p className="text-xs text-red-500 mt-1">
+            <p id="nuevaContrasena-error" role="alert" className="text-xs text-red-600 mt-1">
               {errors.nuevaContrasena.message}
             </p>
           )}
@@ -114,25 +123,28 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <div>
           <Label htmlFor="confirmarContrasena">Confirmá la contraseña</Label>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-500" />
+            <Lock size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="confirmarContrasena"
               type="password"
+              autoComplete="new-password"
               placeholder="Repetí tu nueva contraseña"
               className={errors.confirmarContrasena ? "border-red-500" : ""}
+              aria-invalid={!!errors.confirmarContrasena}
+              aria-describedby={errors.confirmarContrasena ? "confirmarContrasena-error" : undefined}
               {...register("confirmarContrasena")}
             />
           </div>
           {errors.confirmarContrasena && (
-            <p className="text-xs text-red-500 mt-1">
+            <p id="confirmarContrasena-error" role="alert" className="text-xs text-red-600 mt-1">
               {errors.confirmarContrasena.message}
             </p>
           )}
         </div>
 
         {serverError && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200">
-            <p className="text-sm text-red-600 text-center">{serverError}</p>
+          <div role="alert" className="p-3 rounded-xl bg-red-50 border border-red-200">
+            <p className="text-sm text-red-700 text-center">{serverError}</p>
             {serverError.includes("expiró") && (
               <p className="text-xs text-center mt-1">
                 <Link

@@ -95,19 +95,20 @@ export function LoginForm() {
 
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
-      <h2 className="text-2xl font-bold text-center text-color-principal">
+      <h1 className="text-2xl font-bold text-center text-color-principal">
         Iniciar Sesión
-      </h2>
+      </h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {/* Campo Email */}
         <div>
           <Label htmlFor="email">Email</Label>
           <div className="flex items-center gap-2 py-2">
-            <Mail size={16} className="text-gray-500" />
+            <Mail size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="tu@correo.com"
               className={errors.email ? "border-red-500" : ""}
               aria-invalid={!!errors.email}
@@ -116,7 +117,7 @@ export function LoginForm() {
             />
           </div>
           {errors.email && (
-            <p id="login-email-error" role="alert" className="text-xs text-red-500 mt-1">
+            <p id="login-email-error" role="alert" className="text-xs text-red-600 mt-1">
               {errors.email.message}
             </p>
           )}
@@ -134,10 +135,11 @@ export function LoginForm() {
             </a>
           </div>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-500" />
+            <Lock size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               className={errors.contraseña ? "border-red-500" : ""}
               aria-invalid={!!errors.contraseña}
@@ -146,7 +148,7 @@ export function LoginForm() {
             />
           </div>
           {errors.contraseña && (
-            <p id="login-password-error" role="alert" className="text-xs text-red-500 mt-1">
+            <p id="login-password-error" role="alert" className="text-xs text-red-600 mt-1">
               {errors.contraseña.message}
             </p>
           )}
@@ -154,16 +156,14 @@ export function LoginForm() {
 
         {/* Mensajes de Estado */}
         {serverError && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200">
-            <p className="text-sm text-red-600 text-center">{serverError}</p>
+          <div role="alert" className="p-3 rounded-xl bg-red-50 border border-red-200">
+            <p className="text-sm text-red-700 text-center">{serverError}</p>
           </div>
         )}
 
-        {statusMessage && (
-          <p className="text-sm text-blue-600 text-center font-medium">
-            {statusMessage}
-          </p>
-        )}
+        <p role="status" className={statusMessage ? "text-sm text-blue-700 text-center font-medium" : "sr-only"}>
+          {statusMessage}
+        </p>
 
         <Button
           type="submit"

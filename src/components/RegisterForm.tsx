@@ -80,7 +80,7 @@ export function RegisterForm() {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div className="space-y-2 text-center">
-        <h2 className="text-3xl font-bold text-color-principal">Unite a Wave Arg</h2>
+        <h1 className="text-3xl font-bold text-color-principal">Unite a Wave Arg</h1>
         <p className="text-sm text-gray-500">
           Crea tu cuenta y surfeá al próximo nivel
         </p>
@@ -91,10 +91,11 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 text-gray-500" size={18} />
+            <Mail className="absolute left-3 top-3 text-gray-500" size={18} aria-hidden="true" />
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="tu@correo.com"
               className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
               aria-invalid={!!errors.email}
@@ -103,7 +104,7 @@ export function RegisterForm() {
             />
           </div>
           {errors.email && (
-            <p id="reg-email-error" role="alert" className="text-xs text-red-500">
+            <p id="reg-email-error" role="alert" className="text-xs text-red-600">
               {errors.email.message}
             </p>
           )}
@@ -113,10 +114,11 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="password">Contraseña</Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 text-gray-500" size={18} />
+            <Lock className="absolute left-3 top-3 text-gray-500" size={18} aria-hidden="true" />
             <Input
               id="password"
               type="password"
+              autoComplete="new-password"
               placeholder="••••••••"
               className={`pl-10 ${errors.contraseña ? "border-red-500" : ""}`}
               aria-invalid={!!errors.contraseña}
@@ -125,7 +127,7 @@ export function RegisterForm() {
             />
           </div>
           {errors.contraseña && (
-            <p id="reg-password-error" role="alert" className="text-xs text-red-500">
+            <p id="reg-password-error" role="alert" className="text-xs text-red-600">
               {errors.contraseña.message}
             </p>
           )}
@@ -133,16 +135,14 @@ export function RegisterForm() {
 
         {/* Feedback al usuario */}
         {serverError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600 text-center">{serverError}</p>
+          <div role="alert" className="p-3 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-sm text-red-700 text-center">{serverError}</p>
           </div>
         )}
 
-        {statusMessage && (
-          <p className="text-sm text-blue-600 text-center animate-pulse">
-            {statusMessage}
-          </p>
-        )}
+        <p role="status" className={statusMessage ? "text-sm text-blue-700 text-center animate-pulse motion-reduce:animate-none" : "sr-only"}>
+          {statusMessage}
+        </p>
 
         <Button
           type="submit"
