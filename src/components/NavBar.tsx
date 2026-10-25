@@ -15,6 +15,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import DropdownItem from "./DropdownItem";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { etiquetaBotonCarrito } from "@/lib/carrito";
 
 // --- 1. CONFIGURACIÓN DEL MENÚ (DATA DRIVEN) ---
 const menuItems = [
@@ -55,7 +57,6 @@ export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [cartHoverOpen, setCartHoverOpen] = useState(false);
   const cartCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +80,19 @@ export default function NavBar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
+  // Menú móvil: Escape lo cierra y devuelve el foco al botón (front#10).
+  const toggleMovilRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenuOpen(false);
+      toggleMovilRef.current?.focus();
+    };
+    document.addEventListener("keydown", alTeclear);
+    return () => document.removeEventListener("keydown", alTeclear);
+  }, [menuOpen]);
+
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const [cartBump, setCartBump] = useState(false);
@@ -95,7 +109,6 @@ export default function NavBar() {
   }, [cartCount]);
 
   const handleLogout = async () => {
-    setUserDropdownOpen(false);
     await logout();
     router.push("/");
   };
@@ -103,6 +116,9 @@ export default function NavBar() {
   // On homepage before scroll: white text on transparent bg
   // Otherwise (scrolled or non-home): brand color on white/glass bg
   const isTransparent = isHome && !scrolled;
+
+  const itemMenuUsuario =
+    "px-4 py-2 text-sm text-gray-700 outline-none transition flex items-center gap-2 data-[highlighted]:bg-blue-50";
 
   const linkStyle = (href: string) =>
     `px-3 py-2 rounded-full transition-colors duration-200 ${
@@ -146,7 +162,7 @@ export default function NavBar() {
       <button
         onClick={() => { openCart(); setMenuOpen(false); }}
         className="relative px-3 py-2"
-        aria-label="Abrir carrito"
+        aria-label={etiquetaBotonCarrito(cartCount)}
       >
         <div className="relative inline-block">
           <ShoppingCart
@@ -157,6 +173,7 @@ export default function NavBar() {
           {cartCount > 0 && (
             <span
               key={cartCount}
+              aria-hidden="true"
               className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-badgePop"
             >
               {cartCount}
@@ -304,7 +321,8 @@ export default function NavBar() {
             Contacto
           </Link>
 
-          {/* Cart icon — hover preview, click opens drawer */}
+          {/* Cart icon — preview al pasar el mouse; el click (o Enter) abre el drawer, que tiene lo
+              mismo y es accesible con teclado, así que el preview no se abre con foco (front#10). */}
           <div
             className="relative px-3 py-2"
             onMouseEnter={() => {
@@ -314,23 +332,11 @@ export default function NavBar() {
             onMouseLeave={() => {
               cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
             }}
-            onFocus={() => {
-              if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
-              setCartHoverOpen(true);
-            }}
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                setCartHoverOpen(false);
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") setCartHoverOpen(false);
-            }}
           >
             <button
               onClick={openCart}
               className="relative inline-block"
-              aria-label="Abrir carrito"
+              aria-label={etiquetaBotonCarrito(cartCount)}
             >
               <ShoppingCart
                 size={22}
@@ -340,6 +346,7 @@ export default function NavBar() {
               {cartCount > 0 && (
                 <span
                   key={cartCount}
+                  aria-hidden="true"
                   className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-badgePop"
                 >
                   {cartCount}
@@ -402,6 +409,7 @@ export default function NavBar() {
                           <button
                             onClick={() => removeFromCart(item.id)}
                             title="Eliminar del carrito"
+                            aria-label={`Eliminar ${item.name} del carrito`}
                             className="ml-1 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors text-base leading-none"
                           >
                             ×
@@ -429,69 +437,66 @@ export default function NavBar() {
             )}
           </div>
 
-          {/* USER DROPDOWN */}
+          {/* USER DROPDOWN — Radix (front#10): aria-expanded/aria-haspopup, flechas, Escape y
+              click afuera. */}
           {!isLoading && isLoggedIn && user ? (
-            <div className="relative">
-              <button
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
                 className={`flex items-center gap-2 px-3 py-2 rounded-full transition-colors duration-200 font-medium ${
                   isTransparent
                     ? "text-white hover:bg-white/15"
                     : "text-color-principal hover:bg-gray-100"
                 }`}
               >
-                <UserCircle size={20} strokeWidth={1.75} />
+                <UserCircle size={20} strokeWidth={1.75} aria-hidden="true" />
                 <span className="text-sm">{user.email?.split("@")[0]}</span>
-              </button>
+                <span className="sr-only">, menú de cuenta</span>
+              </DropdownMenu.Trigger>
 
-              {/* DROPDOWN MENU */}
-              {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50 animate-scaleIn origin-top-right">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={8}
+                  className="w-48 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50 focus:outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+                >
+                  <DropdownMenu.Label className="px-4 py-2 border-b border-gray-100">
+                    <span className="block text-xs text-gray-500 uppercase tracking-wide">
                       Cuenta
-                    </p>
-                    <p className="font-semibold text-gray-900 text-sm truncate">
+                    </span>
+                    <span className="block font-semibold text-gray-900 text-sm truncate">
                       {user.email}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
+                    </span>
+                    <span className="block text-xs text-gray-600 mt-1">
                       Rol:{" "}
                       <span className="font-medium uppercase">
                         {user.rol || "Usuario"}
                       </span>
-                    </p>
-                  </div>
+                    </span>
+                  </DropdownMenu.Label>
 
-                  <Link
-                    href="/account/profile"
-                    className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
-                    onClick={() => setUserDropdownOpen(false)}
-                  >
-                    <UserCircle size={16} strokeWidth={1.75} /> Mi Perfil
-                  </Link>
+                  <DropdownMenu.Item asChild className={itemMenuUsuario}>
+                    <Link href="/account/profile">
+                      <UserCircle size={16} strokeWidth={1.75} aria-hidden="true" /> Mi Perfil
+                    </Link>
+                  </DropdownMenu.Item>
 
                   {user.rol?.toLowerCase() === "admin" && (
-                    <Link
-                      href="/admin"
-                      className=" px-4 py-2 hover:bg-blue-50 text-sm text-gray-700 transition flex items-center gap-2"
-                      onClick={() => setUserDropdownOpen(false)}
-                    >
-                      <Settings size={16} strokeWidth={1.75} /> Panel Admin
-                    </Link>
+                    <DropdownMenu.Item asChild className={itemMenuUsuario}>
+                      <Link href="/admin">
+                        <Settings size={16} strokeWidth={1.75} aria-hidden="true" /> Panel Admin
+                      </Link>
+                    </DropdownMenu.Item>
                   )}
 
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setUserDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-sm text-red-600 transition flex items-center gap-2"
+                  <DropdownMenu.Item
+                    onSelect={handleLogout}
+                    className="w-full cursor-pointer px-4 py-2 text-sm text-red-600 outline-none transition flex items-center gap-2 data-[highlighted]:bg-red-50"
                   >
-                    <LogOut size={16} strokeWidth={1.75} /> Cerrar Sesión
-                  </button>
-                </div>
-              )}
-            </div>
+                    <LogOut size={16} strokeWidth={1.75} aria-hidden="true" /> Cerrar Sesión
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           ) : !isLoading ? (
             <Link href="/login" className={linkStyle("/login")}>
               Iniciar sesión
@@ -501,6 +506,8 @@ export default function NavBar() {
 
         {/* TOGGLE MÓVIL */}
         <button
+          ref={toggleMovilRef}
+          type="button"
           className={`md:hidden transition-colors duration-200 ${isTransparent ? "text-white" : "text-color-principal"}`}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-expanded={menuOpen}
