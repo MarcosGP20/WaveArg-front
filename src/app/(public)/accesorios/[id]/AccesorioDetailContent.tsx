@@ -257,14 +257,16 @@ export default function AccesorioDetailContent({
                   {selectedVariante.color}
                 </span>
               </p>
-              <div className="flex gap-3 flex-wrap">
+              <div role="group" aria-label="Color" className="flex gap-3 flex-wrap">
                 {coloresUnicos.map((cv) => (
                   <button
                     key={cv.color}
+                    type="button"
                     onClick={() => handleColorClick(cv)}
                     title={cv.color}
                     aria-label={`Color ${cv.color}`}
-                    className={`w-10 h-10 rounded-full transition-all duration-200 focus:outline-none ${
+                    aria-pressed={selectedVariante.color === cv.color}
+                    className={`w-10 h-10 rounded-full transition-all duration-200 ${
                       selectedVariante.color === cv.color
                         ? "ring-2 ring-color-principal ring-offset-2 scale-110 shadow-md"
                         : `ring-1 hover:scale-105 ${
@@ -283,11 +285,13 @@ export default function AccesorioDetailContent({
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                 Especificación
               </p>
-              <div className="flex gap-2 flex-wrap">
+              <div role="group" aria-label="Especificación" className="flex gap-2 flex-wrap">
                 {especificacionesParaColor.map((esp) => (
                   <button
                     key={esp}
+                    type="button"
                     onClick={() => handleEspecificacionClick(esp)}
+                    aria-pressed={selectedVariante.especificacion === esp}
                     className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-all ${
                       selectedVariante.especificacion === esp
                         ? "bg-color-principal text-white border-color-principal shadow-md"
@@ -302,19 +306,28 @@ export default function AccesorioDetailContent({
           )}
 
           <div className="flex items-center gap-3 mt-10">
-            <div className="flex items-center border-2 border-gray-200 rounded-full select-none">
+            <div role="group" aria-label="Cantidad" className="flex items-center border-2 border-gray-200 rounded-full select-none">
               <button
+                type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold"
+                disabled={quantity <= 1}
+                aria-label="Restar uno"
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold disabled:text-gray-300 disabled:hover:bg-transparent"
               >
-                −
+                <span aria-hidden="true">−</span>
               </button>
-              <span className="w-8 text-center font-bold text-sm">{quantity}</span>
+              <span className="w-8 text-center font-bold text-sm" aria-live="polite">
+                <span className="sr-only">Cantidad: </span>
+                {quantity}
+              </span>
               <button
+                type="button"
                 onClick={() => setQuantity(Math.min(selectedVariante.stock, quantity + 1))}
-                className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold"
+                disabled={quantity >= selectedVariante.stock}
+                aria-label="Sumar uno"
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold disabled:text-gray-300 disabled:hover:bg-transparent"
               >
-                +
+                <span aria-hidden="true">+</span>
               </button>
             </div>
 
@@ -329,6 +342,7 @@ export default function AccesorioDetailContent({
             >
               {added ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}
             </button>
+            <p role="status" className="sr-only">{added ? "Agregado al carrito" : ""}</p>
           </div>
         </div>
       </div>
