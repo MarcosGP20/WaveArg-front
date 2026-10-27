@@ -163,7 +163,7 @@ export default function Dashboard() {
           columns={orderColumns}
           data={pedidosRows}
         />
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-gray-400 gap-2 min-h-[12rem]">
+        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center text-gray-500 gap-2 min-h-[12rem]">
           <Package size={32} className="text-gray-300" />
           <p className="text-sm">Próximamente: Productos más vendidos</p>
         </div>

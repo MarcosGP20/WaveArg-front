@@ -168,29 +168,30 @@ function SwapDropdown({ currentId, excludedIds, onSelect, onClose }: SwapDropdow
       ref={ref}
       className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
     >
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100">
-        <Search size={14} className="text-gray-400 shrink-0" />
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 focus-within:ring-2 focus-within:ring-inset focus-within:ring-[#2563eb]">
+        <Search size={14} className="text-gray-500 shrink-0" aria-hidden="true" />
         <input
           ref={inputRef}
           type="text"
           placeholder="Buscar modelo..."
+          aria-label="Buscar modelo"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 text-sm outline-none placeholder:text-gray-400"
+          className="flex-1 text-sm focus:outline-none placeholder:text-gray-500"
         />
         {query && (
-          <button onClick={() => setQuery("")} className="text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={() => setQuery("")} aria-label="Borrar búsqueda" className="text-gray-500 hover:text-gray-600">
             <X size={12} />
           </button>
         )}
       </div>
       <ul className="max-h-56 overflow-y-auto">
         {loading ? (
-          <li className="flex items-center justify-center gap-2 py-6 text-gray-400 text-sm">
+          <li className="flex items-center justify-center gap-2 py-6 text-gray-500 text-sm">
             <Loader2 size={16} className="animate-spin" /> Cargando...
           </li>
         ) : filtered.length === 0 ? (
-          <li className="py-6 text-center text-sm text-gray-400">Sin resultados</li>
+          <li className="py-6 text-center text-sm text-gray-500">Sin resultados</li>
         ) : (
           filtered.map((p) => (
             <li key={p.id}>
@@ -300,7 +301,7 @@ export default function ComparePage() {
         </Link>
         <button
           onClick={() => router.back()}
-          className="mt-4 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+          className="mt-4 text-sm text-gray-500 hover:text-gray-600 transition-colors"
         >
           ← Volver atrás
         </button>
@@ -370,7 +371,7 @@ export default function ComparePage() {
                 <div className="relative shrink-0">
                   <button
                     onClick={() => setOpenSwap(openSwap === colIdx ? null : colIdx)}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-color-principal transition-colors px-2 py-1 rounded-full hover:bg-gray-50"
+                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-color-principal transition-colors px-2 py-1 rounded-full hover:bg-gray-50"
                   >
                     <ArrowLeftRight size={12} />
                     Cambiar
@@ -390,7 +391,7 @@ export default function ComparePage() {
               <div className="divide-y divide-gray-100">
                 {ROW_GROUPS.flatMap((g) => g.rows).filter((l) => l !== "Precio").map((label) => (
                   <div key={label} className="py-2 flex items-center justify-between gap-3">
-                    <span className="text-xs text-gray-400 shrink-0">{label}</span>
+                    <span className="text-xs text-gray-500 shrink-0">{label}</span>
                     <div className="text-right">
                       <CellContent product={p} label={label} isWinner={!!winnersMap.get(label)?.has(p.id)} />
                     </div>
@@ -408,7 +409,7 @@ export default function ComparePage() {
                       ? "bg-green-600 text-white"
                       : hasStock
                       ? "bg-color-principal text-white hover:bg-color-principal-oscuro"
-                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gray-100 text-gray-500 cursor-not-allowed"
                   }`}
                 >
                   {isAdded ? <><Check size={15} /> Agregado</> : <><ShoppingCart size={15} /> Agregar al carrito</>}
@@ -466,7 +467,7 @@ export default function ComparePage() {
                       <div className="relative inline-block mb-3">
                         <button
                           onClick={() => setOpenSwap(openSwap === colIdx ? null : colIdx)}
-                          className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-color-principal transition-colors px-2 py-1 rounded-full hover:bg-gray-50 border border-transparent hover:border-gray-200"
+                          className="inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-color-principal transition-colors px-2 py-1 rounded-full hover:bg-gray-50 border border-transparent hover:border-gray-200"
                         >
                           <ArrowLeftRight size={11} />
                           Cambiar modelo
@@ -491,7 +492,7 @@ export default function ComparePage() {
                               ? "bg-green-600 text-white"
                               : hasStock
                               ? "bg-color-principal text-white hover:bg-color-principal-oscuro"
-                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "bg-gray-100 text-gray-500 cursor-not-allowed"
                           }`}
                         >
                           {isAdded
@@ -523,7 +524,7 @@ export default function ComparePage() {
                       colSpan={compareList.length + 1}
                       className="sticky left-0 bg-gray-50 px-5 py-2"
                     >
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         {group.category}
                       </span>
                     </td>

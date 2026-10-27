@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { decodeJWT } from "@/lib/jwt";
 import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
-
-interface DecodedToken {
-  id: string;
-  email: string;
-  rol: string;
-  iat: number;
-  exp: number;
-}
+import { esAdmin, verificarSesion } from "@/lib/sesion";
 
 // Rutas públicas (sin protección)
 const PUBLIC_ROUTES = [
@@ -26,30 +18,14 @@ const PUBLIC_ROUTES = [
 // Rutas que requieren autenticación
 const PROTECTED_ROUTES = ["/account", "/admin", "/cart", "/checkout"];
 
-function decodeToken(token: string): DecodedToken | null {
-  try {
-    return decodeJWT(token) as DecodedToken | null;
-  } catch (error) {
-    console.error("❌ Error decodificando token:", error);
-    return null;
-  }
-}
-
-function isTokenExpired(token: string): boolean {
-  const decoded = decodeToken(token);
-  if (!decoded) return true;
-
-  const currentTime = Math.floor(Date.now() / 1000);
-  return decoded.exp < currentTime;
-}
-
 const isDev = process.env.NODE_ENV === "development";
 
-export function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const isAuthenticated = token && !isTokenExpired(token);
-  const decodedToken = isAuthenticated ? decodeToken(token!) : null;
+  // Firma, vencimiento, issuer y audience: un token adulterado es lo mismo que no tener sesión.
+  const decodedToken = await verificarSesion(token);
+  const isAuthenticated = decodedToken !== null;
 
   if (isDev) {
     console.log(
@@ -98,11 +74,7 @@ export function middleware(request: NextRequest) {
 
     // 3. Validar acceso por rol
     if (pathname.startsWith("/admin")) {
-      // Verificar múltiples variantes del rol (case-insensitive)
-      const userRol = decodedToken?.rol?.toLowerCase() || "";
-      const isAdmin = userRol === "admin" || userRol === "administrador";
-
-      if (!isAdmin) {
+      if (!esAdmin(decodedToken)) {
         if (isDev) {
           console.log(
             `❌ [Redirect] No-Admin (rol: ${decodedToken?.rol}) intenta /admin → /account/profile`,
@@ -126,6 +98,7 @@ export const config = {
   matcher: [
     // Proteger TODAS las rutas
     // Excepto archivos estáticos y API
-    "/((?!api|_next/static|_next/image|favicon|sitemap|robots).*)",
+    // y archivos de /public (videos, imágenes): no necesitan verificar la sesión
+    "/((?!api|_next/static|_next/image|favicon|sitemap|robots|.*\\.(?:svg|png|jpe?g|webp|avif|gif|ico|mp4|webm|woff2?)$).*)",
   ],
 };

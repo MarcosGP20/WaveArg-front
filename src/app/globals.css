@@ -7,6 +7,7 @@
   --color-principal-oscuro: #0F3C64;
   --color-mp: #009EE3;
   --color-mp-dark: #007ab8;
+  --color-mp-darker: #00609b;
 
   /* Animation timing system */
   --duration-fast: 150ms;
@@ -31,6 +32,7 @@ body {
   --color-color-principal-oscuro: var(--color-principal-oscuro);
   --color-mp: #009EE3;
   --color-mp-dark: #007ab8;
+  --color-mp-darker: #00609b;
 
   /* Animations */
   --animate-fadeDown: fadeDown var(--duration-fast) ease-out forwards;
@@ -211,4 +213,52 @@ body {
 }
 .animate-border-beam {
   animation: border-beam-spin 4s linear infinite;
+}
+
+/* Intro de la home (HomeLoader). Se oculta sin esperar a React en visitas siguientes (clase
+   que pone el script del layout raíz) y con reduced-motion. Si el JS nunca llega, se retira
+   sola a los 6 s. */
+.wave-loader {
+  animation: wave-loader-fuera 0.3s ease-out 6s forwards;
+}
+.wave-sin-intro .wave-loader {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-loader {
+    display: none;
+  }
+}
+@keyframes wave-loader-fuera {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Marquee del Ticker de la home: la pista está duplicada, así que -50% vuelve al inicio. */
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee[data-pausado="true"] {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Foco visible en todo el sitio (front#14): outline azul (5.2:1 sobre blanco) con un halo
+   blanco en el hueco del offset, para que también se vea sobre fondos oscuros o el azul de
+   marca. Los componentes con su propio ring (focus-visible:ring-*) lo pisan desde utilities. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff;
+  }
 }

@@ -131,7 +131,7 @@ export default function MisPedidosPage() {
 
       {/* EMPTY */}
       {!loading && !error && pedidos.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-56 gap-4 text-gray-400">
+        <div className="flex flex-col items-center justify-center h-56 gap-4 text-gray-500">
           <Package size={48} className="text-gray-200" />
           <div className="text-center">
             <p className="font-medium text-gray-600">Todavía no tenés pedidos</p>
@@ -158,7 +158,7 @@ export default function MisPedidosPage() {
                 {/* Info principal */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-xs text-gray-400">
+                    <span className="font-mono text-xs text-gray-500">
                       #{pedido.id}
                     </span>
                     <EstadoBadge estado={pedido.estado} />
@@ -166,7 +166,7 @@ export default function MisPedidosPage() {
                   <p className="font-medium text-gray-800 truncate">
                     {resumeItems(pedido.items)}
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-gray-500 mt-0.5">
                     {formatFecha(pedido.fecha)}
                     {pedido.direccionEnvio && ` · ${pedido.direccionEnvio}`}
                   </p>
@@ -177,7 +177,7 @@ export default function MisPedidosPage() {
                   <p className="text-lg font-bold text-gray-900">
                     {formatMonto(pedido.total)}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-500">
                     {pedido.items?.length ?? 0} producto
                     {(pedido.items?.length ?? 0) !== 1 ? "s" : ""}
                   </p>

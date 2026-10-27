@@ -34,8 +34,8 @@ export default function SettingsPage() {
   if (!mounted || !token || !user) {
     return (
       <div className="flex justify-center items-center h-[80vh]">
-        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-400" />
-        <span className="text-gray-400">Cargando...</span>
+        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-500" />
+        <span className="text-gray-500">Cargando...</span>
       </div>
     );
   }
@@ -46,7 +46,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
-      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link href="/account" className="hover:text-color-principal transition-colors">
           Mi cuenta
         </Link>
@@ -93,7 +93,7 @@ export default function SettingsPage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-700">Cambiar contraseña</p>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-500 mt-0.5">
                   Actualizá tu contraseña periódicamente para mayor seguridad.
                 </p>
               </div>
@@ -134,7 +134,7 @@ export default function SettingsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <p className="font-medium text-gray-700 text-sm">Eliminar cuenta</p>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-500 mt-0.5">
                 Esta acción es permanente e irreversible.
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function SettingsPage() {
       <div className="mt-8">
         <Link
           href="/account/profile"
-          className="text-sm text-gray-400 hover:text-color-principal transition-colors"
+          className="text-sm text-gray-500 hover:text-color-principal transition-colors"
         >
           ← Volver a mi perfil
         </Link>
@@ -196,7 +196,7 @@ function PasswordForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
       <div>
-        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">
           Contraseña actual
         </label>
         <input
@@ -211,7 +211,7 @@ function PasswordForm({
       </div>
 
       <div>
-        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">
           Nueva contraseña
         </label>
         <input
@@ -228,7 +228,7 @@ function PasswordForm({
       </div>
 
       <div>
-        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">
           Confirmar nueva contraseña
         </label>
         <input
@@ -292,7 +292,7 @@ function SettingRow({
             </span>
           )}
         </div>
-        <p className="text-xs text-gray-400 mt-0.5">{description}</p>
+        <p className="text-xs text-gray-500 mt-0.5">{description}</p>
       </div>
     </div>
   );

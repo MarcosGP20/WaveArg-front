@@ -7,8 +7,10 @@ import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminShell({
   children,
+  sesion,
 }: {
   children: React.ReactNode;
+  sesion: { email: string; rol: string };
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -41,7 +43,7 @@ export default function AdminShell({
       {/* Contenido principal */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <header className="flex-shrink-0">
-          <AdminHeader onMenuToggle={() => setSidebarOpen((v) => !v)} />
+          <AdminHeader sesion={sesion} onMenuToggle={() => setSidebarOpen((v) => !v)} />
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
         <Toaster />

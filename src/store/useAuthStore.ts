@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       // Solo persistimos user e isLoggedIn.
-      // El token vive en la cookie auth-token (middleware + fetchFromApi lo leen de ahí).
+      // El token vive en la cookie auth-token (src/proxy.ts + fetchFromApi lo leen de ahí).
       // Persistirlo acá era redundante y podía desincronizarse si la cookie expiraba.
       partialize: (state) => ({
         user: state.user,

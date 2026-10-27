@@ -1,4 +1,4 @@
-// Cookie de sesión: la setea /api/auth/session (httpOnly) y la leen el middleware,
+// Cookie de sesión: la setea /api/auth/session (httpOnly) y la leen src/proxy.ts,
 // el layout de /admin y el proxy /api/backend. Una sola definición para que no se desalineen.
 export const AUTH_COOKIE_NAME = "auth-token";
 

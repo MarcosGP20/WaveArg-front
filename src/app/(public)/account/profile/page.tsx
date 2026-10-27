@@ -98,13 +98,16 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* ASIDE */}
-        <aside className="w-full lg:w-1/3">
+        {/* Columna lateral */}
+        <div className="w-full lg:w-1/3">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center sticky top-24">
             <div className="w-24 h-24 bg-color-principal rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <User className="text-white" size={48} />
+              <User className="text-white" size={48} aria-hidden="true" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-5">{displayName}</h2>
+            <h1 className="text-xl font-bold text-gray-900 mb-5">
+              <span className="sr-only">Mi perfil: </span>
+              {displayName}
+            </h1>
 
             <div className="space-y-2">
               <Button
@@ -119,21 +122,21 @@ export default function ProfilePage() {
               <Button
                 onClick={handleLogout}
                 variant="ghost"
-                className="w-full justify-start gap-3 rounded-full text-red-500 hover:bg-red-50"
+                className="w-full justify-start gap-3 rounded-full text-red-600 hover:bg-red-50"
               >
                 <LogOut size={16} /> Salir
               </Button>
             </div>
           </div>
-        </aside>
+        </div>
 
         {/* MAIN */}
-        <main className="flex-1 space-y-6">
+        <div className="flex-1 space-y-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-color-principal">
+              <h2 className="text-lg font-bold text-color-principal">
                 Datos de contacto
-              </h3>
+              </h2>
               {!editing && (
                 <Button
                   variant="ghost"
@@ -152,7 +155,7 @@ export default function ProfilePage() {
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="flex flex-col gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">
                         Nombre
                       </label>
                       <input
@@ -198,11 +201,11 @@ export default function ProfilePage() {
                     <User className="text-color-principal" size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                       Nombre
                     </p>
                     <p className="font-semibold text-gray-800">
-                      {user.nombre || <span className="text-gray-400 font-normal">Sin nombre</span>}
+                      {user.nombre || <span className="text-gray-500 font-normal">Sin nombre</span>}
                     </p>
                   </div>
                 </div>
@@ -214,7 +217,7 @@ export default function ProfilePage() {
                   <Mail className="text-color-principal" size={20} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                     Correo electrónico
                   </p>
                   <p className="font-semibold text-gray-800">{user.email}</p>
@@ -253,7 +256,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );

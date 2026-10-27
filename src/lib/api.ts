@@ -24,6 +24,24 @@ export interface CreateVarianteDTO {
   imagenes: string[];
 }
 
+// Edición de una variante desde el admin. `stockAnterior` es el stock que se vio al abrir el
+// formulario: si hubo ventas en el medio, el back responde 409 en vez de pisarlas.
+export interface UpdateVarianteDTO {
+  precio: number;
+  stock: number;
+  stockAnterior: number;
+  color: string;
+  memoria: string;
+}
+
+export interface UpdateAccesorioVarianteDTO {
+  precio: number;
+  stock: number;
+  stockAnterior: number;
+  color: string;
+  especificacion: string;
+}
+
 export interface UpdateProductoDTO {
   nombre: string;
   modelo: string;
@@ -69,7 +87,17 @@ export class ApiError extends Error {
 }
 
 /**
- * Lee el token desde la cookie auth-token (misma que usa el middleware y Zustand).
+ * Si el error es el 409 de editar una variante cuyo stock cambió mientras el admin editaba,
+ * devuelve el stock que hay ahora. Si no, null.
+ */
+export function stockActualSiCambio(error: unknown): number | null {
+  if (!(error instanceof ApiError) || error.status !== 409) return null;
+  const stock = error.data.stockActual;
+  return typeof stock === "number" ? stock : null;
+}
+
+/**
+ * Lee el token desde la cookie auth-token (misma que usa src/proxy.ts y Zustand).
  * Una sola fuente de verdad para autenticación.
  */
 export async function fetchFromApi<T>(
@@ -187,7 +215,7 @@ export const VariantesService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Partial<Variante>) =>
+  update: (id: number, data: UpdateVarianteDTO) =>
     fetchFromApi<Variante>(`/Variantes`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),
@@ -232,7 +260,7 @@ export const AccesorioVariantesService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: Partial<AccesorioVariante>) =>
+  update: (id: number, data: UpdateAccesorioVarianteDTO) =>
     fetchFromApi<AccesorioVariante>(`/AccesorioVariantes`, {
       method: "PUT",
       body: JSON.stringify({ id, ...data }),
@@ -310,6 +338,13 @@ export async function vincularGoogle(idToken: string) {
 }
 
 export const CODIGO_VINCULAR_GOOGLE = "VINCULAR_GOOGLE";
+
+// 503 de crear-preferencia cuando el checkout está apagado (Interruptores__CheckoutHabilitado).
+export const CODIGO_CHECKOUT_PAUSADO = "CHECKOUT_PAUSADO";
+
+export function esCheckoutPausado(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 503 && error.data.codigo === CODIGO_CHECKOUT_PAUSADO;
+}
 
 export async function registerUser(data: RegisterDTO) {
   // Ahora usamos fetchFromApi para ser consistentes

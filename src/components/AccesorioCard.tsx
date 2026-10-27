@@ -59,7 +59,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
 
   return (
     <div
-      className={`rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 will-change-transform transition-all duration-300 flex flex-col bg-white group overflow-hidden ${className}`}
+      className={`rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 will-change-transform transition-all duration-300 flex flex-col bg-white group overflow-hidden has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#2563eb] has-[:focus-visible]:ring-offset-2 ${className}`}
     >
       {/* ── ZONA DE IMAGEN ── */}
       <Link href={`/accesorios/${accesorio.id}`} className="block relative">
@@ -112,7 +112,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
           <h2 className="text-[17px] font-semibold text-color-principal leading-snug">
             {accesorio.nombre}
           </h2>
-          <span className="text-[11px] text-gray-400 uppercase tracking-widest">
+          <span className="text-[11px] text-gray-500 uppercase tracking-widest">
             {accesorio.modelo}
           </span>
         </Link>
@@ -159,7 +159,7 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
           tabIndex={variantesConStock.length === 0 ? -1 : undefined}
           className={`mt-1 py-2.5 rounded-full font-semibold transition-colors text-center text-sm ${
             variantesConStock.length === 0
-              ? "bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed"
+              ? "bg-gray-200 text-gray-500 pointer-events-none cursor-not-allowed"
               : "bg-color-principal text-white hover:bg-color-principal-oscuro"
           }`}
         >

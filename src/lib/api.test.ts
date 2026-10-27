@@ -1,5 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError, CODIGO_VINCULAR_GOOGLE, loginWithGoogle, vincularGoogle } from "./api";
+import {
+  AccesorioVariantesService,
+  ApiError,
+  CODIGO_VINCULAR_GOOGLE,
+  loginUser,
+  loginWithGoogle,
+  stockActualSiCambio,
+  VariantesService,
+  vincularGoogle,
+} from "./api";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const fetchMock = vi.fn();
 
@@ -41,5 +51,84 @@ describe("login con Google y vinculación de cuentas (api.ts)", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(String(url)).toMatch(/\/Auth\/google\/vincular$/);
     expect(JSON.parse(init.body)).toEqual({ idToken: "id-token" });
+  });
+});
+
+describe("login con email y contraseña (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+    // fetchFromApi sólo desloguea en el navegador.
+    vi.stubGlobal("window", {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("un login fallido muestra el mensaje del back y no cierra la sesión", async () => {
+    const logout = vi.fn();
+    vi.spyOn(useAuthStore, "getState").mockReturnValue({ ...useAuthStore.getState(), logout });
+    fetchMock.mockResolvedValue(respuesta(400, { message: "Email o contraseña incorrectos." }));
+
+    const error = await loginUser({ email: "ana@test.local", contraseña: "mala" }).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ status: 400, message: "Email o contraseña incorrectos." });
+    expect(logout).not.toHaveBeenCalled();
+  });
+
+  it("un 401 de otro endpoint sí cierra la sesión", async () => {
+    const logout = vi.fn();
+    vi.spyOn(useAuthStore, "getState").mockReturnValue({ ...useAuthStore.getState(), logout });
+    fetchMock.mockResolvedValue(respuesta(401, {}));
+
+    await loginUser({ email: "ana@test.local", contraseña: "x" }).catch(() => {});
+
+    expect(logout).toHaveBeenCalledOnce();
+  });
+});
+
+describe("edición de stock desde el admin (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("manda el stock que el admin vio al abrir el formulario", async () => {
+    fetchMock.mockResolvedValue(respuesta(200, {}));
+
+    await VariantesService.update(7, { precio: 100, stock: 5, stockAnterior: 3, color: "Negro", memoria: "128GB" });
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(JSON.parse(init.body)).toMatchObject({ id: 7, stock: 5, stockAnterior: 3 });
+  });
+
+  it("si hubo ventas en el medio, el 409 trae el stock actual", async () => {
+    fetchMock.mockResolvedValue(
+      respuesta(409, { message: "El stock cambió mientras editabas (hubo ventas): ahora hay 2.", stockActual: 2 }),
+    );
+
+    const error = await AccesorioVariantesService.update(9, {
+      precio: 10,
+      stock: 5,
+      stockAnterior: 3,
+      color: "Negro",
+      especificacion: "USB-C",
+    }).catch((e: unknown) => e);
+
+    expect(stockActualSiCambio(error)).toBe(2);
+    expect(error).toMatchObject({ message: "El stock cambió mientras editabas (hubo ventas): ahora hay 2." });
+  });
+
+  it("otros errores no se confunden con un cambio de stock", () => {
+    expect(stockActualSiCambio(new ApiError("Ya existe", 409, { message: "Ya existe" }))).toBeNull();
+    expect(stockActualSiCambio(new ApiError("Error", 500, { stockActual: 2 }))).toBeNull();
+    expect(stockActualSiCambio(new Error("red"))).toBeNull();
   });
 });

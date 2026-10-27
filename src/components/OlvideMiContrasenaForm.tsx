@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { solicitarResetContrasena } from "@/lib/api";
@@ -13,6 +13,12 @@ import { solicitarResetSchema, SolicitarResetFormValues } from "@/schemas/auth.s
 
 export function OlvideMiContrasenaForm() {
   const [enviado, setEnviado] = useState(false);
+  // Al pasar a la pantalla de éxito el formulario desaparece: el foco va al título, que el
+  // lector de pantalla anuncia (front#11).
+  const tituloExitoRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (enviado) tituloExitoRef.current?.focus();
+  }, [enviado]);
 
   const {
     register,
@@ -32,12 +38,12 @@ export function OlvideMiContrasenaForm() {
     return (
       <div className="max-w-md w-full mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa] text-center space-y-4">
         <CheckCircle className="mx-auto text-green-500" size={48} />
-        <h2 className="text-xl font-bold text-color-principal">Revisá tu email</h2>
+        <h1 ref={tituloExitoRef} tabIndex={-1} className="text-xl font-bold text-color-principal focus:outline-none">Revisá tu email</h1>
         <p className="text-gray-600 text-sm">
           Si el email está registrado, recibirás un enlace para restablecer tu
           contraseña en los próximos minutos.
         </p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-500">
           El link expira en 30 minutos. Si no lo ves, revisá la carpeta de spam.
         </p>
         <Link
@@ -53,9 +59,9 @@ export function OlvideMiContrasenaForm() {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div>
-        <h2 className="text-2xl font-bold text-center text-color-principal">
+        <h1 className="text-2xl font-bold text-center text-color-principal">
           Olvidé mi contraseña
-        </h2>
+        </h1>
         <p className="text-sm text-center text-gray-500 mt-2">
           Ingresá tu email y te enviaremos un link para restablecer tu
           contraseña.
@@ -66,17 +72,20 @@ export function OlvideMiContrasenaForm() {
         <div>
           <Label htmlFor="email">Email</Label>
           <div className="flex items-center gap-2 py-2">
-            <Mail size={16} className="text-gray-400" />
+            <Mail size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="tu@correo.com"
               className={errors.email ? "border-red-500" : ""}
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "olvide-email-error" : undefined}
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+            <p id="olvide-email-error" role="alert" className="text-xs text-red-600 mt-1">{errors.email.message}</p>
           )}
         </div>
 

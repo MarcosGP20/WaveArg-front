@@ -14,10 +14,12 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 import GoogleAuth from "@/components/GoogleAuth";
+import { useEstado } from "@/context/EstadoContext";
 
 export function LoginForm() {
   const [serverError, setServerError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const { googleHabilitado } = useEstado();
   const router = useRouter();
 
   // Obtenemos la función setAuth del estado global
@@ -93,19 +95,20 @@ export function LoginForm() {
 
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
-      <h2 className="text-2xl font-bold text-center text-color-principal">
+      <h1 className="text-2xl font-bold text-center text-color-principal">
         Iniciar Sesión
-      </h2>
+      </h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {/* Campo Email */}
         <div>
           <Label htmlFor="email">Email</Label>
           <div className="flex items-center gap-2 py-2">
-            <Mail size={16} className="text-gray-400" />
+            <Mail size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="tu@correo.com"
               className={errors.email ? "border-red-500" : ""}
               aria-invalid={!!errors.email}
@@ -114,7 +117,7 @@ export function LoginForm() {
             />
           </div>
           {errors.email && (
-            <p id="login-email-error" role="alert" className="text-xs text-red-500 mt-1">
+            <p id="login-email-error" role="alert" className="text-xs text-red-600 mt-1">
               {errors.email.message}
             </p>
           )}
@@ -132,10 +135,11 @@ export function LoginForm() {
             </a>
           </div>
           <div className="flex items-center gap-2 py-2">
-            <Lock size={16} className="text-gray-400" />
+            <Lock size={16} className="text-gray-500" aria-hidden="true" />
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               className={errors.contraseña ? "border-red-500" : ""}
               aria-invalid={!!errors.contraseña}
@@ -144,7 +148,7 @@ export function LoginForm() {
             />
           </div>
           {errors.contraseña && (
-            <p id="login-password-error" role="alert" className="text-xs text-red-500 mt-1">
+            <p id="login-password-error" role="alert" className="text-xs text-red-600 mt-1">
               {errors.contraseña.message}
             </p>
           )}
@@ -152,16 +156,14 @@ export function LoginForm() {
 
         {/* Mensajes de Estado */}
         {serverError && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-200">
-            <p className="text-sm text-red-600 text-center">{serverError}</p>
+          <div role="alert" className="p-3 rounded-xl bg-red-50 border border-red-200">
+            <p className="text-sm text-red-700 text-center">{serverError}</p>
           </div>
         )}
 
-        {statusMessage && (
-          <p className="text-sm text-blue-600 text-center font-medium">
-            {statusMessage}
-          </p>
-        )}
+        <p role="status" className={statusMessage ? "text-sm text-blue-700 text-center font-medium" : "sr-only"}>
+          {statusMessage}
+        </p>
 
         <Button
           type="submit"
@@ -181,23 +183,28 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <div className="relative my-8">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-4 text-gray-400">o continuar con</span>
-        </div>
-      </div>
+      {/* Interruptores__GoogleHabilitado=false en el back: sin botón de Google. */}
+      {googleHabilitado && (
+        <>
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-4 text-gray-500">o continuar con</span>
+            </div>
+          </div>
 
-      <div className="flex justify-center">
-        <GoogleAuth
-          onSuccess={handleGoogleSuccess}
-          onStatus={setStatusMessage}
-          onError={setServerError}
-          text="continue_with"
-        />
-      </div>
+          <div className="flex justify-center">
+            <GoogleAuth
+              onSuccess={handleGoogleSuccess}
+              onStatus={setStatusMessage}
+              onError={setServerError}
+              text="continue_with"
+            />
+          </div>
+        </>
+      )}
 
       <p className="text-sm text-center mt-6 text-gray-500">
         ¿Aún no eres parte?{" "}

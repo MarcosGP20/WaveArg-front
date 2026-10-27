@@ -1,6 +1,30 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
+// CSP (#17). Scripts: los propios de Next (inline, sin nonce para no volver dinámicas todas
+// las páginas) y Google Identity Services. Imágenes y videos: cualquier https, porque las
+// fotos de productos son URLs cargadas desde el admin. MercadoPago no necesita nada: el pago
+// es una redirección, no un script ni un iframe. En dev, Next necesita eval y el websocket del HMR.
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com/gsi/client`,
+  "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' https:",
+  "font-src 'self' data:",
+  `connect-src 'self' https://accounts.google.com/gsi/${isDev ? " ws:" : ""}`,
+  "frame-src https://accounts.google.com/",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+].join("; ");
+
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-XSS-Protection", value: "1; mode=block" },

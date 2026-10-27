@@ -55,7 +55,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
 
   const card = (
     <div
-      className={`rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 will-change-transform transition-all duration-300 flex flex-col bg-white group overflow-hidden ${featured ? "" : className}`}
+      className={`rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 will-change-transform transition-all duration-300 flex flex-col bg-white group overflow-hidden has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#2563eb] has-[:focus-visible]:ring-offset-2 ${featured ? "" : className}`}
     >
       {/* ── ZONA DE IMAGEN ── */}
       <Link href={`/products/${product.id}`} className="block relative">
@@ -94,7 +94,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
           <h2 className="text-[17px] font-semibold text-color-principal leading-snug">
             {product.nombre}
           </h2>
-          <span className="text-[10px] text-gray-400 uppercase tracking-widest">
+          <span className="text-[10px] text-gray-500 uppercase tracking-widest">
             {product.modelo}
           </span>
         </Link>
@@ -102,13 +102,15 @@ export default function ProductCard({ product, className, featured = false }: Pr
         {/* Selector de colores */}
         {coloresUnicos.length > 1 && (
           <div className="flex flex-col items-center gap-1.5">
-            <div className="flex items-center gap-2 flex-wrap justify-center">
+            <div role="group" aria-label={`Colores de ${product.nombre}`} className="flex items-center gap-2 flex-wrap justify-center">
               {coloresUnicos.map((cv) => (
                 <button
                   key={cv.color}
+                  type="button"
                   onClick={(e) => handleColorClick(cv, e)}
                   title={cv.color}
                   aria-label={`Color ${cv.color}`}
+                  aria-pressed={varianteActiva.color === cv.color}
                   className={`w-6 h-6 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-principal focus-visible:ring-offset-2 ${
                     varianteActiva.color === cv.color
                       ? "ring-2 ring-color-principal ring-offset-2 scale-125 shadow-sm"
@@ -120,7 +122,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
                 />
               ))}
             </div>
-            <span className="text-[11px] text-gray-400 font-medium">
+            <span className="text-[11px] text-gray-500 font-medium">
               {varianteActiva.color}
             </span>
           </div>
@@ -128,7 +130,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
 
         {/* Memoria + batería (si aplica) */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full font-medium">
+          <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-full font-medium">
             {varianteActiva.memoria}
           </span>
           {varianteActiva.esUsado && varianteActiva.detalleEstado && (

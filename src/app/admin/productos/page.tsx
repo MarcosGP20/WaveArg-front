@@ -219,14 +219,14 @@ export default function InventarioPage() {
                       </Link>
                       <Link
                         href={`/admin/productos/${p.id}/editar`}
-                        className="p-1.5 text-gray-400 hover:text-color-principal transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-color-principal transition-colors"
                         title="Editar producto"
                       >
                         <Edit3 size={16} />
                       </Link>
                       <button
                         onClick={() => setDeletingId(p.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-red-600 transition-colors"
                         title="Eliminar producto"
                       >
                         <Trash2 size={16} />

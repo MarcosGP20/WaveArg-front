@@ -122,7 +122,7 @@ export default function EditarAccesorioPage() {
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/admin/accesorios"
-          className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 transition-colors"
         >
           <ArrowLeft size={20} />
         </Link>

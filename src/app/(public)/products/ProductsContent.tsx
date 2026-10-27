@@ -2,14 +2,15 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { getProductos, AccesoriosService } from "@/lib/api";
 import { Producto } from "@/interfaces/producto";
 import { Accesorio, CATEGORIA_LABELS, CategoriaAccesorio } from "@/interfaces/accesorio";
 import ProductCard from "@/components/ProductCards";
 import AccesorioCard from "@/components/AccesorioCard";
 import FilterSidebar from "@/components/FilterSide";
-import { SlidersHorizontal, X, Package, Smartphone } from "lucide-react";
+import FiltrosMovil from "@/components/FiltrosMovil";
+import { Package, Smartphone } from "lucide-react";
 import Link from "next/link";
 
 const fadeUp = {
@@ -41,7 +42,6 @@ export default function ProductsContent() {
   const [accesorios, setAccesorios] = useState<Accesorio[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
   const [featuredId, setFeaturedId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -202,15 +202,15 @@ export default function ProductsContent() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <motion.h1
+          <m.h1
             className="text-3xl font-bold text-color-principal"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
           >
             Nuestro Catálogo
-          </motion.h1>
-          <motion.p
+          </m.h1>
+          <m.p
             className="text-gray-500 text-sm mt-1"
             variants={fadeUp}
             initial="hidden"
@@ -219,71 +219,22 @@ export default function ProductsContent() {
           >
             {filteredProducts.length} iPhone{filteredProducts.length !== 1 ? "s" : ""} ·{" "}
             {filteredAccesorios.length} accesorio{filteredAccesorios.length !== 1 ? "s" : ""}
-          </motion.p>
+          </m.p>
         </div>
 
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors"
-          aria-expanded={showFilters}
-          aria-controls="filter-sidebar"
-        >
-          {showFilters ? <X size={16} /> : <SlidersHorizontal size={16} />}
-          Filtros
-          {activeFilterCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-color-principal text-white text-[10px] font-bold">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
+        <FiltrosMovil activeFilterCount={activeFilterCount}>
+          <FilterSidebar priceRange={priceRange} flat />
+        </FiltrosMovil>
       </div>
 
       {/* ── Layout principal ─────────────────────────────────────────────── */}
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar — solo desktop */}
-        <aside className="hidden lg:block w-64 flex-shrink-0">
+        <div className="hidden lg:block w-64 flex-shrink-0">
           <FilterSidebar priceRange={priceRange} />
-        </aside>
+        </div>
 
-        {/* Bottom sheet — solo mobile */}
-        {showFilters && (
-          <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
-            <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setShowFilters(false)}
-            />
-            <div className="relative bg-white rounded-t-3xl max-h-[88vh] flex flex-col animate-slideUp">
-              {/* Handle + header */}
-              <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 shrink-0">
-                <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-10 h-1 bg-gray-200 rounded-full" />
-                <span className="font-bold text-lg text-gray-900 mt-1">Filtros</span>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              {/* Scroll area */}
-              <div className="overflow-y-auto flex-1 px-5 py-4">
-                <FilterSidebar priceRange={priceRange} flat />
-              </div>
-              {/* CTA */}
-              <div className="px-5 py-4 border-t border-gray-100 shrink-0">
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="w-full bg-color-principal text-white py-3 rounded-full font-semibold text-sm hover:bg-color-principal-oscuro transition-colors"
-                >
-                  {activeFilterCount > 0
-                    ? `Aplicar filtros (${activeFilterCount})`
-                    : "Aplicar filtros"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <main className="flex-1 space-y-12">
+        <div className="flex-1 space-y-12">
           {/* ── SECCIÓN IPHONES ─────────────────────────────────────────── */}
           {!hayFiltrosDeProducto || filteredProducts.length > 0 ? (
             <section>
@@ -309,18 +260,18 @@ export default function ProductsContent() {
                   </Link>
                 </div>
               ) : (
-                <motion.div
+                <m.div
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
                   variants={cardGrid}
                   initial="hidden"
                   animate="visible"
                 >
                   {filteredProducts.map((product) => (
-                    <motion.div key={product.id} variants={fadeUp}>
+                    <m.div key={product.id} variants={fadeUp}>
                       <ProductCard product={product} featured={featuredId === product.id} />
-                    </motion.div>
+                    </m.div>
                   ))}
-                </motion.div>
+                </m.div>
               )}
             </section>
           ) : null}
@@ -381,22 +332,22 @@ export default function ProductsContent() {
                   <p className="font-medium">No hay accesorios en esa categoría</p>
                 </div>
               ) : (
-                <motion.div
+                <m.div
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
                   variants={cardGrid}
                   initial="hidden"
                   animate="visible"
                 >
                   {filteredAccesorios.map((acc) => (
-                    <motion.div key={acc.id} variants={fadeUp}>
+                    <m.div key={acc.id} variants={fadeUp}>
                       <AccesorioCard accesorio={acc} />
-                    </motion.div>
+                    </m.div>
                   ))}
-                </motion.div>
+                </m.div>
               )}
             </section>
           )}
-        </main>
+        </div>
       </div>
     </div>
   );

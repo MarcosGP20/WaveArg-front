@@ -4,10 +4,10 @@
 E-commerce de iPhones y accesorios para el mercado argentino. Frontend en Next.js 16 conectado a un backend .NET. Pagos via MercadoPago.
 
 ## Stack
-- **Next.js 16.2.2** (Turbopack), React 19, TypeScript
-- **Tailwind CSS v4** (`@import "tailwindcss"`), Radix UI, Sonner (toasts), react-hook-form, framer-motion
+- **Next.js 16.4** (Turbopack), React 19, TypeScript
+- **Tailwind CSS v4** (`@import "tailwindcss"`), Radix UI (también para dropdowns: no usar headlessui), Sonner (toasts), react-hook-form, framer-motion
 - **Auth**: JWT en cookie `auth-token`, Zustand, Google OAuth
-- **Tests**: Vitest (`npm test`), archivos `src/**/*.test.ts`. Hoy cubren `lib/jwt.ts` y `middleware.ts`
+- **Tests**: Vitest (`npm test`), archivos `src/**/*.test.ts`. Cubren `lib/`, `schemas/` y `proxy.ts`
 - **API**: `src/lib/api.ts` — todos los servicios pasan por `fetchFromApi()` → proxy `/api/backend`
 - **Backend**: .NET, producción en `https://waveargdefinitivo.onrender.com/api`, dev en `http://localhost:5075/api`
 - **Hosting**: Frontend → Vercel (`https://wavearg-front.vercel.app`), Backend → Render
@@ -27,7 +27,7 @@ src/
       login/, register/     → autenticación
       olvide-mi-contrasena/, reset-password/ → recuperación de contraseña
       contacto/, creadores/, nosotros/
-    admin/                  → panel admin (protegido por middleware.ts + rol admin)
+    admin/                  → panel admin (protegido por proxy.ts + rol admin)
       productos/, accesorios/, orders/, users/
       components/           → AdminShell, AdminSideBar, AdminHeader, Dashboard, DataGrid, MetridCard, TableVariants, TableAccesorioVariants
       types/product.ts
@@ -44,19 +44,20 @@ src/
   schemas/        → validación con Zod (auth.schema.ts)
   lib/
     api.ts        → todos los servicios y DTOs de la API
-    jwt.ts        → decodificación JWT sin validación de firma (client-side)
+    jwt.ts        → decodificación JWT sin validación de firma (sólo client-side, para la UI)
+    sesion.ts     → verificarSesion(): firma HS256, vencimiento, issuer y audience (server-side)
     auth-cookie.ts → nombre y opciones de la cookie auth-token (única definición)
     backend.ts    → BACKEND_API_BASE para código server-side (route handlers, server components, sitemap)
     colorMap.ts   → mapeo de nombres de colores a valores hex
   context/        → CartContext (localStorage), CompareContext (memoria)
   store/          → useAuthStore (Zustand)
-  middleware.ts   → protección de rutas por JWT y rol. Va en src/ (no en la raíz): con src/app, Next ignora un middleware en la raíz
+  proxy.ts        → protección de rutas por JWT y rol (ex middleware.ts; Next 16 renombró la convención). Va en src/ (no en la raíz): con src/app, Next lo ignora en la raíz. No confundir con el proxy /api/backend
 ```
 
 ## Autenticación y autorización
-- `src/middleware.ts` valida JWT, maneja redirecciones y protege rutas por rol (primera capa)
+- `src/proxy.ts` verifica la firma del JWT (`lib/sesion.ts`, con `JWT_SECRET`), maneja redirecciones y protege rutas por rol (primera capa)
 - `app/admin/layout.tsx` hace una segunda validación server-side (segunda capa) antes de renderizar el panel
-- El token vive **solo en la cookie** `auth-token` (httpOnly). Zustand persiste `user` e `isLoggedIn` en localStorage, pero **nunca el token** — la cookie es la única fuente de verdad para `fetchFromApi` y el middleware
+- El token vive **solo en la cookie** `auth-token` (httpOnly). Zustand persiste `user` e `isLoggedIn` en localStorage, pero **nunca el token** — la cookie es la única fuente de verdad para `fetchFromApi` y `proxy.ts`
 - Rutas públicas: `/`, `/login`, `/register`, `/products`, `/accesorios`, `/creadores`, `/nosotros`, `/contacto`, `/compare`
 - Rutas protegidas: `/account`, `/admin`, `/cart`, `/checkout`
 - La comparación de rol es **case-insensitive en todo el proyecto**: `rol?.toLowerCase() === "admin"`. No usar `=== "Admin"`.
@@ -83,6 +84,8 @@ NEXT_PUBLIC_API_BASE           # URL del backend (.NET)
 INTERNAL_API_BASE              # Opcional: URL del backend solo para el servidor de Next (pisa a la anterior)
 NEXT_PUBLIC_API_PROXY_BASE     # Opcional: base que usa el cliente (default /api/backend)
 BACKEND_PROXY_SECRET           # Secreto compartido con el backend (Proxy__ClientIpSecret) para reenviar la IP del cliente
+JWT_SECRET                     # Misma clave que Jwt__Key del backend: proxy.ts y layout de admin verifican la firma del token
+BACKEND_TIMEOUT_MS             # Opcional: timeout del proxy /api/backend en ms (default 30000); vencido responde 504
 NEXT_PUBLIC_SITE_URL           # URL pública del frontend (para MercadoPago back_urls)
 NEXT_PUBLIC_GOOGLE_CLIENT_ID
 MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producción)
@@ -124,7 +127,7 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - Carrito queda en localStorage (sin sincronización con backend)
 
 ### Atención ⚠️
-- No existe ruta `/mayorista` como página en el App Router, aunque el middleware la lista como ruta pública.
+- No existe ruta `/mayorista` como página en el App Router, aunque proxy.ts la lista como ruta pública.
 
 ## Dominios de imagen permitidos (next.config.ts)
 - `store.storeimages.cdn-apple.com`, `www.apple.com` (Apple)

@@ -8,7 +8,7 @@ type BreadcrumbItem = {
 
 export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-gray-400 mb-5 flex-wrap">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-gray-500 mb-5 flex-wrap">
       {items.map((item, i) => (
         <span key={i} className="flex items-center gap-1">
           {i > 0 && <ChevronRight size={13} className="text-gray-300 flex-shrink-0" />}

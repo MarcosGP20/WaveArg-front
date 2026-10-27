@@ -146,7 +146,7 @@ export default function ProductDetailContent({
 
   if (loading)
     return (
-      <div className="py-20 text-center text-gray-400 text-sm animate-pulse">
+      <div className="py-20 text-center text-gray-500 text-sm animate-pulse">
         Cargando producto...
       </div>
     );
@@ -292,7 +292,7 @@ export default function ProductDetailContent({
             ]} />
 
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">{product.nombre}</h1>
-            <p className="text-gray-400 text-xs uppercase tracking-widest mt-1 mb-2">
+            <p className="text-gray-500 text-xs uppercase tracking-widest mt-1 mb-2">
               {product.modelo}
             </p>
             <p className="text-gray-500 text-sm leading-relaxed">{product.descripcion}</p>
@@ -309,7 +309,7 @@ export default function ProductDetailContent({
                     : "Sin stock"}
                 </span>
                 {selectedVariante.stock > 0 && selectedVariante.stock <= 3 && (
-                  <span className="bg-red-50 text-red-600 border border-red-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
                     ¡Últimas unidades!
                   </span>
                 )}
@@ -331,20 +331,22 @@ export default function ProductDetailContent({
 
             {coloresUnicos.length > 1 && (
               <div className="mt-7">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                   Color —{" "}
                   <span className="text-gray-700 normal-case font-semibold">
                     {selectedVariante.color}
                   </span>
                 </p>
-                <div className="flex gap-3 flex-wrap">
+                <div role="group" aria-label="Color" className="flex gap-3 flex-wrap">
                   {coloresUnicos.map((cv) => (
                     <button
                       key={cv.color}
+                      type="button"
                       onClick={() => handleColorClick(cv)}
                       title={cv.color}
                       aria-label={`Color ${cv.color}`}
-                      className={`w-10 h-10 rounded-full transition-all duration-200 focus:outline-none ${
+                      aria-pressed={selectedVariante.color === cv.color}
+                      className={`w-10 h-10 rounded-full transition-all duration-200 ${
                         selectedVariante.color === cv.color
                           ? "ring-2 ring-color-principal ring-offset-2 scale-110 shadow-md"
                           : `ring-1 hover:scale-105 ${needsDarkBorder(cv.color) ? "ring-gray-300" : "ring-transparent"}`
@@ -358,14 +360,16 @@ export default function ProductDetailContent({
 
             {memoriasParaColor.length > 0 && (
               <div className="mt-7">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                   Capacidad
                 </p>
-                <div className="flex gap-2 flex-wrap">
+                <div role="group" aria-label="Capacidad" className="flex gap-2 flex-wrap">
                   {memoriasParaColor.map((mem) => (
                     <button
                       key={mem}
+                      type="button"
                       onClick={() => handleMemoriaClick(mem)}
+                      aria-pressed={selectedVariante.memoria === mem}
                       className={`px-5 py-2 rounded-full text-sm font-bold border-2 transition-all ${
                         selectedVariante.memoria === mem
                           ? "bg-color-principal text-white border-color-principal shadow-md shadow-blue-900/20"
@@ -380,19 +384,28 @@ export default function ProductDetailContent({
             )}
 
             <div className="flex items-center gap-3 mt-10">
-              <div className="flex items-center border-2 border-gray-200 rounded-full select-none">
+              <div role="group" aria-label="Cantidad" className="flex items-center border-2 border-gray-200 rounded-full select-none">
                 <button
+                  type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold"
+                  disabled={quantity <= 1}
+                  aria-label="Restar uno"
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold disabled:text-gray-300 disabled:hover:bg-transparent"
                 >
-                  −
+                  <span aria-hidden="true">−</span>
                 </button>
-                <span className="w-8 text-center font-bold text-sm">{quantity}</span>
+                <span className="w-8 text-center font-bold text-sm" aria-live="polite">
+                  <span className="sr-only">Cantidad: </span>
+                  {quantity}
+                </span>
                 <button
+                  type="button"
                   onClick={() => setQuantity(Math.min(selectedVariante.stock, quantity + 1))}
-                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold"
+                  disabled={quantity >= selectedVariante.stock}
+                  aria-label="Sumar uno"
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold disabled:text-gray-300 disabled:hover:bg-transparent"
                 >
-                  +
+                  <span aria-hidden="true">+</span>
                 </button>
               </div>
 
@@ -408,6 +421,7 @@ export default function ProductDetailContent({
               >
                 {added ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}
               </button>
+              <p role="status" className="sr-only">{added ? "Agregado al carrito" : ""}</p>
             </div>
           </div>
         </div>
@@ -417,7 +431,7 @@ export default function ProductDetailContent({
 
         {/* ════ SPECS GRID ════ */}
         <section className="mt-16">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/50 mb-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/80 mb-3">
             Especificaciones
           </p>
           <h2 className="text-2xl font-bold text-gray-900 mb-10">
@@ -445,7 +459,7 @@ export default function ProductDetailContent({
                   </div>
 
                   {/* Label */}
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1.5 relative z-10">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-500 mb-1.5 relative z-10">
                     {spec.label}
                   </p>
 
@@ -477,7 +491,7 @@ export default function ProductDetailContent({
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{sub}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{sub}</p>
                 </div>
               </div>
             ))}
@@ -487,7 +501,7 @@ export default function ProductDetailContent({
         {/* ════ RELATED PRODUCTS ════ */}
         {relatedProducts.length > 0 && (
           <section className="mt-20">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/50 mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/80 mb-3">
               Seguí explorando
             </p>
             <h2 className="text-2xl font-bold text-gray-900 mb-10">
@@ -543,7 +557,7 @@ export default function ProductDetailContent({
         className={`fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.08)]
           transition-transform duration-300 ease-in-out
           ${showStickyBar ? "translate-y-0" : "translate-y-full"}`}
-        aria-hidden={!showStickyBar}
+        inert={!showStickyBar}
       >
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -554,7 +568,7 @@ export default function ProductDetailContent({
             )}
             <div className="min-w-0">
               <p className="text-sm font-bold text-gray-900 truncate">{product.nombre}</p>
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-gray-500 truncate">
                 {selectedVariante.color} · {selectedVariante.memoria}
               </p>
             </div>

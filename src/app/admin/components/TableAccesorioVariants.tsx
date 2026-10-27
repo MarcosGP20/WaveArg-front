@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { AccesorioVariante, AccesorioVariantesService } from "@/lib/api";
+import { AccesorioVariante, AccesorioVariantesService, stockActualSiCambio } from "@/lib/api";
 import { toast } from "sonner";
 
 interface TableAccesorioVariantsProps {
@@ -54,6 +54,7 @@ export const TableAccesorioVariants = ({
       await AccesorioVariantesService.update(editingVariant.id, {
         precio,
         stock,
+        stockAnterior: editingVariant.stock,
         color: editingVariant.color,
         especificacion: editingVariant.especificacion,
       });
@@ -61,6 +62,13 @@ export const TableAccesorioVariants = ({
       cancelEdit();
       window.location.reload();
     } catch (err: unknown) {
+      // Hubo ventas mientras editaba: el formulario pasa a partir del stock actual y el admin
+      // decide qué guardar.
+      const stockActual = stockActualSiCambio(err);
+      if (stockActual !== null) {
+        setEditingVariant({ ...editingVariant, stock: stockActual });
+        setEditValues({ precio: editValues.precio, stock: stockActual.toString() });
+      }
       toast.error(err instanceof Error ? err.message : String(err) ?? "Error al actualizar");
     } finally {
       setIsSaving(false);
@@ -156,7 +164,7 @@ export const TableAccesorioVariants = ({
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => startEdit(v)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                        className="p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
                         title="Editar variante"
                       >
                         <Edit3 size={16} />
@@ -164,7 +172,7 @@ export const TableAccesorioVariants = ({
                       <button
                         disabled={!onDelete}
                         onClick={() => onDelete?.(v.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600"
+                        className="p-1.5 text-gray-500 hover:text-red-600"
                         title="Eliminar variante"
                       >
                         <Trash2 size={16} />

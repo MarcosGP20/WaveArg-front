@@ -12,12 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import GoogleAuth from "@/components/GoogleAuth";
+import { useEstado } from "@/context/EstadoContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 
 export function RegisterForm() {
   const [serverError, setServerError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const { googleHabilitado } = useEstado();
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -78,7 +80,7 @@ export function RegisterForm() {
   return (
     <div className="max-w-md w-full space-y-6 mx-auto bg-white/90 rounded-2xl shadow-lg p-8 border border-[#e3f0fa]">
       <div className="space-y-2 text-center">
-        <h2 className="text-3xl font-bold text-color-principal">Unite a Wave Arg</h2>
+        <h1 className="text-3xl font-bold text-color-principal">Unite a Wave Arg</h1>
         <p className="text-sm text-gray-500">
           Crea tu cuenta y surfeá al próximo nivel
         </p>
@@ -89,10 +91,11 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
+            <Mail className="absolute left-3 top-3 text-gray-500" size={18} aria-hidden="true" />
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="tu@correo.com"
               className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
               aria-invalid={!!errors.email}
@@ -101,7 +104,7 @@ export function RegisterForm() {
             />
           </div>
           {errors.email && (
-            <p id="reg-email-error" role="alert" className="text-xs text-red-500">
+            <p id="reg-email-error" role="alert" className="text-xs text-red-600">
               {errors.email.message}
             </p>
           )}
@@ -111,10 +114,11 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="password">Contraseña</Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
+            <Lock className="absolute left-3 top-3 text-gray-500" size={18} aria-hidden="true" />
             <Input
               id="password"
               type="password"
+              autoComplete="new-password"
               placeholder="••••••••"
               className={`pl-10 ${errors.contraseña ? "border-red-500" : ""}`}
               aria-invalid={!!errors.contraseña}
@@ -123,7 +127,7 @@ export function RegisterForm() {
             />
           </div>
           {errors.contraseña && (
-            <p id="reg-password-error" role="alert" className="text-xs text-red-500">
+            <p id="reg-password-error" role="alert" className="text-xs text-red-600">
               {errors.contraseña.message}
             </p>
           )}
@@ -131,16 +135,14 @@ export function RegisterForm() {
 
         {/* Feedback al usuario */}
         {serverError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600 text-center">{serverError}</p>
+          <div role="alert" className="p-3 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-sm text-red-700 text-center">{serverError}</p>
           </div>
         )}
 
-        {statusMessage && (
-          <p className="text-sm text-blue-600 text-center animate-pulse">
-            {statusMessage}
-          </p>
-        )}
+        <p role="status" className={statusMessage ? "text-sm text-blue-700 text-center animate-pulse motion-reduce:animate-none" : "sr-only"}>
+          {statusMessage}
+        </p>
 
         <Button
           type="submit"
@@ -160,23 +162,28 @@ export function RegisterForm() {
         </Button>
       </form>
 
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-400">O también</span>
-        </div>
-      </div>
+      {/* Interruptores__GoogleHabilitado=false en el back: sin botón de Google. */}
+      {googleHabilitado && (
+        <>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">O también</span>
+            </div>
+          </div>
 
-      <div className="flex justify-center">
-        <GoogleAuth
-          onSuccess={handleGoogleSuccess}
-          onStatus={setStatusMessage}
-          onError={setServerError}
-          text="signup_with"
-        />
-      </div>
+          <div className="flex justify-center">
+            <GoogleAuth
+              onSuccess={handleGoogleSuccess}
+              onStatus={setStatusMessage}
+              onError={setServerError}
+              text="signup_with"
+            />
+          </div>
+        </>
+      )}
 
       <p className="text-sm text-center mt-4 text-gray-500">
         ¿Ya tenés cuenta?{" "}

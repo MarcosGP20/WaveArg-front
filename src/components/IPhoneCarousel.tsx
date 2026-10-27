@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { Pause, Play } from "lucide-react";
 
 export interface CarouselItem {
   id?: string | number;
@@ -26,7 +27,12 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
   const [direction, setDirection] = useState<1 | -1>(1);
   const [imageError, setImageError] = useState(false); // Control de placeholder
 
-  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Autoplay (front#15): corre solo si el usuario no lo pausó, no hay mouse ni foco adentro y
+  // no pidió reducir movimiento.
+  const reducido = useReducedMotion();
+  const [pausadoPorUsuario, setPausadoPorUsuario] = useState(false);
+  const [suspendido, setSuspendido] = useState(false);
+
   const touchStartX = useRef<number | null>(null);
   const isAnimatingRef = useRef(false);
 
@@ -53,20 +59,13 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
   const next = useCallback(() => goTo(current + 1, 1), [current, goTo]);
   const prev = useCallback(() => goTo(current - 1, -1), [current, goTo]);
 
-  const startAutoplay = useCallback(() => {
-    if (total <= 1) return;
-    if (autoplayRef.current) clearInterval(autoplayRef.current);
-    autoplayRef.current = setInterval(() => {
-      next();
-    }, AUTOPLAY_DELAY);
-  }, [total, next]);
+  const autoplayActivo = total > 1 && !reducido && !pausadoPorUsuario && !suspendido;
 
   useEffect(() => {
-    startAutoplay();
-    return () => {
-      if (autoplayRef.current) clearInterval(autoplayRef.current);
-    };
-  }, [startAutoplay]);
+    if (!autoplayActivo) return;
+    const timeout = setTimeout(next, AUTOPLAY_DELAY);
+    return () => clearTimeout(timeout);
+  }, [autoplayActivo, next]);
 
   if (total === 0) return null;
 
@@ -79,13 +78,23 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
   };
 
   return (
-    <div className="w-full select-none">
+    <section
+      className="w-full select-none"
+      aria-roledescription="carrusel"
+      aria-label="iPhones destacados"
+      onMouseEnter={() => setSuspendido(true)}
+      onMouseLeave={() => setSuspendido(false)}
+      onFocus={() => setSuspendido(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setSuspendido(false);
+      }}
+    >
       <div
+        role="group"
+        aria-roledescription="slide"
+        aria-label={`${current + 1} de ${total}: ${slide.model}`}
+        aria-live={autoplayActivo ? "off" : "polite"}
         className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[450px] md:min-h-[550px]"
-        onMouseEnter={() =>
-          autoplayRef.current && clearInterval(autoplayRef.current)
-        }
-        onMouseLeave={startAutoplay}
         onTouchStart={(e) => (touchStartX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (!touchStartX.current) return;
@@ -97,7 +106,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
         {/* ── Panel de Imagen: Ahora con más aire y protagonismo ── */}
         <div className="relative md:w-[45%] bg-[#F8F9FA] flex items-center justify-center p-8 md:p-12">
           <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
+            <m.div
               key={current}
               custom={direction}
               variants={variants}
@@ -127,25 +136,25 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
                 ) : (
                   /* Placeholder estilizado */
                   <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50">
-                    <span className="text-gray-400 text-sm font-medium">Imagen próximamente</span>
+                    <span className="text-gray-500 text-sm font-medium">Imagen próximamente</span>
                   </div>
                 )}
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
 
         {/* ── Panel de Contenido ── */}
         <div className="md:w-[55%] flex flex-col justify-center px-8 py-10 md:px-16 md:py-16">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={current}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
             >
-              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">
+              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">
                 {current + 1} / {total}
               </p>
 
@@ -178,7 +187,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
                   <path d="M1 7h12M8 2l5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
 
@@ -186,6 +195,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
         {total > 1 && (
           <>
             <button
+              type="button"
               onClick={prev}
               aria-label="iPhone anterior"
               className="absolute left-4 top-[172px] md:top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
@@ -195,6 +205,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
               </svg>
             </button>
             <button
+              type="button"
               onClick={next}
               aria-label="iPhone siguiente"
               className="absolute right-4 top-[172px] md:top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-[#05467D] hover:bg-white transition-all z-20"
@@ -207,14 +218,24 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
         )}
       </div>
 
-      {/* ── Indicadores ── */}
+      {/* ── Pausa + indicadores ── */}
       {total > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
+        <div className="flex justify-center items-center gap-2 mt-4">
+          {!reducido && (
+            <button
+              type="button"
+              onClick={() => setPausadoPorUsuario((p) => !p)}
+              aria-label={pausadoPorUsuario ? "Reanudar el carrusel" : "Pausar el carrusel"}
+              className="mr-2 flex h-8 w-8 items-center justify-center rounded-full text-[#05467D] hover:bg-gray-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#05467D]"
+            >
+              {pausadoPorUsuario ? <Play size={16} strokeWidth={1.75} /> : <Pause size={16} strokeWidth={1.75} />}
+            </button>
+          )}
           {items.map((item, i) => (
             <button
               key={i}
-              role="tab"
-              aria-selected={i === current}
+              type="button"
+              aria-current={i === current ? "true" : undefined}
               aria-label={`Ir a ${item.model}`}
               onClick={() => goTo(i, i > current ? 1 : -1)}
               className={`rounded-full transition-all duration-300 ${
@@ -226,6 +247,6 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

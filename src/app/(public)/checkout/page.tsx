@@ -1,19 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { MercadoPagoService } from "@/lib/api";
+import { esCheckoutPausado, MercadoPagoService } from "@/lib/api";
+import { useEstado } from "@/context/EstadoContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check, MapPin } from "lucide-react";
+import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check, MapPin, PauseCircle } from "lucide-react";
+import {
+  primerCampoInvalido,
+  validarDireccion,
+  type CampoDireccion,
+  type DireccionForm,
+  type ErroresDireccion,
+} from "@/lib/direccion";
 
-interface DireccionForm {
-  calle: string;
-  ciudad: string;
-  provincia: string;
-  codigoPostal: string;
-}
+// Campos de la dirección de envío, en el orden del formulario. autocomplete deja que el
+// navegador los complete (front#9).
+const CAMPOS: {
+  campo: CampoDireccion;
+  label: string;
+  autoComplete: string;
+  placeholder?: string;
+  ancho?: boolean;
+}[] = [
+  { campo: "calle", label: "Calle y número", autoComplete: "street-address", placeholder: "Ej: Av. Corrientes 1234, Piso 3 Depto B", ancho: true },
+  { campo: "ciudad", label: "Ciudad / Localidad", autoComplete: "address-level2", placeholder: "Ej: Rosario" },
+  { campo: "codigoPostal", label: "Código Postal", autoComplete: "postal-code", placeholder: "Ej: 2000" },
+  { campo: "provincia", label: "Provincia", autoComplete: "address-level1", ancho: true },
+];
 
 const PROVINCIAS = [
   "Buenos Aires", "CABA", "Catamarca", "Chaco", "Chubut", "Córdoba",
@@ -29,7 +45,10 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [authError, setAuthError] = useState(false);
-  const [formErrors, setFormErrors] = useState<Partial<DireccionForm>>({});
+  // El estado llega del layout; si el checkout se apaga después, lo avisa el 503 del back.
+  const [pausado, setPausado] = useState(!useEstado().checkoutHabilitado);
+  const [formErrors, setFormErrors] = useState<ErroresDireccion>({});
+  const camposRef = useRef<Partial<Record<CampoDireccion, HTMLInputElement | HTMLSelectElement | null>>>({});
 
   const [direccion, setDireccion] = useState<DireccionForm>({
     calle: "",
@@ -40,22 +59,23 @@ export default function CheckoutPage() {
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const validarDireccion = (): boolean => {
-    const errors: Partial<DireccionForm> = {};
-    if (!direccion.calle.trim()) errors.calle = "Requerido";
-    if (!direccion.ciudad.trim()) errors.ciudad = "Requerido";
-    if (!direccion.provincia) errors.provincia = "Requerido";
-    if (!direccion.codigoPostal.trim()) errors.codigoPostal = "Requerido";
-    // Mismo formato que valida el backend: CPA ("C1043AAB") o 4 dígitos, con o sin letra de provincia.
-    else if (!/^[A-Za-z]?\d{4}([A-Za-z]{3})?$/.test(direccion.codigoPostal.trim()))
-      errors.codigoPostal = "Código postal inválido";
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+  // Con errores, el foco va al primer campo inválido, que anuncia su mensaje (aria-describedby).
+  const direccionValida = (): boolean => {
+    const errores = validarDireccion(direccion);
+    setFormErrors(errores);
+    const primero = primerCampoInvalido(errores);
+    if (primero) camposRef.current[primero]?.focus();
+    return primero === null;
+  };
+
+  const cambiarCampo = (campo: CampoDireccion, valor: string) => {
+    setDireccion((d) => ({ ...d, [campo]: valor }));
+    if (formErrors[campo]) setFormErrors((f) => ({ ...f, [campo]: undefined }));
   };
 
   const handlePagar = async () => {
     if (cart.length === 0) return;
-    if (!validarDireccion()) return;
+    if (!direccionValida()) return;
 
     setLoading(true);
     setError(null);
@@ -99,6 +119,11 @@ export default function CheckoutPage() {
 
       window.location.href = urlPago;
     } catch (err: unknown) {
+      if (esCheckoutPausado(err)) {
+        setPausado(true);
+        setLoading(false);
+        return;
+      }
       const message =
         err instanceof Error
           ? err.message
@@ -146,8 +171,9 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Indicador de pasos */}
-        <div className="flex items-center justify-center gap-0 mb-10">
+        {/* Indicador de pasos (visual; el lector de pantalla lee el texto de abajo) */}
+        <p className="sr-only">Paso 2 de 3: revisión del pedido.</p>
+        <div aria-hidden="true" className="flex items-center justify-center gap-0 mb-10">
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 rounded-full bg-color-principal flex items-center justify-center">
               <Check size={16} className="text-white" />
@@ -168,9 +194,9 @@ export default function CheckoutPage() {
 
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400 text-xs font-bold">3</span>
+              <span className="text-gray-500 text-xs font-bold">3</span>
             </div>
-            <span className="text-[11px] text-gray-400 font-medium mt-1.5">Pago</span>
+            <span className="text-[11px] text-gray-500 font-medium mt-1.5">Pago</span>
           </div>
         </div>
 
@@ -201,7 +227,7 @@ export default function CheckoutPage() {
                   />
                 ) : (
                   <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
-                    <ShoppingCart size={24} className="text-gray-400" />
+                    <ShoppingCart size={24} className="text-gray-500" />
                   </div>
                 )}
 
@@ -227,106 +253,71 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            handlePagar();
+          }}
+        >
         {/* Dirección de envío */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+        <fieldset className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <legend className="sr-only">Dirección de envío</legend>
           <div className="flex items-center gap-2 mb-5">
-            <MapPin size={20} className="text-color-principal" strokeWidth={1.75} />
+            <MapPin size={20} className="text-color-principal" strokeWidth={1.75} aria-hidden="true" />
             <h2 className="text-lg font-semibold text-gray-800">Dirección de envío</h2>
           </div>
+          <p className="text-xs text-gray-600 mb-4">Todos los campos son obligatorios.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Calle y número */}
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Calle y número <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Ej: Av. Corrientes 1234, Piso 3 Depto B"
-                value={direccion.calle}
-                onChange={(e) => {
-                  setDireccion((d) => ({ ...d, calle: e.target.value }));
-                  if (formErrors.calle) setFormErrors((f) => ({ ...f, calle: undefined }));
-                }}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal ${
-                  formErrors.calle ? "border-red-400 bg-red-50" : "border-gray-200 bg-gray-50"
-                }`}
-              />
-              {formErrors.calle && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.calle}</p>
-              )}
-            </div>
-
-            {/* Ciudad */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Ciudad / Localidad <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Ej: Rosario"
-                value={direccion.ciudad}
-                onChange={(e) => {
-                  setDireccion((d) => ({ ...d, ciudad: e.target.value }));
-                  if (formErrors.ciudad) setFormErrors((f) => ({ ...f, ciudad: undefined }));
-                }}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal ${
-                  formErrors.ciudad ? "border-red-400 bg-red-50" : "border-gray-200 bg-gray-50"
-                }`}
-              />
-              {formErrors.ciudad && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.ciudad}</p>
-              )}
-            </div>
-
-            {/* Código Postal */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Código Postal <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Ej: 2000"
-                value={direccion.codigoPostal}
-                onChange={(e) => {
-                  setDireccion((d) => ({ ...d, codigoPostal: e.target.value }));
-                  if (formErrors.codigoPostal) setFormErrors((f) => ({ ...f, codigoPostal: undefined }));
-                }}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal ${
-                  formErrors.codigoPostal ? "border-red-400 bg-red-50" : "border-gray-200 bg-gray-50"
-                }`}
-              />
-              {formErrors.codigoPostal && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.codigoPostal}</p>
-              )}
-            </div>
-
-            {/* Provincia */}
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Provincia <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={direccion.provincia}
-                onChange={(e) => {
-                  setDireccion((d) => ({ ...d, provincia: e.target.value }));
-                  if (formErrors.provincia) setFormErrors((f) => ({ ...f, provincia: undefined }));
-                }}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal ${
-                  formErrors.provincia ? "border-red-400 bg-red-50" : "border-gray-200 bg-gray-50"
-                }`}
-              >
-                <option value="">Seleccioná una provincia</option>
-                {PROVINCIAS.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-              {formErrors.provincia && (
-                <p className="text-xs text-red-500 mt-1">{formErrors.provincia}</p>
-              )}
-            </div>
+            {CAMPOS.map(({ campo, label, autoComplete, placeholder, ancho }) => {
+              const id = `checkout-${campo}`;
+              const error = formErrors[campo];
+              const props = {
+                id,
+                name: campo,
+                autoComplete,
+                required: true,
+                value: direccion[campo],
+                "aria-invalid": error ? true : undefined,
+                "aria-describedby": error ? `${id}-error` : undefined,
+                className: `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal ${
+                  error ? "border-red-600 bg-red-50" : "border-gray-300 bg-gray-50"
+                }`,
+              };
+              return (
+                <div key={campo} className={ancho ? "sm:col-span-2" : undefined}>
+                  <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1.5">
+                    {label} <span className="text-red-700" aria-hidden="true">*</span>
+                  </label>
+                  {campo === "provincia" ? (
+                    <select
+                      {...props}
+                      ref={(el) => { camposRef.current[campo] = el; }}
+                      onChange={(e) => cambiarCampo(campo, e.target.value)}
+                    >
+                      <option value="">Seleccioná una provincia</option>
+                      {PROVINCIAS.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      {...props}
+                      type="text"
+                      placeholder={placeholder}
+                      ref={(el) => { camposRef.current[campo] = el; }}
+                      onChange={(e) => cambiarCampo(campo, e.target.value)}
+                    />
+                  )}
+                  {error && (
+                    <p id={`${id}-error`} className="text-xs text-red-700 mt-1">{error}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </div>
+        </fieldset>
 
         {/* Info de pago */}
         <div className="bg-color-principal/5 border border-color-principal/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
@@ -344,8 +335,8 @@ export default function CheckoutPage() {
 
         {/* Error de sesión no iniciada */}
         {authError && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
-            <LogIn className="text-amber-500 shrink-0 mt-0.5" size={22} />
+          <div role="alert" className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
+            <LogIn className="text-amber-600 shrink-0 mt-0.5" size={22} aria-hidden="true" />
             <div className="flex-1">
               <p className="font-semibold text-amber-800 mb-1">
                 Necesitás iniciar sesión
@@ -355,6 +346,7 @@ export default function CheckoutPage() {
                 iniciada. Por favor, iniciá sesión y volvé a intentarlo.
               </p>
               <button
+                type="button"
                 onClick={() => router.push(`/login?redirect=/checkout`)}
                 className="bg-color-principal text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-color-principal-oscuro transition flex items-center gap-2"
               >
@@ -365,26 +357,40 @@ export default function CheckoutPage() {
           </div>
         )}
 
+        {/* Interruptores__CheckoutHabilitado=false en el back */}
+        {pausado && (
+          <div role="status" className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
+            <PauseCircle className="text-amber-600 shrink-0 mt-0.5" size={22} aria-hidden="true" />
+            <div>
+              <p className="font-semibold text-amber-800 mb-1">Las compras están pausadas</p>
+              <p className="text-amber-700 text-sm">
+                Volvemos a tomar pedidos en unos minutos. Tu carrito queda guardado.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Error genérico */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-            <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={20} />
+          <div role="alert" className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
+            <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} aria-hidden="true" />
             <div className="text-sm">
               <p className="font-semibold text-red-700 mb-0.5">Ocurrió un error</p>
-              <p className="text-red-600">{error}</p>
+              <p className="text-red-700">{error}</p>
             </div>
           </div>
         )}
 
         {/* Botón de pago */}
         <button
-          onClick={handlePagar}
-          disabled={loading}
-          className="w-full bg-mp hover:bg-mp-dark active:bg-mp-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-200 shadow-lg shadow-mp/30"
+          type="submit"
+          disabled={loading || pausado}
+          aria-busy={loading || undefined}
+          className="w-full bg-mp-dark hover:bg-mp-darker active:bg-mp-darker disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-200 shadow-lg shadow-mp/30"
         >
           {loading ? (
             <>
-              <Loader2 size={22} className="animate-spin" />
+              <Loader2 size={22} className="animate-spin" aria-hidden="true" />
               Conectando con MercadoPago…
             </>
           ) : (
@@ -392,6 +398,7 @@ export default function CheckoutPage() {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 48 48"
+                aria-hidden="true"
                 className="w-6 h-6 fill-white"
               >
                 <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16zm-2-22h4v12h-4zm0-6h4v4h-4z" />
@@ -400,8 +407,9 @@ export default function CheckoutPage() {
             </>
           )}
         </button>
+        </form>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-gray-500 mt-4">
           Al continuar aceptás los{" "}
           <a href="#" className="underline hover:text-gray-600">
             términos y condiciones
