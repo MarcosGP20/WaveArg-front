@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MetricCard from "./MetridCard";
-import DataGrid from "./DataGrid";
+import DataGrid, { type Column } from "./DataGrid";
 import { AdminService, DashboardMetrics, PedidosService } from "@/lib/api";
 import { DollarSign, ShoppingCart, Users, Package, AlertCircle } from "lucide-react";
 
@@ -102,7 +102,7 @@ export default function Dashboard() {
     );
   }
 
-  const orderColumns = [
+  const orderColumns: Column<PedidoRow>[] = [
     { key: "id", label: "#" },
     { key: "cliente", label: "Cliente" },
     { key: "producto", label: "Producto" },

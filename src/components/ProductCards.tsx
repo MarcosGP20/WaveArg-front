@@ -32,7 +32,7 @@ export default function ProductCard({ product, className, featured = false }: Pr
   // Hoy usamos el producto.imagenes[] indexado por posición de color.
   const colorIdx = coloresUnicos.findIndex((v) => v.color === varianteActiva.color);
   const imagenActiva =
-    (varianteActiva as unknown as Record<string, any>)?.imagenes?.[0] ??
+    varianteActiva?.imagenes?.[0] ??
     product.imagenes?.[Math.max(colorIdx, 0)] ??
     product.imagenes?.[0] ??
     "/placeholder.png";

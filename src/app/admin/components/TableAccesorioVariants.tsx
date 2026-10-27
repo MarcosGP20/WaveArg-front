@@ -128,7 +128,7 @@ export const TableAccesorioVariants = ({
                     {v.color}
                   </td>
                   <td className="px-6 py-4 text-xs text-gray-600 max-w-[200px] truncate">
-                    {(v as unknown as Record<string, any>)?.especificacion ?? "-"}
+                    {v.especificacion || "-"}
                   </td>
                   <td className="px-6 py-4 font-bold text-color-principal">
                     USD {v.precio.toLocaleString()}
