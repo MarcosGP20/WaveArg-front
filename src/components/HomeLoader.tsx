@@ -41,6 +41,9 @@ export default function HomeLoader() {
   return (
     <div className="wave-loader fixed inset-0 z-50 flex items-center justify-center bg-white">
       <video
+        // src en el <video> (no un <source>): si el navegador no puede reproducir el WebM (Safari),
+        // el error llega acá y la intro se cierra sin esperar a MAX_MS.
+        src={VIDEO_PATH}
         playsInline
         autoPlay
         muted
@@ -48,9 +51,7 @@ export default function HomeLoader() {
         onEnded={cerrar}
         onError={cerrar}
         className="h-full w-full object-contain"
-      >
-        <source src={VIDEO_PATH} type="video/webm" />
-      </video>
+      />
       <button
         type="button"
         onClick={cerrar}

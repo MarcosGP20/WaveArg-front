@@ -115,10 +115,11 @@ export default function CartDrawer() {
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
+                            updateQuantity(item.id, Math.min(item.stock ?? Infinity, item.quantity + 1))
                           }
+                          disabled={item.stock != null && item.quantity >= item.stock}
                           aria-label={`Sumar uno a ${item.name}`}
-                          className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 text-gray-500 transition-colors"
+                          className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 text-gray-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200"
                         >
                           <Plus size={11} />
                         </button>

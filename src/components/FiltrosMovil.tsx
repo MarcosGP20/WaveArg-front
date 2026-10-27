@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { SlidersHorizontal, X } from "lucide-react";
 
 // Botón "Filtros" + panel inferior de filtros en mobile (catálogo y accesorios). Es un Radix
 // Dialog (front#13): tiene nombre, cierra con Escape, con click afuera o con los botones,
-// atrapa el foco y al cerrar lo devuelve al botón.
+// atrapa el foco y al cerrar lo devuelve al botón. Al pasar a desktop (lg) se cierra: oculto con
+// lg:hidden seguiría siendo modal y dejaría la página bloqueada.
 export default function FiltrosMovil({
   activeFilterCount,
   children,
@@ -13,8 +15,19 @@ export default function FiltrosMovil({
   activeFilterCount: number;
   children: React.ReactNode;
 }) {
+  const [abierto, setAbierto] = useState(false);
+
+  useEffect(() => {
+    if (!abierto) return;
+    const desktop = matchMedia("(min-width: 1024px)");
+    const cerrarEnDesktop = () => desktop.matches && setAbierto(false);
+    cerrarEnDesktop();
+    desktop.addEventListener("change", cerrarEnDesktop);
+    return () => desktop.removeEventListener("change", cerrarEnDesktop);
+  }, [abierto]);
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={abierto} onOpenChange={setAbierto}>
       <Dialog.Trigger className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors">
         <SlidersHorizontal size={16} aria-hidden="true" />
         Filtros
