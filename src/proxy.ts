@@ -98,6 +98,7 @@ export const config = {
   matcher: [
     // Proteger TODAS las rutas
     // Excepto archivos estáticos y API
-    "/((?!api|_next/static|_next/image|favicon|sitemap|robots).*)",
+    // y archivos de /public (videos, imágenes): no necesitan verificar la sesión
+    "/((?!api|_next/static|_next/image|favicon|sitemap|robots|.*\\.(?:svg|png|jpe?g|webp|avif|gif|ico|mp4|webm|woff2?)$).*)",
   ],
 };

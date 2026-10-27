@@ -4,7 +4,7 @@ import { Atkinson_Hyperlegible } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import { GoogleProvider } from "@/components/GoogleProvider";
-import Mantenimiento from "@/components/Mantenimiento";
+import PuertaMantenimiento from "@/components/PuertaMantenimiento";
 import { EstadoProvider } from "@/context/EstadoContext";
 import { obtenerEstado } from "@/lib/estado";
 
@@ -47,15 +47,11 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${atkinson.variable} ${workSans.variable} overflow-x-hidden`}>
-        {estado.mantenimiento ? (
-          <Mantenimiento />
-        ) : (
-          <EstadoProvider estado={estado}>
-            <GoogleProvider>
-              {children}
-            </GoogleProvider>
-          </EstadoProvider>
-        )}
+        <EstadoProvider estado={estado}>
+          <GoogleProvider>
+            <PuertaMantenimiento>{children}</PuertaMantenimiento>
+          </GoogleProvider>
+        </EstadoProvider>
       </body>
     </html>
   );

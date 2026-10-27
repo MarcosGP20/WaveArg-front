@@ -31,8 +31,33 @@ function leerJson(parte: string): Record<string, unknown> | null {
   }
 }
 
+// La clave se importa una sola vez por secreto: proxy.ts verifica en cada request.
+let claveCache: { secreto: string; clave: Promise<CryptoKey> } | null = null;
+
+function obtenerClave(secreto: string): Promise<CryptoKey> {
+  if (claveCache?.secreto !== secreto) {
+    const clave = crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(secreto),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+    clave.catch(() => (claveCache = null));
+    claveCache = { secreto, clave };
+  }
+  return claveCache.clave;
+}
+
+let avisoSinSecreto = false;
+
 export async function verificarSesion(token: string | undefined): Promise<Sesion | null> {
   const secreto = process.env.JWT_SECRET;
+  if (!secreto && !avisoSinSecreto) {
+    // Sin la clave ninguna sesión es válida: nadie puede loguearse y todos ven el sitio deslogueado.
+    console.error("[sesion] JWT_SECRET no está configurado: se rechazan todas las sesiones.");
+    avisoSinSecreto = true;
+  }
   if (!token || !secreto) return null;
 
   const partes = token.split(".");
@@ -44,13 +69,7 @@ export async function verificarSesion(token: string | undefined): Promise<Sesion
 
   let firmaValida = false;
   try {
-    const clave = await crypto.subtle.importKey(
-      "raw",
-      new TextEncoder().encode(secreto),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"],
-    );
+    const clave = await obtenerClave(secreto);
     firmaValida = await crypto.subtle.verify(
       "HMAC",
       clave,
@@ -74,6 +93,6 @@ export async function verificarSesion(token: string | undefined): Promise<Sesion
 }
 
 export function esAdmin(sesion: Sesion | null): boolean {
-  const rol = sesion?.rol.toLowerCase();
-  return rol === "admin" || rol === "administrador";
+  // Igual que en el cliente: el back sólo emite el rol "Admin" (Politicas.Admin).
+  return sesion?.rol.toLowerCase() === "admin";
 }

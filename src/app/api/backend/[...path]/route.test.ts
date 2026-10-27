@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { GET } from "./route";
+import { GET, POST } from "./route";
 
 const fetchMock = vi.fn();
 
@@ -36,6 +36,21 @@ describe("proxy /api/backend", () => {
 
     expect(res.status).toBe(504);
     expect((await res.json()).message).toMatch(/tard/i);
+  });
+
+  it("un POST no se corta por timeout: el back podría terminar de crear el pedido igual", async () => {
+    fetchMock.mockResolvedValue(Response.json({ id: 7 }, { status: 201 }));
+
+    const res = await POST(
+      new NextRequest(new URL("/api/backend/Pedidos", "http://localhost:3000"), {
+        method: "POST",
+        body: "{}",
+      }),
+      { params: Promise.resolve({ path: ["Pedidos"] }) },
+    );
+
+    expect(res.status).toBe(201);
+    expect(fetchMock.mock.calls[0][1].signal).toBeUndefined();
   });
 
   it("si el back responde, pasa el status y el cuerpo tal cual", async () => {
