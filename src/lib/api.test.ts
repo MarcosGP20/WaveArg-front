@@ -7,6 +7,8 @@ import {
   invalidarProductos,
   loginUser,
   loginWithGoogle,
+  MENSAJE_REGISTRO_POR_DEFECTO,
+  registerUser,
   stockActualSiCambio,
   VariantesService,
   vincularGoogle,
@@ -192,5 +194,31 @@ describe("getProductos: una sola request compartida (api.ts)", () => {
     invalidarProductos();
     await getProductos();
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("registro (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const datos = { email: "ana@test.local", contraseña: "Segura123!", rolId: 0 };
+
+  it("devuelve el mensaje del back, que es el mismo exista o no la cuenta (back#104)", async () => {
+    const mensaje = "Listo. Si el email ya tenía una cuenta, te mandamos un mail para que ingreses.";
+    fetchMock.mockResolvedValue(respuesta(200, { message: mensaje }));
+
+    expect(await registerUser(datos)).toBe(mensaje);
+  });
+
+  it("si el back no manda un mensaje (versión anterior), usa uno por defecto", async () => {
+    fetchMock.mockResolvedValue(respuesta(200, "Usuario Registrado"));
+
+    expect(await registerUser(datos)).toBe(MENSAJE_REGISTRO_POR_DEFECTO);
   });
 });

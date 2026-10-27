@@ -6,6 +6,7 @@ import { registerSchema, RegisterFormValues } from "@/schemas/auth.schema";
 import { registerUser } from "@/lib/api";
 import type { AuthResponse } from "@/interfaces/auth";
 import { useState } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 export function RegisterForm() {
   const [serverError, setServerError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [registrado, setRegistrado] = useState(false);
   const { googleHabilitado } = useEstado();
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -40,20 +42,16 @@ export function RegisterForm() {
 
     try {
       // Enviamos los datos exactos que espera el controlador de .NET
-      await registerUser({
+      const mensaje = await registerUser({
         email: data.email,
         contraseña: data.contraseña,
         rolId: data.rolId || 0,
       });
 
-      setStatusMessage(
-        "¡Registro exitoso! Redirigiendo al inicio de sesión..."
-      );
-
-      // Usamos router.push para una navegación fluida (SPA)
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
+      // Sin redirección automática: el mensaje del back puede pedir que revise el mail, y tiene
+      // que quedar en pantalla hasta que lo lea.
+      setRegistrado(true);
+      setStatusMessage(mensaje);
     } catch (error: unknown) {
       setStatusMessage("");
       // Capturamos el mensaje de error que definimos en fetchFromApi
@@ -140,14 +138,32 @@ export function RegisterForm() {
           </div>
         )}
 
-        <p role="status" className={statusMessage ? "text-sm text-blue-700 text-center animate-pulse motion-reduce:animate-none" : "sr-only"}>
+        <p
+          role="status"
+          className={
+            registrado
+              ? "p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800 text-center"
+              : statusMessage
+                ? "text-sm text-blue-700 text-center animate-pulse motion-reduce:animate-none"
+                : "sr-only"
+          }
+        >
           {statusMessage}
         </p>
+
+        {registrado && (
+          <Link
+            href="/login"
+            className="block text-center text-sm font-semibold text-color-principal underline underline-offset-4 hover:text-color-principal-oscuro"
+          >
+            Ir a iniciar sesión
+          </Link>
+        )}
 
         <Button
           type="submit"
           className="w-full bg-color-principal hover:bg-color-principal-oscuro text-white font-bold py-6 rounded-full shadow-md transition-all active:scale-[0.98]"
-          disabled={isSubmitting}
+          disabled={isSubmitting || registrado}
           aria-busy={isSubmitting}
         >
           {isSubmitting ? (
