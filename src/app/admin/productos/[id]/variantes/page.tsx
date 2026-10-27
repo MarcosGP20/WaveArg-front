@@ -1,6 +1,13 @@
 "use client";
 
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  useWatch,
+  type Control,
+  type UseFormRegister,
+  type UseFormSetValue,
+} from "react-hook-form";
 import {
   Plus,
   Trash2,
@@ -39,6 +46,8 @@ type VarianteForm = {
   imagenesStock: string[];   // renders/fotos de marketing del color
   imagenesReales: string[];  // fotos del equipo físico (solo usados)
 };
+
+type VarianteFormValues = { variantes: VarianteForm[] };
 
 const MEMORIAS = ["64GB", "128GB", "256GB", "512GB", "1TB"];
 
@@ -148,14 +157,14 @@ function VarianteCard({
   onRemove,
 }: {
   index: number;
-  register: any;
-  control: any;
-  setValue: any;
+  register: UseFormRegister<VarianteFormValues>;
+  control: Control<VarianteFormValues>;
+  setValue: UseFormSetValue<VarianteFormValues>;
   onRemove: () => void;
 }) {
   const esUsado: boolean = useWatch({ control, name: `variantes.${index}.esUsado` });
-  const imagenesStock = (useWatch({ control, name: `variantes.${index}.imagenesStock` as any }) as string[]) ?? [];
-  const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` as any }) as string[]) ?? [];
+  const imagenesStock = (useWatch({ control, name: `variantes.${index}.imagenesStock` })) ?? [];
+  const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` })) ?? [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -309,7 +318,7 @@ export default function GestionVariantesPage() {
       .finally(() => { setLoadingProducto(false); setLoading(false); });
   }, [id]);
 
-  const { register, control, handleSubmit, setValue } = useForm<{ variantes: VarianteForm[] }>({
+  const { register, control, handleSubmit, setValue } = useForm<VarianteFormValues>({
     defaultValues: { variantes: [{ ...VARIANTE_DEFAULT }] },
   });
 

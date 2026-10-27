@@ -1,6 +1,13 @@
 "use client";
 
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  useWatch,
+  type Control,
+  type UseFormRegister,
+  type UseFormSetValue,
+} from "react-hook-form";
 import {
   Plus,
   Trash2,
@@ -39,6 +46,8 @@ type AccesorioVarianteForm = {
   imagenesStock: string[];
   imagenesReales: string[];
 };
+
+type AccesorioVarianteFormValues = { variantes: AccesorioVarianteForm[] };
 
 const VARIANTE_DEFAULT: AccesorioVarianteForm = {
   color: "",
@@ -146,14 +155,14 @@ function VarianteCard({
   onRemove,
 }: {
   index: number;
-  register: any;
-  control: any;
-  setValue: any;
+  register: UseFormRegister<AccesorioVarianteFormValues>;
+  control: Control<AccesorioVarianteFormValues>;
+  setValue: UseFormSetValue<AccesorioVarianteFormValues>;
   onRemove: () => void;
 }) {
   const esUsado: boolean = useWatch({ control, name: `variantes.${index}.esUsado` });
-  const imagenesStock = (useWatch({ control, name: `variantes.${index}.imagenesStock` as any }) as string[]) ?? [];
-  const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` as any }) as string[]) ?? [];
+  const imagenesStock = (useWatch({ control, name: `variantes.${index}.imagenesStock` })) ?? [];
+  const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` })) ?? [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -297,7 +306,7 @@ export default function GestionVariantesAccesorioPage() {
       .finally(() => { setLoadingAccesorio(false); setLoading(false); });
   }, [id]);
 
-  const { register, control, handleSubmit, setValue } = useForm<{ variantes: AccesorioVarianteForm[] }>({
+  const { register, control, handleSubmit, setValue } = useForm<AccesorioVarianteFormValues>({
     defaultValues: { variantes: [{ ...VARIANTE_DEFAULT }] },
   });
 

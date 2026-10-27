@@ -25,10 +25,10 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
 
   // Helper: extrae la primera URL de imagen sin importar si el backend
   // devuelve string[], { url: string }[], u otro shape
-  function extractUrl(val: any): string | null {
+  function extractUrl(val: unknown): string | null {
     if (!val) return null;
     if (typeof val === "string") return val;
-    if (typeof val === "object" && val.url) return val.url;
+    if (typeof val === "object" && "url" in val && typeof val.url === "string") return val.url;
     return null;
   }
 
@@ -36,8 +36,8 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
   //  1. variante.imagenes[0]        (array propio de la variante)
   //  2. accesorio.imagenes[0]       (array del accesorio)
   //  3. variante.fotoEstadoUrl      (foto de estado individual)
-  const rawVarianteImgs = (varianteMasBarata as unknown as Record<string, any>)?.imagenes;
-  const rawAccesorioImgs = (accesorio as unknown as Record<string, any>)?.imagenes;
+  const rawVarianteImgs: unknown = varianteMasBarata?.imagenes;
+  const rawAccesorioImgs: unknown = accesorio.imagenes;
 
   const imagen =
     extractUrl(Array.isArray(rawVarianteImgs) ? rawVarianteImgs[0] : rawVarianteImgs) ??
