@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 
 :root {
-  --font-work-sans: "Work Sans", sans-serif;
   --color-principal: #05467D;
   --color-principal-oscuro: #0F3C64;
   --color-mp: #009EE3;
@@ -15,17 +14,25 @@
   --duration-slow: 400ms;
 }
 
-body {
-  font-family: var(--font-work-sans);
-}
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+
+  /* Sistema visual (DESIGN.md): tinta, superficies y bordes neutros; el azul de marca sólo
+     para la acción principal y lo seleccionado. */
+  --color-tinta: #1D1D1F;
+  --color-tinta-suave: #6E6E73;
+  --color-superficie: #F5F5F7;
+  --color-borde: #E8E8ED;
+  --color-borde-fuerte: #D2D2D7;
+  --color-principal-suave: #E8F0F7;
+  --color-exito: #1F6B3A;
+  --radius-control: 12px;
+  --radius-panel: 20px;
 
   /* Brand colors */
   --color-color-principal: var(--color-principal);
@@ -153,7 +160,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-work-sans);
+    font-family: var(--font-sans);
   }
 }
 

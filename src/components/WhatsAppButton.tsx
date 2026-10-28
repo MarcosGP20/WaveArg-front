@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { linkWhatsApp } from "@/lib/whatsapp";
 
-const WA_URL = "https://wa.me/5492262586880?text=Hola%2C%20me%20interesa%20saber%20m%C3%A1s%20sobre%20los%20productos%20de%20Wave%20Arg.";
+const WA_URL = linkWhatsApp("Hola, me interesa saber más sobre los productos de Wave Arg.");
 
 export default function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(false);
