@@ -5,13 +5,12 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import {
-  Cpu, Smartphone, Camera, Clapperboard, Wifi, Fingerprint,
-  Truck, ShieldCheck, CreditCard, Battery, ArrowUpRight,
-} from "lucide-react";
+import { Camera, Battery, ShieldCheck, Truck, RefreshCw, ArrowUpRight } from "lucide-react";
 import { getProductoById, getProductos, Producto, Variante } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import Breadcrumb from "@/components/Breadcrumb";
+import { formatearPrecio } from "@/lib/precio";
+import { linkWhatsApp } from "@/lib/whatsapp";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
@@ -40,7 +39,14 @@ function getGalleryImages(product: Producto, variante: Variante): string[] {
   return stockImg ? [stockImg] : ["/placeholder.png"];
 }
 
-type Spec = { icon: LucideIcon; label: string; value: string };
+type Spec = { label: string; value: string };
+
+// Lo que Wave promete en todos los equipos (mismos textos que la home).
+const GARANTIAS: { icon: LucideIcon; titulo: string; detalle: string }[] = [
+  { icon: ShieldCheck, titulo: "Garantía de 3 meses", detalle: "en todos los equipos" },
+  { icon: Truck, titulo: "Envío a todo el país", detalle: "con número de seguimiento" },
+  { icon: RefreshCw, titulo: "Plan canje", detalle: "tu iPhone como parte de pago" },
+];
 
 function getSpecs(product: Producto): Spec[] {
   const n = product.nombre.toLowerCase();
@@ -72,12 +78,12 @@ function getSpecs(product: Producto): Spec[] {
   else if (isPro || isProMax) video = "ProRes 4K";
 
   return [
-    { icon: Cpu,         label: "Chip",        value: chip },
-    { icon: Smartphone,  label: "Pantalla",     value: pantalla },
-    { icon: Camera,      label: "Cámara",       value: camara },
-    { icon: Clapperboard,label: "Video",        value: video },
-    { icon: Wifi,        label: "Conectividad", value: "5G + Wi-Fi 6" },
-    { icon: Fingerprint, label: "Seguridad",    value: "Face ID + SOS" },
+    { label: "Chip",         value: chip },
+    { label: "Pantalla",     value: pantalla },
+    { label: "Cámara",       value: camara },
+    { label: "Video",        value: video },
+    { label: "Conectividad", value: "5G + Wi-Fi 6" },
+    { label: "Seguridad",    value: "Face ID + SOS" },
   ];
 }
 
@@ -160,7 +166,7 @@ export default function ProductDetailContent({
 
   if (loading)
     return (
-      <div className="py-20 text-center text-gray-500 text-sm animate-pulse">
+      <div className="py-20 text-center text-tinta-suave text-sm animate-pulse motion-reduce:animate-none">
         Cargando producto...
       </div>
     );
@@ -227,51 +233,60 @@ export default function ProductDetailContent({
   const specs = getSpecs(product);
   const minPrice = (p: Producto) => Math.min(...p.variantes.map((v) => v.precio));
 
+  const sinStock = selectedVariante.stock < 1;
+  const ultimas = selectedVariante.stock > 0 && selectedVariante.stock <= 3;
+  // WhatsApp es ayuda secundaria: la venta se concreta en la web (DESIGN.md).
+  const consultaWhatsApp = linkWhatsApp(
+    `Hola, tengo una consulta sobre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}.`
+  );
+
   return (
     <>
-      {/* ─── Main content ─── */}
-      <div className="py-10 px-4 max-w-6xl mx-auto pb-28 md:pb-24">
+      <div className="mx-auto max-w-6xl px-4 pt-6 pb-28 md:pb-24 text-tinta">
+        <Breadcrumb items={[
+          { label: "Inicio", href: "/" },
+          { label: "iPhone", href: "/products" },
+          { label: product.nombre },
+        ]} />
 
-        {/* ════ TWO-COLUMN: Gallery + Info ════ */}
-        <div className="flex flex-col md:flex-row items-start gap-10 lg:gap-16">
+        <div className="flex flex-col md:flex-row md:items-start gap-8 lg:gap-12">
 
-          {/* ── GALERÍA ── */}
-          <div className="w-full md:w-1/2 flex gap-3">
+          {/* ── Galería ── */}
+          <section aria-label="Fotos" className="w-full md:w-[56%] flex gap-3">
             {galleryImages.length > 1 && (
-              <div className="hidden md:flex flex-col gap-2 flex-shrink-0">
+              <div className="hidden md:flex flex-col gap-2.5 flex-shrink-0">
                 {galleryImages.map((img, idx) => (
                   <button
                     key={idx}
-                    onMouseEnter={() => setActiveImage(img)}
+                    type="button"
                     onClick={() => setActiveImage(img)}
                     aria-label={`Ver imagen ${idx + 1} de ${product.nombre} en ${selectedVariante.color}`}
-                    className={`w-[60px] h-[60px] rounded-xl border-2 overflow-hidden transition-all bg-white ${
-                      activeImage === img
-                        ? "border-color-principal shadow-md"
-                        : "border-gray-200 hover:border-gray-400"
+                    aria-current={activeImage === img}
+                    className={`relative size-[72px] rounded-control bg-superficie overflow-hidden transition-colors ${
+                      activeImage === img ? "ring-[1.5px] ring-tinta" : "ring-1 ring-borde hover:ring-borde-fuerte"
                     }`}
                   >
-                    <div className="relative w-full h-full">
-                      <Image src={img} alt="" fill className="object-contain p-1" />
-                    </div>
+                    <Image src={img} alt="" fill sizes="72px" className="object-contain p-1.5 mix-blend-multiply" />
                   </button>
                 ))}
               </div>
             )}
 
-            <div className="flex-1 flex flex-col gap-3">
-              <div className="relative rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden aspect-square shadow-sm">
+            <div className="flex-1 min-w-0 flex flex-col gap-3">
+              <div className="relative aspect-square rounded-panel bg-superficie overflow-hidden">
                 {isRealPhoto && (
-                  <div className="absolute top-3 left-3 z-10 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide flex items-center gap-1.5">
-                    <Camera size={11} strokeWidth={2} />
+                  <span className="absolute top-4 left-4 z-10 flex items-center gap-1.5 rounded-md bg-white px-2.5 py-1 text-xs font-medium text-tinta">
+                    <Camera size={13} strokeWidth={1.75} aria-hidden="true" />
                     Foto real del equipo
-                  </div>
+                  </span>
                 )}
+                {/* mix-blend-multiply: el fondo blanco de las fotos se funde con el panel gris. */}
                 <Image
                   src={activeImage || "/placeholder.png"}
                   alt={`${product.nombre} – ${selectedVariante.color}`}
                   fill
-                  className={`object-contain p-8 transition-opacity duration-150 ${fading ? "opacity-0" : "opacity-100"}`}
+                  sizes="(min-width: 768px) 56vw, 100vw"
+                  className={`object-contain p-10 mix-blend-multiply transition-opacity duration-150 motion-reduce:transition-none ${fading ? "opacity-0" : "opacity-100"}`}
                   priority
                 />
               </div>
@@ -281,284 +296,228 @@ export default function ProductDetailContent({
                   {galleryImages.map((img, idx) => (
                     <button
                       key={idx}
+                      type="button"
                       onClick={() => setActiveImage(img)}
                       aria-label={`Ver imagen ${idx + 1} de ${product.nombre} en ${selectedVariante.color}`}
-                      className={`flex-shrink-0 w-14 h-14 rounded-xl border-2 overflow-hidden transition-all bg-white ${
-                        activeImage === img ? "border-color-principal" : "border-gray-200"
+                      aria-current={activeImage === img}
+                      className={`relative flex-shrink-0 size-16 rounded-control bg-superficie overflow-hidden ${
+                        activeImage === img ? "ring-[1.5px] ring-tinta" : "ring-1 ring-borde"
                       }`}
                     >
-                      <div className="relative w-full h-full">
-                        <Image src={img} alt="" fill className="object-contain p-1" />
-                      </div>
+                      <Image src={img} alt="" fill sizes="64px" className="object-contain p-1.5 mix-blend-multiply" />
                     </button>
                   ))}
                 </div>
               )}
             </div>
-          </div>
+          </section>
 
-          {/* ── INFO ── */}
-          <div className="w-full md:w-1/2 flex flex-col">
-            <Breadcrumb items={[
-              { label: "Inicio", href: "/" },
-              { label: "Productos", href: "/products" },
-              { label: product.nombre },
-            ]} />
-
-            <h1 className="text-3xl font-bold text-gray-900 leading-tight">{product.nombre}</h1>
-            <p className="text-gray-500 text-xs uppercase tracking-widest mt-1 mb-2">
-              {product.modelo}
-            </p>
-            <p className="text-gray-500 text-sm leading-relaxed">{product.descripcion}</p>
-
-            <div className="mt-6 pt-5 border-t border-gray-100">
-              <p className="text-4xl font-bold text-color-principal">
-                ${selectedVariante.precio.toLocaleString("es-AR")}
-              </p>
-              <div className="flex items-center gap-2 mt-2 flex-wrap">
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${selectedVariante.stock > 0 ? "bg-green-500" : "bg-red-400"}`} />
-                <span className="text-sm text-gray-500 font-medium">
-                  {selectedVariante.stock > 0
-                    ? `${selectedVariante.stock} unidad${selectedVariante.stock > 1 ? "es" : ""} disponible${selectedVariante.stock > 1 ? "s" : ""}`
-                    : "Sin stock"}
-                </span>
-                {selectedVariante.stock > 0 && selectedVariante.stock <= 3 && (
-                  <span className="bg-red-50 text-red-700 border border-red-200 text-[11px] font-bold px-2 py-0.5 rounded-full">
-                    ¡Últimas unidades!
-                  </span>
-                )}
-                {selectedVariante.esUsado && (
+          {/* ── Compra ── */}
+          <section aria-label="Comprar" className="w-full md:flex-1 min-w-0 flex flex-col gap-6">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                {selectedVariante.esUsado ? (
                   <>
-                    <span className="bg-amber-100 text-amber-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase">
-                      Usado
-                    </span>
+                    <span className="rounded-md bg-superficie px-2.5 py-1 text-xs font-semibold text-tinta">Usado</span>
                     {selectedVariante.detalleEstado && (
-                      <span className="bg-amber-50 text-amber-600 text-[11px] px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
-                        <Battery size={11} strokeWidth={2} />
+                      <span className="flex items-center gap-1 rounded-md bg-superficie px-2.5 py-1 text-xs text-tinta-suave">
+                        <Battery size={13} strokeWidth={1.75} aria-hidden="true" />
                         {selectedVariante.detalleEstado}
                       </span>
                     )}
                   </>
+                ) : (
+                  <span className="rounded-md bg-principal-suave px-2.5 py-1 text-xs font-semibold text-color-principal">
+                    Nuevo · sellado
+                  </span>
                 )}
               </div>
+              <h1 className="mt-3 text-4xl lg:text-[44px] font-semibold tracking-tight leading-[1.05]">
+                {product.nombre}
+              </h1>
+              <p className="mt-1.5 text-[15px] text-tinta-suave">
+                {selectedVariante.memoria} · {selectedVariante.color} · Modelo {product.modelo}
+              </p>
+            </div>
+
+            <div className="rounded-panel bg-superficie px-5 py-4">
+              <p className="text-[32px] font-semibold tracking-tight tabular-nums leading-tight">
+                {formatearPrecio(selectedVariante.precio)}
+              </p>
+              <p className="mt-0.5 text-sm text-tinta-suave">Pagás con MercadoPago: tarjeta, débito o transferencia.</p>
             </div>
 
             {coloresUnicos.length > 1 && (
-              <div className="mt-7">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
-                  Color —{" "}
-                  <span className="text-gray-700 normal-case font-semibold">
-                    {selectedVariante.color}
-                  </span>
-                </p>
-                <div role="group" aria-label="Color" className="flex gap-3 flex-wrap">
-                  {coloresUnicos.map((cv) => (
-                    <button
-                      key={cv.color}
-                      type="button"
-                      onClick={() => handleColorClick(cv)}
-                      title={cv.color}
-                      aria-label={`Color ${cv.color}`}
-                      aria-pressed={selectedVariante.color === cv.color}
-                      className={`w-10 h-10 rounded-full transition-all duration-200 ${
-                        selectedVariante.color === cv.color
-                          ? "ring-2 ring-color-principal ring-offset-2 scale-110 shadow-md"
-                          : `ring-1 hover:scale-105 ${needsDarkBorder(cv.color) ? "ring-gray-300" : "ring-transparent"}`
-                      }`}
-                      style={{ backgroundColor: mapColorToHex(cv.color) }}
-                    />
-                  ))}
+              <fieldset>
+                <legend className="mb-2.5 text-sm font-semibold">
+                  Color · <span className="font-normal text-tinta-suave">{selectedVariante.color}</span>
+                </legend>
+                <div className="flex flex-wrap gap-2.5">
+                  {coloresUnicos.map((cv) => {
+                    const activo = selectedVariante.color === cv.color;
+                    return (
+                      <button
+                        key={cv.color}
+                        type="button"
+                        onClick={() => handleColorClick(cv)}
+                        aria-label={cv.color}
+                        aria-pressed={activo}
+                        className={`size-11 rounded-full bg-white p-[3px] border-2 transition-colors ${
+                          activo ? "border-color-principal" : "border-borde hover:border-borde-fuerte"
+                        }`}
+                      >
+                        <span
+                          className={`block size-full rounded-full ${needsDarkBorder(cv.color) ? "ring-1 ring-inset ring-black/15" : ""}`}
+                          style={{ backgroundColor: mapColorToHex(cv.color) }}
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
+              </fieldset>
             )}
 
             {memoriasParaColor.length > 0 && (
-              <div className="mt-7">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
-                  Capacidad
-                </p>
-                <div role="group" aria-label="Capacidad" className="flex gap-2 flex-wrap">
-                  {memoriasParaColor.map((mem) => (
-                    <button
-                      key={mem}
-                      type="button"
-                      onClick={() => handleMemoriaClick(mem)}
-                      aria-pressed={selectedVariante.memoria === mem}
-                      className={`px-5 py-2 rounded-full text-sm font-bold border-2 transition-all ${
-                        selectedVariante.memoria === mem
-                          ? "bg-color-principal text-white border-color-principal shadow-md shadow-blue-900/20"
-                          : "bg-white border-gray-200 text-gray-600 hover:border-color-principal/40"
-                      }`}
-                    >
-                      {mem}
-                    </button>
-                  ))}
+              <fieldset>
+                <legend className="mb-2.5 text-sm font-semibold">Capacidad</legend>
+                <div className="grid grid-cols-3 gap-2.5">
+                  {memoriasParaColor.map((mem) => {
+                    const activo = selectedVariante.memoria === mem;
+                    return (
+                      <button
+                        key={mem}
+                        type="button"
+                        onClick={() => handleMemoriaClick(mem)}
+                        aria-pressed={activo}
+                        className={`min-h-12 rounded-control bg-white text-[15px] font-medium transition-colors ${
+                          activo ? "border-2 border-color-principal" : "border border-borde-fuerte hover:border-tinta-suave"
+                        }`}
+                      >
+                        {mem}
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
+              </fieldset>
             )}
 
-            <div className="flex items-center gap-3 mt-10">
-              <div role="group" aria-label="Cantidad" className="flex items-center border-2 border-gray-200 rounded-full select-none">
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2.5">
+                <div role="group" aria-label="Cantidad" className="flex items-center rounded-control border border-borde-fuerte select-none">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                    aria-label="Restar uno"
+                    className="size-12 flex items-center justify-center text-lg text-tinta disabled:text-borde-fuerte"
+                  >
+                    <span aria-hidden="true">−</span>
+                  </button>
+                  <span className="w-6 text-center font-semibold tabular-nums" aria-live="polite">
+                    <span className="sr-only">Cantidad: </span>
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.min(selectedVariante.stock, quantity + 1))}
+                    disabled={quantity >= selectedVariante.stock}
+                    aria-label="Sumar uno"
+                    className="size-12 flex items-center justify-center text-lg text-tinta disabled:text-borde-fuerte"
+                  >
+                    <span aria-hidden="true">+</span>
+                  </button>
+                </div>
+
                 <button
+                  ref={addBtnRef}
                   type="button"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={quantity <= 1}
-                  aria-label="Restar uno"
-                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold disabled:text-gray-300 disabled:hover:bg-transparent"
+                  onClick={handleAddToCart}
+                  disabled={sinStock}
+                  className={`flex-1 min-h-14 rounded-control text-[17px] font-semibold text-white transition-colors active:scale-[0.99] motion-reduce:active:scale-100 ${
+                    added ? "bg-exito" : "bg-color-principal hover:bg-color-principal-oscuro"
+                  } disabled:bg-borde disabled:text-tinta-suave`}
                 >
-                  <span aria-hidden="true">−</span>
-                </button>
-                <span className="w-8 text-center font-bold text-sm" aria-live="polite">
-                  <span className="sr-only">Cantidad: </span>
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(Math.min(selectedVariante.stock, quantity + 1))}
-                  disabled={quantity >= selectedVariante.stock}
-                  aria-label="Sumar uno"
-                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-lg font-bold disabled:text-gray-300 disabled:hover:bg-transparent"
-                >
-                  <span aria-hidden="true">+</span>
+                  {sinStock ? "Sin stock" : added ? "Agregado al carrito" : "Agregar al carrito"}
                 </button>
               </div>
-
-              <button
-                ref={addBtnRef}
-                onClick={handleAddToCart}
-                disabled={selectedVariante.stock < 1}
-                className={`flex-1 font-bold py-3.5 rounded-full text-sm tracking-wide transition-all ${
-                  added
-                    ? "bg-green-600 text-white shadow-lg shadow-green-700/20"
-                    : "bg-color-principal text-white shadow-lg shadow-blue-900/20 hover:bg-color-principal-oscuro active:scale-[0.98]"
-                } disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none`}
-              >
-                {added ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}
-              </button>
               <p role="status" className="sr-only">{added ? "Agregado al carrito" : ""}</p>
+
+              <p className={`text-sm ${sinStock ? "text-tinta-suave" : "text-exito"}`}>
+                {sinStock
+                  ? "Sin stock en esta combinación. Probá con otro color o capacidad."
+                  : `En stock · ${selectedVariante.stock} ${selectedVariante.stock === 1 ? "unidad" : "unidades"}${ultimas ? " · Últimas unidades" : ""}`}
+              </p>
+              <p className="text-sm text-tinta-suave">
+                ¿Tenés dudas?{" "}
+                <a
+                  href={consultaWhatsApp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-color-principal underline underline-offset-[3px] hover:text-color-principal-oscuro"
+                >
+                  Escribinos por WhatsApp
+                </a>
+              </p>
             </div>
-          </div>
+
+            <ul className="rounded-panel border border-borde divide-y divide-borde">
+              {GARANTIAS.map(({ icon: Icon, titulo, detalle }) => (
+                <li key={titulo} className="flex items-center gap-3 px-4 py-3.5 text-sm">
+                  <Icon size={20} strokeWidth={1.75} className="flex-shrink-0 text-color-principal" aria-hidden="true" />
+                  <span>
+                    <span className="font-semibold">{titulo}</span>{" "}
+                    <span className="text-tinta-suave">{detalle}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            {product.descripcion && (
+              <p className="text-[15px] leading-relaxed text-tinta-suave">{product.descripcion}</p>
+            )}
+          </section>
         </div>
 
-        {/* ════ DIVIDER ════ */}
-        <div className="mt-24 mb-0 border-t border-gray-100" />
-
-        {/* ════ SPECS GRID ════ */}
-        <section className="mt-16">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/80 mb-3">
-            Especificaciones
-          </p>
-          <h2 className="text-2xl font-bold text-gray-900 mb-10">
-            Lo que hace especial al {product.nombre}
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:gap-4">
-            {specs.map((spec) => {
-              const Icon = spec.icon;
-              return (
-                <div
-                  key={spec.label}
-                  className="group relative bg-white border border-gray-100 rounded-2xl p-5 lg:p-6 flex flex-col gap-0
-                    hover:border-color-principal/20 hover:shadow-[0_8px_32px_-4px_rgba(5,70,125,0.08)]
-                    transition-all duration-300 cursor-default overflow-hidden"
-                >
-                  {/* Subtle background accent on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-color-principal/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-
-                  {/* Icon */}
-                  <div className="w-10 h-10 rounded-xl bg-color-principal/[0.07] flex items-center justify-center mb-5
-                    group-hover:bg-color-principal/[0.12] group-hover:scale-110
-                    transition-all duration-300 ease-out origin-center relative z-10">
-                    <Icon size={18} strokeWidth={1.75} className="text-color-principal" />
-                  </div>
-
-                  {/* Label */}
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-500 mb-1.5 relative z-10">
-                    {spec.label}
-                  </p>
-
-                  {/* Value */}
-                  <p className="text-sm font-semibold text-gray-900 leading-snug relative z-10">
-                    {spec.value}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ════ TRUST STRIP ════ */}
-        <section className="mt-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden bg-white">
-            {[
-              { icon: Truck,       title: "Envío a todo el país",  sub: "Coordinamos la entrega" },
-              { icon: ShieldCheck, title: "Garantía oficial",      sub: "Equipos verificados" },
-              { icon: CreditCard,  title: "Pago 100% seguro",      sub: "Procesado por MercadoPago" },
-            ].map(({ icon: Icon, title, sub }) => (
-              <div
-                key={title}
-                className="group flex items-center gap-4 px-6 py-5 hover:bg-gray-50/80 transition-colors duration-200"
-              >
-                <div className="w-9 h-9 flex-shrink-0 rounded-xl bg-color-principal/[0.07] flex items-center justify-center
-                  group-hover:bg-color-principal/[0.12] group-hover:scale-110 transition-all duration-300">
-                  <Icon size={16} strokeWidth={1.75} className="text-color-principal" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">{title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{sub}</p>
-                </div>
+        {/* ── Especificaciones ── */}
+        <section aria-labelledby="specs" className="mt-20">
+          <h2 id="specs" className="mb-5 text-[28px] font-semibold tracking-tight">Especificaciones</h2>
+          <dl className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {specs.map((spec) => (
+              <div key={spec.label} className="rounded-panel bg-superficie p-5">
+                <dt className="text-[13px] text-tinta-suave">{spec.label}</dt>
+                <dd className="mt-1.5 text-[17px] font-medium leading-snug">{spec.value}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </section>
 
-        {/* ════ RELATED PRODUCTS ════ */}
+        {/* ── Relacionados ── */}
         {relatedProducts.length > 0 && (
-          <section className="mt-20">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-color-principal/80 mb-3">
-              Seguí explorando
-            </p>
-            <h2 className="text-2xl font-bold text-gray-900 mb-10">
-              También te puede interesar
-            </h2>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
+          <section aria-labelledby="relacionados" className="mt-20">
+            <h2 id="relacionados" className="mb-5 text-[28px] font-semibold tracking-tight">También te puede interesar</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {relatedProducts.map((p) => (
                 <Link
                   key={p.id}
                   href={`/products/${p.id}`}
-                  className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden
-                    hover:border-color-principal/20 hover:shadow-[0_8px_32px_-4px_rgba(5,70,125,0.08)]
-                    transition-all duration-300"
+                  className="group rounded-panel bg-superficie p-4 transition-colors hover:bg-borde"
                 >
-                  {/* Image */}
-                  <div className="aspect-square bg-gray-50 relative overflow-hidden">
+                  <div className="relative aspect-square">
                     {p.imagenes?.[0] && (
                       <Image
                         src={p.imagenes[0]}
-                        alt={p.nombre}
+                        alt=""
                         fill
-                        className="object-contain p-4 group-hover:scale-[1.06] transition-transform duration-500 ease-out"
+                        sizes="(min-width: 768px) 25vw, 50vw"
+                        className="object-contain p-3 mix-blend-multiply transition-transform duration-300 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                       />
                     )}
                   </div>
-
-                  {/* Info */}
-                  <div className="px-4 py-4 border-t border-gray-50">
-                    <p className="text-sm font-semibold text-gray-900 line-clamp-1 mb-1">
-                      {p.nombre}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-color-principal">
-                        Desde ${minPrice(p).toLocaleString("es-AR")}
-                      </p>
-                      <ArrowUpRight
-                        size={14}
-                        strokeWidth={2}
-                        className="text-gray-300 group-hover:text-color-principal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
+                  <p className="mt-3 text-[15px] font-semibold line-clamp-1">{p.nombre}</p>
+                  <p className="mt-0.5 flex items-center justify-between text-sm text-tinta-suave">
+                    Desde {formatearPrecio(minPrice(p))}
+                    <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" className="group-hover:text-color-principal" />
+                  </p>
                 </Link>
               ))}
             </div>
@@ -566,42 +525,41 @@ export default function ProductDetailContent({
         )}
       </div>
 
-      {/* ════ STICKY ADD BAR ════ */}
+      {/* ── Barra fija: aparece cuando el botón de agregar quedó arriba ── */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.08)]
-          transition-transform duration-300 ease-in-out
+        className={`fixed bottom-0 left-0 right-0 z-30 border-t border-borde bg-white/95 backdrop-blur-md
+          transition-transform duration-300 ease-in-out motion-reduce:transition-none
           ${showStickyBar ? "translate-y-0" : "translate-y-full"}`}
         inert={!showStickyBar}
       >
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-4">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {activeImage && (
-              <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden relative">
-                <Image src={activeImage} alt={product.nombre} fill className="object-contain p-1" />
+              <div className="relative size-11 flex-shrink-0 rounded-control bg-superficie overflow-hidden">
+                <Image src={activeImage} alt="" fill sizes="44px" className="object-contain p-1 mix-blend-multiply" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-sm font-bold text-gray-900 truncate">{product.nombre}</p>
-              <p className="text-xs text-gray-500 truncate">
-                {selectedVariante.color} · {selectedVariante.memoria}
+              <p className="text-sm font-semibold text-tinta truncate">{product.nombre}</p>
+              <p className="text-xs text-tinta-suave truncate">
+                {selectedVariante.memoria} · {selectedVariante.color}
               </p>
             </div>
           </div>
 
-          <p className="text-base font-bold text-color-principal flex-shrink-0 hidden sm:block">
-            ${selectedVariante.precio.toLocaleString("es-AR")}
+          <p className="hidden sm:block flex-shrink-0 text-base font-semibold text-tinta tabular-nums">
+            {formatearPrecio(selectedVariante.precio)}
           </p>
 
           <button
+            type="button"
             onClick={handleAddToCart}
-            disabled={selectedVariante.stock < 1}
-            className={`flex-shrink-0 font-bold px-6 py-2.5 rounded-full text-sm tracking-wide transition-all ${
-              added
-                ? "bg-green-600 text-white"
-                : "bg-color-principal text-white hover:bg-color-principal-oscuro active:scale-[0.98]"
-            } disabled:bg-gray-200 disabled:text-gray-400`}
+            disabled={sinStock}
+            className={`flex-shrink-0 min-h-11 px-5 rounded-control text-sm font-semibold text-white transition-colors ${
+              added ? "bg-exito" : "bg-color-principal hover:bg-color-principal-oscuro"
+            } disabled:bg-borde disabled:text-tinta-suave`}
           >
-            {added ? "✓ Agregado" : "Agregar al carrito"}
+            {added ? "Agregado" : "Agregar al carrito"}
           </button>
         </div>
       </div>

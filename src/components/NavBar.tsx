@@ -17,40 +17,32 @@ import { useAuthStore } from "@/store/useAuthStore";
 import DropdownItem from "./DropdownItem";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { etiquetaBotonCarrito } from "@/lib/carrito";
+import { formatearPrecio } from "@/lib/precio";
 
-// --- 1. CONFIGURACIÓN DEL MENÚ (DATA DRIVEN) ---
-const menuItems = [
+// Panel de "Productos": sólo filtros que el catálogo entiende (?estado=), nada de modelos
+// escritos a mano que pueden no estar en stock.
+const PANEL_PRODUCTOS = [
   {
-    titulo: "iPhone 15",
-    slugFamilia: "iphone-15",
-    variantes: [
-      { nombre: "Base", slugModelo: "base" },
-      { nombre: "Plus", slugModelo: "plus" },
-      { nombre: "Pro", slugModelo: "pro" },
-      { nombre: "Pro Max", slugModelo: "pro-max" },
+    titulo: "iPhone",
+    links: [
+      { label: "Todos los iPhone", href: "/products" },
+      { label: "Nuevos sellados", href: "/products?estado=nuevo" },
+      { label: "Usados", href: "/products?estado=usado" },
     ],
   },
   {
-    titulo: "iPhone 14",
-    slugFamilia: "iphone-14",
-    variantes: [
-      { nombre: "Base", slugModelo: "base" },
-      { nombre: "Pro", slugModelo: "pro" },
+    titulo: "Accesorios",
+    links: [
+      { label: "Todos los accesorios", href: "/accesorios" },
+      { label: "Comparar iPhone", href: "/compare" },
     ],
   },
-  {
-    titulo: "iPhone 13",
-    slugFamilia: "iphone-13",
-    variantes: [{ nombre: "Base", slugModelo: "base" }],
-  },
-  {
-    titulo: "iPhone 12",
-    slugFamilia: "iphone-12",
-    variantes: [
-      { nombre: "Base", slugModelo: "base" },
-      { nombre: "Mini", slugModelo: "mini" },
-    ],
-  },
+];
+
+const LINKS = [
+  { label: "Guía creadores", href: "/creadores" },
+  { label: "Nosotros", href: "/nosotros" },
+  { label: "Contacto", href: "/contacto" },
 ];
 
 export default function NavBar() {
@@ -63,7 +55,6 @@ export default function NavBar() {
   const { cart, removeFromCart, openCart } = useCart();
   const { user, logout, isLoggedIn } = useAuthStore();
 
-  // --- Scroll-aware glassmorphism ---
   const [scrolled, setScrolled] = useState(false);
   const isHome = pathname === "/";
 
@@ -113,100 +104,75 @@ export default function NavBar() {
     router.push("/");
   };
 
-  // On homepage before scroll: white text on transparent bg
-  // Otherwise (scrolled or non-home): brand color on white/glass bg
-  const isTransparent = isHome && !scrolled;
+  // En la home, antes de scrollear, la barra va sobre el video: texto y logo blancos. En el resto
+  // (o al scrollear) fondo blanco con los colores del sistema (DESIGN.md).
+  const isTransparent = isHome && !scrolled && !menuOpen;
+
+  const esActivo = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+
+  // Activo: texto pleno + una línea fina debajo. Sin píldoras de fondo.
+  const linkStyle = (href: string) =>
+    `relative px-3 py-2 text-[15px] transition-colors duration-200 after:absolute after:inset-x-3 after:-bottom-0.5 after:h-[2px] after:rounded-full ${
+      isTransparent
+        ? esActivo(href) ? "text-white after:bg-white" : "text-white/80 hover:text-white after:bg-transparent"
+        : esActivo(href) ? "text-tinta font-medium after:bg-color-principal" : "text-tinta-suave hover:text-tinta after:bg-transparent"
+    }`;
+
+  const iconoColor = isTransparent ? "text-white" : "text-tinta";
 
   const itemMenuUsuario =
-    "px-4 py-2 text-sm text-gray-700 outline-none transition flex items-center gap-2 data-[highlighted]:bg-blue-50";
+    "px-4 py-2.5 text-sm text-tinta outline-none transition flex items-center gap-2 data-[highlighted]:bg-superficie";
 
-  const linkStyle = (href: string) =>
-    `px-3 py-2 rounded-full transition-colors duration-200 ${
-      isTransparent
-        ? "text-white hover:bg-white/15"
-        : "text-color-principal hover:bg-gray-200"
-    } ${pathname === href ? "font-bold" : ""}`;
+  const itemPanel =
+    "-mx-2 block rounded-md px-2 py-1.5 text-[15px] text-tinta transition-colors hover:bg-superficie";
 
-  // --- MENÚ MÓVIL ---
+  // --- MENÚ MÓVIL: panel blanco, siempre legible ---
+  const linkMovil = (href: string) =>
+    `block rounded-control px-3 py-3 text-base transition-colors hover:bg-superficie ${
+      esActivo(href) ? "font-semibold text-color-principal" : "text-tinta"
+    }`;
+
   const mobileLinks = (
     <>
-      <Link
-        href="/"
-        className={linkStyle("/")}
-        onClick={() => setMenuOpen(false)}
-      >
-        Inicio
-      </Link>
-      <Link
-        href="/products"
-        className={linkStyle("/products")}
-        onClick={() => setMenuOpen(false)}
-      >
-        Productos
-      </Link>
-      <Link
-        href="/creadores"
-        className={linkStyle("/creadores")}
-        onClick={() => setMenuOpen(false)}
-      >
-        Guía creadores
-      </Link>
-      <Link
-        href="/contacto"
-        className={linkStyle("/contacto")}
-        onClick={() => setMenuOpen(false)}
-      >
-        Contacto
-      </Link>
+      {[{ label: "Inicio", href: "/" }, { label: "iPhone", href: "/products" }, { label: "Accesorios", href: "/accesorios" }, ...LINKS].map((l) => (
+        <Link
+          key={l.href}
+          href={l.href}
+          aria-current={esActivo(l.href) ? "page" : undefined}
+          className={linkMovil(l.href)}
+          onClick={() => setMenuOpen(false)}
+        >
+          {l.label}
+        </Link>
+      ))}
+
+      <div className="my-1 border-t border-borde" />
 
       <button
+        type="button"
         onClick={() => { openCart(); setMenuOpen(false); }}
-        className="relative px-3 py-2"
-        aria-label={etiquetaBotonCarrito(cartCount)}
+        className="flex items-center gap-3 rounded-control px-3 py-3 text-left text-base text-tinta hover:bg-superficie"
       >
-        <div className="relative inline-block">
-          <ShoppingCart
-            size={22}
-            strokeWidth={1.75}
-            className={`transition-all duration-200 ${isTransparent ? "text-white" : "text-color-principal"} ${cartBump ? "animate-cartBump" : ""}`}
-          />
-          {cartCount > 0 && (
-            <span
-              key={cartCount}
-              aria-hidden="true"
-              className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-badgePop"
-            >
-              {cartCount}
-            </span>
-          )}
-        </div>
+        <ShoppingCart size={20} strokeWidth={1.75} aria-hidden="true" />
+        Carrito{cartCount > 0 ? ` (${cartCount})` : ""}
       </button>
 
       {!isLoading && isLoggedIn && user ? (
-        <Link
-          href="/account/profile"
-          className={linkStyle("/account/profile")}
-          onClick={() => setMenuOpen(false)}
-        >
-          <UserCircle className="inline mr-1" size={18} strokeWidth={1.75} /> Mi cuenta
-        </Link>
-      ) : null}
-      {!isLoading && isLoggedIn ? (
-        <button
-          onClick={() => {
-            handleLogout();
-            setMenuOpen(false);
-          }}
-          className={`text-sm hover:underline ml-2 text-left px-3 ${isTransparent ? "text-red-300" : "text-red-600"}`}
-        >
-          Cerrar sesión
-        </button>
+        <>
+          <Link href="/account/profile" className={linkMovil("/account/profile")} onClick={() => setMenuOpen(false)}>
+            Mi cuenta
+          </Link>
+          <button
+            type="button"
+            onClick={() => { handleLogout(); setMenuOpen(false); }}
+            className="rounded-control px-3 py-3 text-left text-base text-red-700 hover:bg-superficie"
+          >
+            Cerrar sesión
+          </button>
+        </>
       ) : !isLoading ? (
-        <Link
-          href="/login"
-          className={linkStyle("/login")}
-          onClick={() => setMenuOpen(false)}
-        >
+        <Link href="/login" className={linkMovil("/login")} onClick={() => setMenuOpen(false)}>
           Iniciar sesión
         </Link>
       ) : null}
@@ -215,318 +181,248 @@ export default function NavBar() {
 
   return (
     <nav
+      aria-label="Principal"
       // En la home va fixed, encima del video de portada (transparente hasta scrollear); en el
       // resto, sticky en el flujo. Sticky en la home la dejaba arriba del hero, blanca sobre blanco.
-      className={`top-0 z-50 transition-all duration-300 ${isHome ? "fixed inset-x-0" : "sticky"} ${
-        scrolled ? "py-2 px-4 md:p-4" : "p-4"
-      } ${
+      className={`top-0 z-50 transition-colors duration-300 ${isHome ? "fixed inset-x-0" : "sticky"} ${
         isTransparent
-          ? "bg-transparent border-b border-white/10"
-          : "bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+          // Velo oscuro arriba: el video puede tener zonas claras y el texto blanco tiene que leerse.
+          ? "bg-gradient-to-b from-black/55 to-transparent"
+          : "bg-white/90 backdrop-blur-xl border-b border-borde"
       }`}
     >
-      <div className="flex justify-between items-center">
-        {/* LOGO: un solo link; cada tamaño muestra su imagen. Antes eran dos links y en desktop
-            quedaba uno vacío en el orden de tabulación. */}
-        <Link href="/" aria-label="Wave Arg – ir al inicio">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        {/* LOGO: un solo link; cada tamaño muestra su imagen. Sobre el video se pinta blanco. */}
+        <Link href="/" aria-label="Wave Arg – ir al inicio" className="flex items-center">
           <Image
             src="/waves5.svg"
             alt=""
-            width={120}
-            height={120}
-            className="hidden md:block"
+            width={112}
+            height={28}
+            className={`hidden md:block h-7 w-auto transition-[filter] duration-300 ${isTransparent ? "brightness-0 invert" : ""}`}
             priority
           />
           <Image
             src="/iso3.svg"
             alt=""
-            width={40}
-            height={40}
-            className={`md:hidden transition-all duration-300 ${scrolled ? "w-7 h-7" : "w-10 h-10"}`}
+            width={32}
+            height={32}
+            className={`md:hidden size-8 transition-[filter] duration-300 ${isTransparent ? "brightness-0 invert" : ""}`}
           />
         </Link>
 
-        {/* --- DESKTOP MENU --- */}
-        <div className="hidden md:flex items-center gap-4">
-          <Link href="/" className={linkStyle("/")}>
+        {/* --- DESKTOP --- */}
+        <div className="hidden md:flex items-center gap-1">
+          <Link href="/" aria-current={esActivo("/") ? "page" : undefined} className={linkStyle("/")}>
             Inicio
           </Link>
 
-          {/* DROPDOWN DINÁMICO */}
-          <DropdownItem title="Productos" href="/products" transparent={isTransparent}>
-            {/* AQUÍ ESTÁ EL CAMBIO CLAVE:
-                1. grid grid-cols-2: Divide en dos columnas.
-                2. min-w-[600px]: Fuerza el ancho para ocupar espacio.
-                3. gap-x-12: Separa las columnas horizontalmente.
-            */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-6 min-w-[300px] lg:min-w-[600px] px-2 py-2">
-              {menuItems.map((familia) => (
-                <div key={familia.slugFamilia} className="group">
-                  <div className="flex flex-wrap items-center gap-x-2 text-sm text-color-principal">
-                    {/* 1. Link a la Familia (NEGRITA) */}
-                    <Link
-                      href={`/products?familia=${familia.slugFamilia}`}
-                      className="font-bold uppercase hover:text-blue-600 tracking-wide whitespace-nowrap"
-                    >
-                      {familia.titulo}
-                    </Link>
-
-                    {/* Separador visual inicial */}
-                    {familia.variantes.length > 0 && (
-                      <span className="text-gray-300 font-light">/</span>
-                    )}
-
-                    {/* 2. Links a Variantes (LIGHT) */}
-                    {familia.variantes.map((variante, idx) => (
-                      <div
-                        key={variante.slugModelo}
-                        className="flex items-center gap-2"
-                      >
-                        <Link
-                          href={`/products?familia=${familia.slugFamilia}&modelo=${variante.slugModelo}`}
-                          className="font-light hover:font-bold hover:text-blue-600 transition-all whitespace-nowrap"
-                        >
-                          {variante.nombre}
-                        </Link>
-                        {/* Separador entre variantes (menos en la última) */}
-                        {idx < familia.variantes.length - 1 && (
-                          <span className="text-gray-300 font-light">/</span>
-                        )}
-                      </div>
+          <DropdownItem title="Productos" href="/products" linkClassName={linkStyle("/products")} transparent={isTransparent}>
+            <div className="grid grid-cols-2 gap-6">
+              {PANEL_PRODUCTOS.map((grupo) => (
+                <div key={grupo.titulo}>
+                  <p className="mb-2 text-[13px] text-tinta-suave">{grupo.titulo}</p>
+                  <ul className="space-y-0.5">
+                    {grupo.links.map((l) => (
+                      <li key={l.href}>
+                        <Link href={l.href} className={itemPanel}>{l.label}</Link>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               ))}
             </div>
-
-            {/* Separador y "Ver todos" */}
-            <div className="border-t mt-4 pt-3">
-              <Link
-                href="/products"
-                className="block -mx-4 px-4 py-1 text-center font-semibold text-color-principal hover:bg-gray-50 text-sm"
-              >
-                Ver todo el catálogo completo &rarr;
-              </Link>
-            </div>
           </DropdownItem>
-          {/* --- FIN DROPDOWN --- */}
 
-          <Link href="/creadores" className={linkStyle("/creadores")}>
-            Guía creadores
-          </Link>
-          <Link href="/nosotros" className={linkStyle("/nosotros")}>
-            Nosotros
-          </Link>
-          <Link href="/contacto" className={linkStyle("/contacto")}>
-            Contacto
-          </Link>
+          {LINKS.map((l) => (
+            <Link key={l.href} href={l.href} aria-current={esActivo(l.href) ? "page" : undefined} className={linkStyle(l.href)}>
+              {l.label}
+            </Link>
+          ))}
 
-          {/* Cart icon — preview al pasar el mouse; el click (o Enter) abre el drawer, que tiene lo
-              mismo y es accesible con teclado, así que el preview no se abre con foco (front#10). */}
-          <div
-            className="relative px-3 py-2"
-            onMouseEnter={() => {
-              if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
-              setCartHoverOpen(true);
-            }}
-            onMouseLeave={() => {
-              cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
-            }}
-          >
-            <button
-              onClick={openCart}
-              className="relative inline-block"
-              aria-label={etiquetaBotonCarrito(cartCount)}
+          <div className="ml-3 flex items-center gap-1">
+            {/* Carrito — preview al pasar el mouse; el click (o Enter) abre el drawer, que tiene lo
+                mismo y es accesible con teclado, así que el preview no se abre con foco (front#10). */}
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
+                setCartHoverOpen(true);
+              }}
+              onMouseLeave={() => {
+                cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
+              }}
             >
-              <ShoppingCart
-                size={22}
-                strokeWidth={1.75}
-                className={`transition-all duration-200 ${isTransparent ? "text-white" : "text-color-principal"} ${cartBump ? "animate-cartBump" : ""}`}
-              />
-              {cartCount > 0 && (
-                <span
-                  key={cartCount}
+              <button
+                type="button"
+                onClick={openCart}
+                className={`relative grid size-11 place-items-center rounded-full transition-colors ${iconoColor}`}
+                aria-label={etiquetaBotonCarrito(cartCount)}
+              >
+                <ShoppingCart
+                  size={21}
+                  strokeWidth={1.75}
                   aria-hidden="true"
-                  className="absolute -top-1 -right-1 bg-[#333] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-badgePop"
-                >
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
-            {/* CART HOVER DROPDOWN */}
-            {cartHoverOpen && (
-              <div
-                className="absolute right-0 top-full mt-1 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fadeDown"
-                onMouseEnter={() => {
-                  if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
-                }}
-                onMouseLeave={() => {
-                  cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
-                }}
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 bg-color-principal">
-                  <span className="text-white font-semibold text-sm tracking-wide">
-                    🛒 Mi Carrito
+                  className={cartBump ? "animate-cartBump" : ""}
+                />
+                {cartCount > 0 && (
+                  <span
+                    key={cartCount}
+                    aria-hidden="true"
+                    className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-color-principal px-1 text-[11px] font-semibold text-white animate-badgePop"
+                  >
+                    {cartCount}
                   </span>
-                  <span className="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {cartCount} {cartCount === 1 ? "item" : "items"}
-                  </span>
-                </div>
-
-                {/* Product list */}
-                {cart.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-gray-500 text-sm">
-                    <ShoppingCart size={28} strokeWidth={1.5} className="mx-auto mb-2 opacity-30" />
-                    Tu carrito está vacío
-                  </div>
-                ) : (
-                  <>
-                    <ul className="max-h-64 overflow-y-auto divide-y divide-gray-50">
-                      {cart.map((item) => (
-                        <li key={item.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                          {item.image ? (
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-11 h-11 rounded-xl object-cover border border-gray-100 flex-shrink-0"
-                            />
-                          ) : (
-                            <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                              <ShoppingCart size={16} strokeWidth={1.75} className="text-color-principal opacity-50" />
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              Cant: <span className="font-semibold text-gray-600">{item.quantity}</span>
-                            </p>
-                          </div>
-                          <span className="text-sm font-bold text-color-principal whitespace-nowrap">
-                            ${(item.price * item.quantity).toLocaleString("es-AR")}
-                          </span>
-                          <button
-                            onClick={() => removeFromCart(item.id)}
-                            title="Eliminar del carrito"
-                            aria-label={`Eliminar ${item.name} del carrito`}
-                            className="ml-1 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors text-base leading-none"
-                          >
-                            ×
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">Subtotal</span>
-                        <span className="text-base font-bold text-gray-900">
-                          ${cart.reduce((sum, i) => sum + i.price * i.quantity, 0).toLocaleString("es-AR")}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => { openCart(); setCartHoverOpen(false); }}
-                        className="block w-full text-center bg-color-principal hover:bg-color-principal-oscuro text-white text-sm font-semibold py-2 rounded-full transition-colors"
-                      >
-                        Ver carrito completo →
-                      </button>
-                    </div>
-                  </>
                 )}
-              </div>
-            )}
-          </div>
+              </button>
 
-          {/* USER DROPDOWN — Radix (front#10): aria-expanded/aria-haspopup, flechas, Escape y
-              click afuera. */}
-          {!isLoading && isLoggedIn && user ? (
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger
-                className={`flex items-center gap-2 px-3 py-2 rounded-full transition-colors duration-200 font-medium ${
-                  isTransparent
-                    ? "text-white hover:bg-white/15"
-                    : "text-color-principal hover:bg-gray-100"
-                }`}
-              >
-                <UserCircle size={20} strokeWidth={1.75} aria-hidden="true" />
-                <span className="text-sm">{user.email?.split("@")[0]}</span>
-                <span className="sr-only">, menú de cuenta</span>
-              </DropdownMenu.Trigger>
-
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  align="end"
-                  sideOffset={8}
-                  className="w-48 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50 focus:outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+              {cartHoverOpen && (
+                <div
+                  className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-panel border border-borde bg-white text-tinta shadow-xl shadow-black/5 animate-fadeDown"
+                  onMouseEnter={() => {
+                    if (cartCloseTimer.current) clearTimeout(cartCloseTimer.current);
+                  }}
+                  onMouseLeave={() => {
+                    cartCloseTimer.current = setTimeout(() => setCartHoverOpen(false), 120);
+                  }}
                 >
-                  <DropdownMenu.Label className="px-4 py-2 border-b border-gray-100">
-                    <span className="block text-xs text-gray-500 uppercase tracking-wide">
-                      Cuenta
+                  <div className="flex items-center justify-between border-b border-borde px-4 py-3">
+                    <span className="text-sm font-semibold">Tu carrito</span>
+                    <span className="text-[13px] text-tinta-suave">
+                      {cartCount} {cartCount === 1 ? "producto" : "productos"}
                     </span>
-                    <span className="block font-semibold text-gray-900 text-sm truncate">
-                      {user.email}
-                    </span>
-                    <span className="block text-xs text-gray-600 mt-1">
-                      Rol:{" "}
-                      <span className="font-medium uppercase">
-                        {user.rol || "Usuario"}
-                      </span>
-                    </span>
-                  </DropdownMenu.Label>
+                  </div>
 
-                  <DropdownMenu.Item asChild className={itemMenuUsuario}>
-                    <Link href="/account/profile">
-                      <UserCircle size={16} strokeWidth={1.75} aria-hidden="true" /> Mi Perfil
-                    </Link>
-                  </DropdownMenu.Item>
+                  {cart.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-tinta-suave">
+                      Tu carrito está vacío
+                    </div>
+                  ) : (
+                    <>
+                      <ul className="max-h-64 divide-y divide-borde overflow-y-auto">
+                        {cart.map((item) => (
+                          <li key={item.id} className="flex items-center gap-3 px-4 py-3">
+                            <div className="relative size-11 flex-shrink-0 overflow-hidden rounded-control bg-superficie">
+                              {item.image && (
+                                <Image src={item.image} alt="" fill sizes="44px" className="object-contain p-1 mix-blend-multiply" />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium">{item.name}</p>
+                              <p className="mt-0.5 text-xs text-tinta-suave">Cantidad: {item.quantity}</p>
+                            </div>
+                            <span className="whitespace-nowrap text-sm font-semibold tabular-nums">
+                              {formatearPrecio(item.price * item.quantity)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeFromCart(item.id)}
+                              aria-label={`Eliminar ${item.name} del carrito`}
+                              className="grid size-7 flex-shrink-0 place-items-center rounded-full text-tinta-suave transition-colors hover:bg-superficie hover:text-tinta"
+                            >
+                              <X size={14} strokeWidth={1.75} aria-hidden="true" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="border-t border-borde bg-superficie px-4 py-3">
+                        <div className="mb-3 flex items-center justify-between">
+                          <span className="text-sm text-tinta-suave">Subtotal</span>
+                          <span className="text-base font-semibold tabular-nums">
+                            {formatearPrecio(cart.reduce((sum, i) => sum + i.price * i.quantity, 0))}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => { openCart(); setCartHoverOpen(false); }}
+                          className="block min-h-11 w-full rounded-control bg-color-principal text-sm font-semibold text-white transition-colors hover:bg-color-principal-oscuro"
+                        >
+                          Ver carrito
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
-                  {user.rol?.toLowerCase() === "admin" && (
+            {/* Cuenta — Radix (front#10): aria-expanded/aria-haspopup, flechas, Escape y click afuera. */}
+            {!isLoading && isLoggedIn && user ? (
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger
+                  className={`flex min-h-11 items-center gap-2 rounded-full px-3 text-[15px] transition-colors ${
+                    isTransparent ? "text-white/80 hover:text-white" : "text-tinta-suave hover:text-tinta"
+                  }`}
+                >
+                  <UserCircle size={20} strokeWidth={1.75} aria-hidden="true" />
+                  <span>{user.email?.split("@")[0]}</span>
+                  <span className="sr-only">, menú de cuenta</span>
+                </DropdownMenu.Trigger>
+
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content
+                    align="end"
+                    sideOffset={8}
+                    className="z-50 w-56 rounded-panel border border-borde bg-white py-2 shadow-xl shadow-black/5 focus:outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+                  >
+                    <DropdownMenu.Label className="border-b border-borde px-4 pb-2.5 pt-1">
+                      <span className="block truncate text-sm font-semibold text-tinta">{user.email}</span>
+                      {user.rol?.toLowerCase() === "admin" && (
+                        <span className="text-xs text-tinta-suave">Administrador</span>
+                      )}
+                    </DropdownMenu.Label>
+
                     <DropdownMenu.Item asChild className={itemMenuUsuario}>
-                      <Link href="/admin">
-                        <Settings size={16} strokeWidth={1.75} aria-hidden="true" /> Panel Admin
+                      <Link href="/account/profile">
+                        <UserCircle size={16} strokeWidth={1.75} aria-hidden="true" /> Mi cuenta
                       </Link>
                     </DropdownMenu.Item>
-                  )}
 
-                  <DropdownMenu.Item
-                    onSelect={handleLogout}
-                    className="w-full cursor-pointer px-4 py-2 text-sm text-red-600 outline-none transition flex items-center gap-2 data-[highlighted]:bg-red-50"
-                  >
-                    <LogOut size={16} strokeWidth={1.75} aria-hidden="true" /> Cerrar Sesión
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          ) : !isLoading ? (
-            <Link href="/login" className={linkStyle("/login")}>
-              Iniciar sesión
-            </Link>
-          ) : null}
+                    {user.rol?.toLowerCase() === "admin" && (
+                      <DropdownMenu.Item asChild className={itemMenuUsuario}>
+                        <Link href="/admin">
+                          <Settings size={16} strokeWidth={1.75} aria-hidden="true" /> Panel admin
+                        </Link>
+                      </DropdownMenu.Item>
+                    )}
+
+                    <DropdownMenu.Item
+                      onSelect={handleLogout}
+                      className="flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm text-red-700 outline-none transition data-[highlighted]:bg-red-50"
+                    >
+                      <LogOut size={16} strokeWidth={1.75} aria-hidden="true" /> Cerrar sesión
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
+            ) : !isLoading ? (
+              <Link href="/login" aria-current={esActivo("/login") ? "page" : undefined} className={linkStyle("/login")}>
+                Iniciar sesión
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         {/* TOGGLE MÓVIL */}
         <button
           ref={toggleMovilRef}
           type="button"
-          className={`md:hidden transition-colors duration-200 ${isTransparent ? "text-white" : "text-color-principal"}`}
+          className={`grid size-11 place-items-center md:hidden transition-colors duration-200 ${iconoColor}`}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           aria-label="Menú de navegación"
         >
-          {menuOpen ? <X size={24} strokeWidth={1.75} /> : <Menu size={24} strokeWidth={1.75} />}
+          {menuOpen ? <X size={24} strokeWidth={1.75} aria-hidden="true" /> : <Menu size={24} strokeWidth={1.75} aria-hidden="true" />}
         </button>
       </div>
 
       {/* MENÚ MÓVIL DESPLEGABLE */}
       {menuOpen && (
-        <div
-          id="mobile-menu"
-          className={`flex flex-col gap-2 mt-3 md:hidden px-2 pb-2 animate-slideDown rounded-xl ${
-            isTransparent ? "bg-black/40 backdrop-blur-xl" : ""
-          }`}
-        >
-          {mobileLinks}
+        <div id="mobile-menu" className="px-4 pb-4 md:hidden">
+          <div className="flex flex-col rounded-panel border border-borde bg-white p-2 shadow-xl shadow-black/5 animate-slideDown motion-reduce:animate-none">
+            {mobileLinks}
+          </div>
         </div>
       )}
     </nav>

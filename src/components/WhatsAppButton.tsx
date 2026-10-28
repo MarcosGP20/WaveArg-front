@@ -1,20 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
+import { linkWhatsApp } from "@/lib/whatsapp";
 
-const WA_URL = "https://wa.me/5492262586880?text=Hola%2C%20me%20interesa%20saber%20m%C3%A1s%20sobre%20los%20productos%20de%20Wave%20Arg.";
+const WA_URL = linkWhatsApp("Hola, me interesa saber más sobre los productos de Wave Arg.");
+
+// En las pantallas de compra el aviso no aparece solo: la venta se concreta en la web y el globo
+// tapaba la ficha (DESIGN.md). El botón sigue disponible.
+function esPantallaDeCompra(pathname: string): boolean {
+  return /^\/(products|accesorios)\/[^/]+/.test(pathname) || pathname.startsWith("/cart") || pathname.startsWith("/checkout");
+}
 
 export default function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(false);
+  const pathname = usePathname();
 
   // Mostrar el tooltip automáticamente a los 4 segundos, sólo desde sm: en mobile tapaba los
   // botones del hero y no hay lugar libre en la pantalla para un globo flotante.
   useEffect(() => {
+    if (esPantallaDeCompra(pathname)) {
+      setShowTooltip(false);
+      return;
+    }
     if (!matchMedia("(min-width: 640px)").matches) return;
     const timer = setTimeout(() => setShowTooltip(true), 4000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [pathname]);
 
   return (
     <aside aria-label="Contacto por WhatsApp" className="fixed bottom-[calc(1.5rem+var(--barra-inferior,0px))] right-6 z-50 flex flex-col items-end gap-2 transition-[bottom] duration-300 motion-reduce:transition-none">

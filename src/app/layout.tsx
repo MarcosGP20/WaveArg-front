@@ -1,23 +1,16 @@
 // src/app/layout.tsx — único lugar con <html> y <body>
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible } from "next/font/google";
-import { Work_Sans } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import { GoogleProvider } from "@/components/GoogleProvider";
 import PuertaMantenimiento from "@/components/PuertaMantenimiento";
 import { EstadoProvider } from "@/context/EstadoContext";
 import { obtenerEstado } from "@/lib/estado";
 
-const atkinson = Atkinson_Hyperlegible({
+// Tipografía única del sitio (DESIGN.md).
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-atkinson",
-  weight: ["400", "700"],
-});
-
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  variable: "--font-work-sans",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-geist",
 });
 
 export const metadata: Metadata = {
@@ -46,7 +39,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${atkinson.variable} ${workSans.variable} overflow-x-hidden`}>
+      <body className={`${geist.variable} font-sans antialiased overflow-x-hidden`}>
         <EstadoProvider estado={estado}>
           <GoogleProvider>
             <PuertaMantenimiento>{children}</PuertaMantenimiento>
