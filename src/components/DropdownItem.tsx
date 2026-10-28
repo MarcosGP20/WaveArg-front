@@ -9,6 +9,8 @@ type DropdownItemProps = {
   title: string;
   href: string;
   children: React.ReactNode;
+  /** Clases del link, las mismas que el resto de la NavBar (color según fondo y estado activo). */
+  linkClassName: string;
   transparent?: boolean;
 };
 
@@ -16,7 +18,7 @@ type DropdownItemProps = {
 // menú de acciones, así que sigue el patrón "disclosure" de la APG (front#10): el botón tiene
 // aria-expanded y aria-controls (aria-haspopup anunciaría un role="menu" que no hay), y el
 // panel cierra con Escape (el foco vuelve al botón) y con un click afuera.
-const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, transparent = false }) => {
+const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, linkClassName, transparent = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const raizRef = useRef<HTMLDivElement>(null);
@@ -59,16 +61,9 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, tran
   useEffect(() => setIsOpen(false), [pathname]);
 
   return (
-    <div ref={raizRef} onMouseEnter={open} onMouseLeave={scheduleClose}>
+    <div ref={raizRef} className="relative" onMouseEnter={open} onMouseLeave={scheduleClose}>
       <div className="flex items-center">
-        <Link
-          href={href}
-          className={`px-3 py-2 rounded-full transition-colors duration-200 ${
-            transparent
-              ? "text-white hover:bg-white/15"
-              : "text-color-principal hover:bg-gray-200"
-          } ${isActive ? "font-bold" : ""}`}
-        >
+        <Link href={href} aria-current={isActive ? "page" : undefined} className={linkClassName}>
           {title}
         </Link>
         <button
@@ -78,30 +73,33 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, tran
           aria-expanded={isOpen}
           aria-controls={panelId}
           aria-label={`Más opciones de ${title}`}
-          className={`p-1.5 rounded-full transition-colors duration-200 ${
-            transparent
-              ? "text-white hover:bg-white/15"
-              : "text-color-principal hover:bg-gray-200"
+          className={`-ml-1 size-8 grid place-items-center rounded-md transition-colors duration-200 ${
+            transparent ? "text-white/80 hover:text-white" : "text-tinta-suave hover:text-tinta"
           }`}
         >
           <ChevronDown
             size={16}
+            strokeWidth={1.75}
             aria-hidden="true"
-            className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+            className={`transition-transform duration-200 motion-reduce:transition-none ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
       </div>
 
+      {/* Panel compacto debajo del botón (antes una franja blanca de todo el ancho que cortaba el
+          hero). El pt-2 es un puente invisible para que el mouse no lo cierre al bajar. */}
       <div
         id={panelId}
         hidden={!isOpen}
-        className="absolute inset-x-0 top-full w-screen z-30 bg-white shadow-xl border-b"
+        className="absolute left-1/2 top-full z-30 -translate-x-1/2 pt-2"
         onMouseEnter={() => {
           if (timerRef.current) clearTimeout(timerRef.current);
         }}
         onMouseLeave={scheduleClose}
       >
-        <div className="mx-auto flex flex-col p-4">{children}</div>
+        <div className="w-[420px] rounded-panel border border-borde bg-white p-5 text-tinta shadow-xl shadow-black/5">
+          {children}
+        </div>
       </div>
     </div>
   );
