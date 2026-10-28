@@ -31,8 +31,12 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Estado antes de leer localStorage. Se compara por referencia para no guardarlo: en dev,
+// StrictMode monta los efectos dos veces y el segundo leía el [] que había escrito el primero.
+const SIN_HIDRATAR: CartItem[] = [];
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(SIN_HIDRATAR);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
@@ -47,6 +51,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    if (cart === SIN_HIDRATAR) return;
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 

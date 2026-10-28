@@ -1,21 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, MessageCircle } from "lucide-react";
+import { X } from "lucide-react";
 
 const WA_URL = "https://wa.me/5492262586880?text=Hola%2C%20me%20interesa%20saber%20m%C3%A1s%20sobre%20los%20productos%20de%20Wave%20Arg.";
 
 export default function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Mostrar el tooltip automáticamente a los 4 segundos
+  // Mostrar el tooltip automáticamente a los 4 segundos, sólo desde sm: en mobile tapaba los
+  // botones del hero y no hay lugar libre en la pantalla para un globo flotante.
   useEffect(() => {
+    if (!matchMedia("(min-width: 640px)").matches) return;
     const timer = setTimeout(() => setShowTooltip(true), 4000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <aside aria-label="Contacto por WhatsApp" className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+    <aside aria-label="Contacto por WhatsApp" className="fixed bottom-[calc(1.5rem+var(--barra-inferior,0px))] right-6 z-50 flex flex-col items-end gap-2 transition-[bottom] duration-300 motion-reduce:transition-none">
       {/* Tooltip */}
       {showTooltip && (
         <div className="relative bg-white rounded-2xl shadow-xl border border-gray-100 px-4 py-3 max-w-[220px] animate-fadeup">
