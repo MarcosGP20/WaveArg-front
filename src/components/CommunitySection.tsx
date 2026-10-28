@@ -24,7 +24,8 @@ export default function CommunitySection() {
         {/* 4. Aplicamos la animación al div que contiene la imagen y el texto */}
         <m.div
           style={{ scale, opacity }}
-          className="relative rounded-2xl overflow-hidden shadow-2xl min-h-[700px] flex items-center"
+          // Con reduced-motion, quieta y visible (ver ParallaxReveal).
+          className="relative rounded-2xl overflow-hidden shadow-2xl min-h-[700px] flex items-center motion-reduce:opacity-100! motion-reduce:[transform:none]!"
         >
           <Image
             src="/celu-wave-perfil-ig.webp"

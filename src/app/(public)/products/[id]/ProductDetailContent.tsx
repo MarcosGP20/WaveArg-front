@@ -137,12 +137,26 @@ export default function ProductDetailContent({
     const el = addBtnRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
+      // Sólo cuando el botón quedó arriba de la pantalla: si está abajo (en mobile, al cargar)
+      // la barra tapaba el precio sin que hiciera falta. El root se extiende hacia abajo para que
+      // "abajo de la pantalla" cuente como visible; así un scroll rápido que salta el botón
+      // también cambia el estado y dispara el observer.
       ([entry]) => setShowStickyBar(!entry.isIntersecting),
-      { threshold: 0 }
+      { threshold: 0, rootMargin: "0px 0px 100000px 0px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, [product, selectedVariante]);
+
+  // Con la barra visible, el botón de WhatsApp sube para no taparla (ver WhatsAppButton).
+  useEffect(() => {
+    const raiz = document.documentElement.style;
+    if (showStickyBar) raiz.setProperty("--barra-inferior", "4.5rem");
+    else raiz.removeProperty("--barra-inferior");
+    return () => {
+      raiz.removeProperty("--barra-inferior");
+    };
+  }, [showStickyBar]);
 
   if (loading)
     return (
@@ -216,7 +230,7 @@ export default function ProductDetailContent({
   return (
     <>
       {/* ─── Main content ─── */}
-      <div className="py-10 px-4 max-w-6xl mx-auto pb-28 md:pb-16">
+      <div className="py-10 px-4 max-w-6xl mx-auto pb-28 md:pb-24">
 
         {/* ════ TWO-COLUMN: Gallery + Info ════ */}
         <div className="flex flex-col md:flex-row items-start gap-10 lg:gap-16">
