@@ -5,162 +5,112 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
+  {
+    pregunta: "¿Los iPhones son nuevos o usados?",
+    respuesta: (
+      <>
+        <p>
+          Todos los iPhones que vendemos son <strong>originales Apple</strong>, y pueden ser{" "}
+          <strong>nuevos sellados</strong> o <strong>reacondicionados</strong> según el modelo.
+        </p>
+        <p>En cada publicación lo indicamos claramente: estado, capacidad, color y garantía.</p>
+      </>
+    ),
+  },
+  {
+    pregunta: "¿Qué significa que un iPhone sea reacondicionado?",
+    respuesta: (
+      <>
+        <p>
+          Es <strong>un equipo original Apple que fue revisado, testeado y garantizado</strong>. Pasa por un
+          control técnico completo: batería, cámara, pantalla, carcasa y software.
+        </p>
+        <p>
+          En Wave solo publicamos equipos que cumplen <strong>100% con los estándares de calidad</strong> y
+          funcionan como nuevos.
+        </p>
+      </>
+    ),
+  },
+  {
+    pregunta: "¿Hacen envíos a todo el país?",
+    respuesta: (
+      <>
+        <p>
+          Sí. Enviamos a <strong>todas las provincias de Argentina</strong> con correo asegurado. Cada envío se
+          despacha en 24/48 hs hábiles y llega con número de seguimiento.
+        </p>
+        <p>También podés retirar personalmente en nuestros puntos habilitados si estás en Buenos Aires.</p>
+      </>
+    ),
+  },
+  {
+    pregunta: "¿Qué medios de pago aceptan?",
+    respuesta: (
+      <>
+        <p>
+          Podés pagar con <strong>tarjeta de crédito o débito, transferencia bancaria</strong> (con descuento) o{" "}
+          <strong>Mercado Pago</strong>. En cuotas, el interés depende del banco o la promoción vigente.
+        </p>
+        <p>
+          También aceptamos <strong>plan canje</strong>, donde entregás tu iPhone usado como parte de pago.
+        </p>
+      </>
+    ),
+  },
+  {
+    pregunta: "¿Cómo funciona el plan canje?",
+    respuesta: (
+      <>
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>Nos mandás las fotos y el modelo de tu iPhone actual.</li>
+          <li>Te hacemos una cotización real según el estado y el almacenamiento.</li>
+          <li>
+            Usás ese monto para <strong>ahorrar en tu nuevo iPhone Wave</strong>.
+          </li>
+        </ol>
+        <p>Sin vueltas ni valuaciones infladas. Te decimos lo que vale, de verdad.</p>
+      </>
+    ),
+  },
+  {
+    pregunta: "¿Tienen garantía?",
+    respuesta: (
+      <>
+        <p>
+          Sí. Todos nuestros equipos incluyen <strong>garantía de 3 meses</strong> contra fallas de fábrica. Los
+          iPhones nuevos sellados cuentan además con la <strong>garantía oficial de Apple</strong>.
+        </p>
+        <p>
+          Ante cualquier inconveniente técnico, nos contactás directamente y lo resolvemos. No desaparecemos
+          después de la venta: <strong>damos la cara siempre.</strong>
+        </p>
+      </>
+    ),
+  },
+];
+
 export default function FAQSection() {
   return (
-    <>
-      <h2 className="mt-14 text-3xl text-color-principal font-bold text-center px-4">
-        Preguntas frecuentes
-      </h2>
-      <div className="w-full flex justify-center items-center py-10 px-4">
-        <Accordion
-          type="single"
-          collapsible
-          className="w-full max-w-3xl"
-          defaultValue="item-1"
-        >
-          <AccordionItem
-            className="border-b-0 border-gray-300 rounded-xl shadow-md overflow-hidden"
-            value="item-1"
-          >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-xl shadow-md overflow-hidden">
-              ¿Los iPhones son nuevos o usados?
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-color-principal text-lg">
-              <p>
-                Todos los iPhones que vendemos son{" "}
-                <span className="font-semibold">originales Apple</span>, y
-                pueden ser{" "}
-                <span className="font-semibold">nuevos sellados</span> o
-                <span className="font-semibold">reacondicionados</span> según el
-                modelo
-              </p>
-              <p>
-                En cada publicación lo indicamos claramente: estado, capacidad,
-                color y garantía
-              </p>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem
-            className="border-b-0 border-gray-300 rounded-xl shadow-md overflow-hidden"
-            value="item-2"
-          >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-xl shadow-md overflow-hidden">
-              ¿Qué signfica que un iPhone sea reacondicionado?
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
-              <p>
-                Un iPhone reacondicionado es{" "}
-                <span className="font-semibold">
-                  un equipo original Apple que fue revisado, testeado y
-                  garantizado.
-                </span>
-              </p>
-
-              <p>
-                Pasa por un control técnico completo: batería, cámara, pantalla,
-                carcasa y software.
-              </p>
-              <p>
-                En WAVE solo publicamos equipos que cumplen
-                <span className="font-semibold">
-                  100% con los estándares de calidad
-                </span>
-                y funcionan como nuevos.
-              </p>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem
-            className="border-b-0 border-gray-300 rounded-xl shadow-md overflow-hidden"
-            value="item-3"
-          >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-xl shadow-md overflow-hidden">
-              ¿Hacen envíos a todo el país?
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
-              <p>
-                Sí. Enviamos a{" "}
-                <span className="font-semibold">
-                  todas las provincias de Argentina
-                </span>
-                con correo asegurado. Cada envío se despacha en 24/48 hs hábiles
-                y llega con número de seguimiento.
-              </p>
-              <p>
-                También podés retirar personalmente en nuestros puntos
-                habilitados si estás en Buenos Aires.
-              </p>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem
-            className="border-b-0 border-gray-300 rounded-xl shadow-md overflow-hidden"
-            value="item-4"
-          >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left text-color-principal hover:bg-gray-200 hover:no-underline rounded-xl shadow-md overflow-hidden">
-              ¿Qué medios de pago aceptan?
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
-              <p>
-                Podés pagar con
-                <span className="font-semibold">
-                  tarjeta de crédito o débito, transferencia bancaria
-                </span>
-                (con descuento) o
-                <span className="font-semibold"> Mercado Pago.</span>
-              </p>
-              <p>
-                En cuotas, el interés depende del banco o la promoción vigente.
-                También aceptamos
-                <span className="font-semibold">plan canje</span>, donde
-                entregás tu iPhone usado como parte de pago.
-              </p>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem
-            className="border-b-0 border-gray-300 rounded-xl shadow-md overflow-hidden"
-            value="item-5"
-          >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-color-principal hover:bg-gray-200 hover:no-underline rounded-xl shadow-md overflow-hidden">
-              ¿Cómo funciona el plan canje?
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4  text-color-principal text-lg">
-              El plan canje es simple: <br /> 1-Nos mandás las fotos y el modelo
-              de tu iPhone actual. <br />
-              2- Te hacemos una cotización real según el estado y el
-              almacenamiento. <br />
-              3-Podés usar ese monto para{" "}
-              <span className="font-semibold">
-                ahorrar en tu nuevo iPhone WAVE.
-              </span>{" "}
-              Sin vueltas ni valuaciones infladas. Te decimos lo que vale, de
-              verdad.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem
-            className="border-b-0 border-gray-300 rounded-xl shadow-md overflow-hidden"
-            value="item-6"
-          >
-            <AccordionTrigger className="font-semibold text-xl px-4 py-5 text-left  text-color-principal hover:bg-gray-200 hover:no-underline rounded-xl shadow-md overflow-hidden">
-              🧾 ¿Tienen garantía?
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance p-4 text-color-principal text-lg">
-              <p>
-                Sí. Todos nuestros equipos incluyen{" "}
-                <span className="font-semibold">garantía de 3 meses</span> contra
-                fallas de fábrica. Los iPhones nuevos sellados cuentan además con
-                la{" "}
-                <span className="font-semibold">garantía oficial de Apple</span>.
-              </p>
-              <p>
-                En caso de cualquier inconveniente técnico, nos contactás
-                directamente y lo resolvemos. No desaparecemos después de la
-                venta:{" "}
-                <span className="font-semibold">damos la cara siempre.</span>
-              </p>
-            </AccordionContent>
-          </AccordionItem>
+    <section aria-labelledby="faq" className="mx-auto max-w-6xl px-4 pt-32 md:pt-36">
+      <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
+        <h2 id="faq" className="revelar text-5xl md:text-7xl font-semibold tracking-[-0.045em] leading-[0.98]">
+          Preguntas frecuentes
+        </h2>
+        <Accordion type="single" collapsible className="border-t border-borde">
+          {PREGUNTAS.map(({ pregunta, respuesta }, i) => (
+            <AccordionItem key={pregunta} value={`item-${i}`} className="border-b border-borde">
+              <AccordionTrigger className="py-6 text-left text-xl font-medium text-tinta hover:no-underline">
+                {pregunta}
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-3 pb-6 text-[17px] leading-relaxed text-tinta-suave [&_strong]:font-semibold [&_strong]:text-tinta">
+                {respuesta}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
         </Accordion>
       </div>
-    </>
+    </section>
   );
 }

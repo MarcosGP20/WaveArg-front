@@ -22,6 +22,10 @@ Wave reservado para lo que importa. La confianza la da la claridad, no la decora
 | `color-principal` | `#05467D` | Acción principal, selección, links |
 | `principal-suave` | `#E8F0F7` | Fondo de badges de marca |
 | `exito` | `#1F6B3A` | Stock disponible |
+| `noche` | `#0B0B0C` | Fondo de secciones oscuras (hero y cierre de la home) |
+| `noche-2` | `#1C1C1E` | Superficies sobre `noche` (tarjeta de compra, palabra gigante) |
+| `noche-borde` | `#2C2C2E` | Bordes sobre `noche` |
+| `niebla` | `#A1A1A6` | Texto secundario sobre `noche` (8:1) |
 | `radius-control` | `12px` | Botones, inputs, opciones |
 | `radius-panel` | `20px` | Paneles y tarjetas |
 
@@ -56,6 +60,16 @@ No se usan hex sueltos en componentes nuevos: si falta un color, se agrega acá 
 
 Transiciones de 150–250ms en estados (hover, selección). Nada que tape contenido mientras anima.
 Todo respeta `prefers-reduced-motion`.
+
+El movimiento atado al scroll es **CSS** (`animation-timeline: view()`), no JS: clases `.revelar`
+(entrada de títulos y bloques) y `.hero-pulso-*` en `globals.css`. El estado base es el final, así
+que sin soporte del navegador o con reduced-motion todo se ve quieto y completo.
+
+## Home "Pulso"
+
+Hero oscuro con la palabra "iPhone" gigante detrás del equipo y una tarjeta de compra real (stock,
+precio, agregar al carrito): se puede comprar sin pasar por el catálogo. Títulos de sección grandes
+(72px, tracking muy cerrado), bloques de `rounded-[32px]` y rieles horizontales con scroll-snap.
 
 ## Accesibilidad
 

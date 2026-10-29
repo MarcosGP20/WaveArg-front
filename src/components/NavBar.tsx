@@ -199,7 +199,7 @@ export default function NavBar() {
             alt=""
             width={112}
             height={28}
-            className={`hidden md:block h-7 w-auto transition-[filter] duration-300 ${isTransparent ? "brightness-0 invert" : ""}`}
+            className={`hidden md:block transition-[filter] duration-300 ${isTransparent ? "brightness-0 invert" : ""}`}
             priority
           />
           <Image

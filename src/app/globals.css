@@ -31,6 +31,11 @@
   --color-borde-fuerte: #D2D2D7;
   --color-principal-suave: #E8F0F7;
   --color-exito: #1F6B3A;
+  /* Secciones oscuras (hero y cierre de la home). niebla: texto secundario, 8:1 sobre noche. */
+  --color-noche: #0B0B0C;
+  --color-noche-2: #1C1C1E;
+  --color-noche-borde: #2C2C2E;
+  --color-niebla: #A1A1A6;
   --radius-control: 12px;
   --radius-panel: 20px;
 
@@ -267,5 +272,54 @@
     outline: 2px solid #2563eb;
     outline-offset: 2px;
     box-shadow: 0 0 0 2px #fff;
+  }
+}
+
+/* ── Home "Pulso": movimiento atado al scroll (DESIGN.md) ─────────────────────────────────────
+   CSS puro (animation-timeline): no corre JS ni depende de la hidratación. Sin soporte del
+   navegador o con prefers-reduced-motion todo queda quieto y visible: el estado base es el final. */
+
+@keyframes hero-pulso-entra {
+  from { opacity: 0; transform: translateY(48px) scale(0.94); }
+}
+@keyframes hero-pulso-telefono {
+  to { transform: translateY(18vh) scale(1.18) rotate(6deg); }
+}
+@keyframes hero-pulso-palabra {
+  to { transform: translateX(-18%); }
+}
+@keyframes hero-pulso-texto {
+  to { opacity: 0; transform: translateY(-40px); }
+}
+@keyframes revelar {
+  from { opacity: 0; transform: translateY(40px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-pulso-entra {
+    animation: hero-pulso-entra 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .hero-pulso {
+      view-timeline-name: --hero-pulso;
+    }
+    .hero-pulso-telefono,
+    .hero-pulso-palabra,
+    .hero-pulso-texto {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --hero-pulso;
+      animation-range: exit 0% exit 100%;
+    }
+    .hero-pulso-telefono { animation-name: hero-pulso-telefono; }
+    .hero-pulso-palabra { animation-name: hero-pulso-palabra; }
+    .hero-pulso-texto { animation-name: hero-pulso-texto; animation-range: exit 0% exit 60%; }
+
+    .revelar {
+      animation: revelar linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
   }
 }
