@@ -11,6 +11,14 @@ import { useCart } from "@/context/CartContext";
 import Breadcrumb from "@/components/Breadcrumb";
 import { formatearPrecio } from "@/lib/precio";
 import { linkWhatsApp } from "@/lib/whatsapp";
+import {
+  capacidadesDelColor,
+  coloresDelEstado,
+  estadosDisponibles,
+  resolverVariante,
+  varianteInicial,
+  type Eleccion,
+} from "@/lib/configurador";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
@@ -91,8 +99,11 @@ function getSpecs(product: Producto): Spec[] {
 
 export default function ProductDetailContent({
   params,
+  varianteDelLink,
 }: {
   params: Promise<{ id: string }>;
+  /** ?v= del link: la configuración que alguien compartió. */
+  varianteDelLink?: string;
 }) {
   const { id } = use(params);
   const { addToCart, openCart } = useCart();
@@ -108,6 +119,11 @@ export default function ProductDetailContent({
   const [showStickyBar, setShowStickyBar]   = useState(false);
 
   const addBtnRef = useRef<HTMLButtonElement>(null);
+  const fadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (fadeRef.current) clearTimeout(fadeRef.current);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -115,7 +131,7 @@ export default function ProductDetailContent({
         const data = await getProductoById(id);
         setProduct(data);
         if (data.variantes?.length) {
-          const primera = data.variantes.find((v) => !v.esUsado) ?? data.variantes[0];
+          const primera = varianteInicial(data.variantes, varianteDelLink) ?? data.variantes[0];
           setSelectedVariante(primera);
           setActiveImage(primera.fotoEstadoUrl ?? data.imagenes?.[0] ?? null);
         }
@@ -126,7 +142,7 @@ export default function ProductDetailContent({
       }
     }
     load();
-  }, [id]);
+  }, [id, varianteDelLink]);
 
   useEffect(() => {
     if (!product) return;
@@ -172,43 +188,38 @@ export default function ProductDetailContent({
     );
   if (!product || !selectedVariante) return notFound();
 
-  const coloresUnicos: Variante[] = Array.from(
-    new Map(product.variantes.map((v) => [v.color, v])).values()
-  );
-
   const galleryImages = getGalleryImages(product, selectedVariante);
 
-  const memoriasParaColor = [
-    ...new Set(
-      product.variantes
-        .filter((v) => v.color === selectedVariante.color)
-        .map((v) => v.memoria)
-    ),
-  ];
+  // Configurador: estado → color → capacidad. Lo que no hay se ve deshabilitado, no se oculta.
+  const estados = estadosDisponibles(product.variantes);
+  const colores = coloresDelEstado(product.variantes, selectedVariante.esUsado);
+  const capacidades = capacidadesDelColor(product.variantes, selectedVariante.esUsado, selectedVariante.color);
 
   const switchVariante = (next: Variante) => {
     if (next.id === selectedVariante.id) return;
+    // La elección queda en el link (?v=) para poder compartir la configuración exacta.
+    window.history.replaceState(null, "", `?v=${next.id}`);
+    // Un cambio nuevo cancela el fade anterior: si no, un clic rápido dejaba la variante vieja.
+    if (fadeRef.current) clearTimeout(fadeRef.current);
     setFading(true);
-    setTimeout(() => {
+    fadeRef.current = setTimeout(() => {
       setSelectedVariante(next);
       setActiveImage(getGalleryImages(product, next)[0] ?? null);
       setFading(false);
     }, 150);
   };
 
-  const handleColorClick = (cv: Variante) => {
-    const match =
-      product.variantes.find(
-        (v) => v.color === cv.color && v.memoria === selectedVariante.memoria
-      ) ?? cv;
-    switchVariante(match);
-  };
-
-  const handleMemoriaClick = (mem: string) => {
-    const match = product.variantes.find(
-      (v) => v.memoria === mem && v.color === selectedVariante.color
-    );
-    if (match) switchVariante(match);
+  const elegir = (cambio: Partial<Eleccion>) => {
+    const next = resolverVariante(product.variantes, {
+      esUsado: selectedVariante.esUsado,
+      color: selectedVariante.color,
+      memoria: selectedVariante.memoria,
+      ...cambio,
+    });
+    if (next) {
+      setQuantity(1);
+      switchVariante(next);
+    }
   };
 
   const handleAddToCart = () => {
@@ -235,9 +246,13 @@ export default function ProductDetailContent({
 
   const sinStock = selectedVariante.stock < 1;
   const ultimas = selectedVariante.stock > 0 && selectedVariante.stock <= 3;
-  // WhatsApp es ayuda secundaria: la venta se concreta en la web (DESIGN.md).
+  // WhatsApp es ayuda secundaria: la venta se concreta en la web (DESIGN.md). El mensaje lleva la
+  // configuración, el precio y el link, así quien atiende ve el mismo equipo sin preguntar.
+  const estadoTexto = selectedVariante.esUsado ? "usado" : "nuevo sellado";
+  const linkFicha = typeof window !== "undefined" ? ` ${window.location.origin}/products/${product.id}?v=${selectedVariante.id}` : "";
   const consultaWhatsApp = linkWhatsApp(
-    `Hola, tengo una consulta sobre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}.`
+    `Hola, tengo una consulta sobre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}, ` +
+      `${estadoTexto}, a ${formatearPrecio(selectedVariante.precio)}.${linkFicha}`
   );
 
   return (
@@ -347,29 +362,26 @@ export default function ProductDetailContent({
               <p className="mt-0.5 text-sm text-tinta-suave">Pagás con MercadoPago: tarjeta, débito o transferencia.</p>
             </div>
 
-            {coloresUnicos.length > 1 && (
+            {estados.length > 1 && (
               <fieldset>
-                <legend className="mb-2.5 text-sm font-semibold">
-                  Color · <span className="font-normal text-tinta-suave">{selectedVariante.color}</span>
-                </legend>
-                <div className="flex flex-wrap gap-2.5">
-                  {coloresUnicos.map((cv) => {
-                    const activo = selectedVariante.color === cv.color;
+                <legend className="mb-2.5 text-sm font-semibold">Estado</legend>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {estados.map(({ esUsado, desde, hayStock }) => {
+                    const activo = selectedVariante.esUsado === esUsado;
                     return (
                       <button
-                        key={cv.color}
+                        key={String(esUsado)}
                         type="button"
-                        onClick={() => handleColorClick(cv)}
-                        aria-label={cv.color}
+                        onClick={() => elegir({ esUsado })}
                         aria-pressed={activo}
-                        className={`size-11 rounded-full bg-white p-[3px] border-2 transition-colors ${
-                          activo ? "border-color-principal" : "border-borde hover:border-borde-fuerte"
+                        className={`flex min-h-16 flex-col items-start justify-center rounded-control bg-white px-4 py-2.5 text-left transition-colors ${
+                          activo ? "border-2 border-color-principal" : "border border-borde-fuerte hover:border-tinta-suave"
                         }`}
                       >
-                        <span
-                          className={`block size-full rounded-full ${needsDarkBorder(cv.color) ? "ring-1 ring-inset ring-black/15" : ""}`}
-                          style={{ backgroundColor: mapColorToHex(cv.color) }}
-                        />
+                        <span className="text-[15px] font-medium">{esUsado ? "Usado" : "Nuevo sellado"}</span>
+                        <span className="text-[13px] text-tinta-suave tabular-nums">
+                          {hayStock ? `Desde ${formatearPrecio(desde)}` : "Sin stock"}
+                        </span>
                       </button>
                     );
                   })}
@@ -377,23 +389,69 @@ export default function ProductDetailContent({
               </fieldset>
             )}
 
-            {memoriasParaColor.length > 0 && (
+            {colores.length > 1 && (
               <fieldset>
-                <legend className="mb-2.5 text-sm font-semibold">Capacidad</legend>
-                <div className="grid grid-cols-3 gap-2.5">
-                  {memoriasParaColor.map((mem) => {
-                    const activo = selectedVariante.memoria === mem;
+                <legend className="mb-2.5 text-sm font-semibold">
+                  Color <span className="font-normal text-tinta-suave">{selectedVariante.color}</span>
+                </legend>
+                <div className="flex flex-wrap gap-2.5">
+                  {colores.map(({ color, hayStock }) => {
+                    const activo = selectedVariante.color === color;
                     return (
                       <button
-                        key={mem}
+                        key={color}
                         type="button"
-                        onClick={() => handleMemoriaClick(mem)}
+                        onClick={() => elegir({ color })}
+                        aria-label={hayStock ? color : `${color}, sin stock`}
                         aria-pressed={activo}
-                        className={`min-h-12 rounded-control bg-white text-[15px] font-medium transition-colors ${
-                          activo ? "border-2 border-color-principal" : "border border-borde-fuerte hover:border-tinta-suave"
+                        className={`relative size-11 rounded-full bg-white p-[3px] border-2 transition-colors ${
+                          activo ? "border-color-principal" : "border-borde hover:border-borde-fuerte"
                         }`}
                       >
-                        {mem}
+                        <span
+                          className={`block size-full rounded-full ${needsDarkBorder(color) ? "ring-1 ring-inset ring-black/15" : ""} ${hayStock ? "" : "opacity-40"}`}
+                          style={{ backgroundColor: mapColorToHex(color) }}
+                        />
+                        {/* Sin stock en ninguna capacidad: se puede mirar, pero queda tachado. */}
+                        {!hayStock && (
+                          <span aria-hidden="true" className="absolute left-1/2 top-1/2 h-0.5 w-7 -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded bg-tinta-suave" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            )}
+
+            {capacidades.length > 0 && (
+              <fieldset>
+                <legend className="mb-2.5 text-sm font-semibold">Capacidad</legend>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {capacidades.map(({ memoria, variante, disponible }) => {
+                    const activo = selectedVariante.memoria === memoria;
+                    return (
+                      <button
+                        key={memoria}
+                        type="button"
+                        onClick={() => elegir({ memoria })}
+                        disabled={!disponible && !activo}
+                        aria-pressed={activo}
+                        className={`flex min-h-16 flex-col items-center justify-center rounded-control px-2 py-2 transition-colors disabled:cursor-not-allowed ${
+                          activo
+                            ? "border-2 border-color-principal bg-white"
+                            : "border border-borde-fuerte bg-white enabled:hover:border-tinta-suave disabled:border-borde disabled:bg-superficie"
+                        }`}
+                      >
+                        <span className={`text-[15px] font-medium ${disponible || activo ? "" : "text-tinta-suave line-through"}`}>
+                          {memoria}
+                        </span>
+                        <span className="text-[13px] text-tinta-suave tabular-nums">
+                          {disponible && variante
+                            ? formatearPrecio(variante.precio)
+                            : variante
+                              ? "Sin stock"
+                              : `No hay en ${selectedVariante.color.toLowerCase()}`}
+                        </span>
                       </button>
                     );
                   })}
@@ -445,7 +503,11 @@ export default function ProductDetailContent({
               <p className={`text-sm ${sinStock ? "text-tinta-suave" : "text-exito"}`}>
                 {sinStock
                   ? "Sin stock en esta combinación. Probá con otro color o capacidad."
-                  : `En stock · ${selectedVariante.stock} ${selectedVariante.stock === 1 ? "unidad" : "unidades"}${ultimas ? " · Últimas unidades" : ""}`}
+                  : ultimas
+                    ? selectedVariante.stock === 1
+                      ? "En stock, queda la última unidad"
+                      : `En stock, quedan las últimas ${selectedVariante.stock} unidades`
+                    : `En stock, ${selectedVariante.stock} unidades para enviar`}
               </p>
               <p className="text-sm text-tinta-suave">
                 ¿Tenés dudas?{" "}

@@ -125,9 +125,15 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/20 pt-4 md:flex-row">
-          <p className="text-center caption-2 text-espuma/85 md:text-left">
-            © {new Date().getFullYear()} {VENDEDOR.nombre}. Todos los derechos reservados.
-          </p>
+          <div className="text-center caption-2 text-espuma/85 md:text-left">
+            <p>
+              © {new Date().getFullYear()} {VENDEDOR.nombre}. Todos los derechos reservados.
+            </p>
+            <p className="mt-1">
+              Wave es un revendedor independiente, no afiliado a Apple Inc. iPhone y Apple son marcas de sus
+              respectivos titulares.
+            </p>
+          </div>
           <div className="flex">
             {REDES.map((red) => (
               <a
