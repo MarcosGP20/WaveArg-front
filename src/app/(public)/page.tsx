@@ -1,143 +1,159 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Shield, RefreshCw, Truck, PackageCheck } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
-import CommunitySection from "@/components/CommunitySection";
 import FAQSection from "@/components/FAQSection";
 import HomeLoader from "@/components/HomeLoader";
 import { LazyVideoFacade } from "@/components/VideoPlayer";
-import BentoCreadores from "@/components/BentoCreadores";
-import Ticker from "@/components/Ticker";
-import HeroVideo from "@/components/home/HeroVideo";
-import HomeCarousel from "@/components/home/HomeCarousel";
-import ParallaxReveal from "@/components/home/ParallaxReveal";
+import LineaOla from "@/components/home/LineaOla";
+import ParteDeStock from "@/components/home/ParteDeStock";
+import TelefonoOla from "@/components/home/TelefonoOla";
+import TituloOla from "@/components/home/TituloOla";
 
-// Server Component (front#15): el HTML inicial trae todo el contenido de la home. Lo animado o
-// interactivo vive en islas cliente (HomeLoader, HeroVideo, HomeCarousel, ParallaxReveal y las
-// secciones de components/).
+// Home con la identidad "Parte de olas" (DESIGN.md). Server Component (front#15): el texto viene
+// en el HTML; el teléfono 3D y el parte de stock son islas cliente. Lo único que se mueve solo es
+// el hero (la ola tipográfica una vez y el teléfono); el resto de la página queda quieto.
 
-// Rutas de recursos
-const ASSET_PATHS = {
-  VIDEO: "/wave-video-portada.mp4",
-  IPHONE_IMG: "/iphone-div-landing.jpg",
-};
-
-const TRUST_SIGNALS = [
-  { icon: Shield,       title: "Garantía incluida",      desc: "3 meses en todos los equipos" },
-  { icon: RefreshCw,    title: "Plan canje",             desc: "Tu iPhone como parte de pago" },
-  { icon: Truck,        title: "Envíos a todo el país",  desc: "Con número de seguimiento" },
-  { icon: PackageCheck, title: "Stock real",             desc: "Lo que ves está disponible" },
+const RAZONES = [
+  { titulo: "Stock real", detalle: "Lo que ves en el parte está para enviar hoy." },
+  { titulo: "3 meses de garantía", detalle: "En todos los equipos, nuevos y usados. Escrita." },
+  { titulo: "Plan canje", detalle: "Tu iPhone actual paga parte del nuevo." },
+  { titulo: "Envío a todo el país", detalle: "Despachamos en 24/48 hs hábiles, con seguimiento." },
 ];
+
+// Mensajes reales de clientes (los mismos del video de testimonios).
+const TESTIMONIOS = [
+  { texto: "Está flamaaaa, gracias!", fondo: "bg-espuma" },
+  { texto: "Perfecto! Muchas gracias por la atención, te volví loco, un genio!", fondo: "bg-atlantico text-espuma" },
+  { texto: "Excelentísima atención pre y post venta! Gracias por la paciencia!", fondo: "bg-espuma" },
+  { texto: "De USA directo a casa! Muchas gracias!", fondo: "bg-color-principal text-white" },
+  { texto: "Gracias, hermoso el celu!! Son lo más", fondo: "bg-espuma" },
+];
+
+const INSTAGRAM = "https://www.instagram.com/wavearg__";
+
+const tituloSeccion = "font-display font-extrabold tracking-[-0.025em] leading-[0.95] text-[clamp(40px,6vw,76px)]";
 
 export default function HomePage() {
   return (
     <>
       <HomeLoader />
-      <div>
-        {/* Hero - Video */}
-        <section className="relative h-screen w-full overflow-hidden">
-          <HeroVideo src={ASSET_PATHS.VIDEO} />
 
-          {/* Overlay gradient + CTA. La entrada es CSS: el texto se ve aunque el JS no haya llegado. */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end pb-16 px-6 md:px-16 lg:px-24">
-            <div className="pointer-events-auto max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 ease-out fill-mode-both motion-reduce:animate-none">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/60 mb-3 font-medium">
-                Tu próximo iPhone, al mejor precio
+      {/* ── Hero: titular con ola, teléfono 3D y parte de stock ── */}
+      <section className="relative overflow-hidden bg-atlantico text-espuma">
+        <div className="mx-auto max-w-6xl px-4 pt-24 pb-10 md:pb-14">
+          {/* El titular va a todo el ancho y en dos líneas; el teléfono sube por detrás, a la derecha. */}
+          <TituloOla
+            lineas={["Tu próximo iPhone,", "hoy en stock."]}
+            className="relative z-10 font-display font-extrabold text-white text-[clamp(44px,8.2vw,120px)] leading-[0.9] tracking-[-0.035em]"
+          />
+          <div className="grid items-end gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+            <div className="relative z-10 pb-4">
+              <p className="mt-6 max-w-[44ch] text-lg text-espuma/80">
+                iPhones originales, nuevos y usados, con 3 meses de garantía. Despachamos a todo el país desde
+                Necochea y Mar del Plata.
               </p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                Tecnología Apple que <br className="hidden md:block" />{" "}
-                acompaña tu ritmo.
-              </h1>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/products"
-                  className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors duration-200"
-                >
-                  Ver iPhones
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <Link href="/products" className="inline-flex min-h-14 items-center rounded-control bg-white px-7 font-semibold text-atlantico transition-colors hover:bg-espuma">
+                  Ver iPhone en stock
                 </Link>
-                <Link
-                  href="/accesorios"
-                  className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-white/20 transition-colors duration-200"
-                >
+                <Link href="/accesorios" className="font-medium text-white underline decoration-espuma/40 underline-offset-[6px] hover:decoration-white">
                   Ver accesorios
                 </Link>
               </div>
             </div>
-
-            {/* Scroll indicator */}
-            <div
-              aria-hidden="true"
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 animate-in fade-in duration-700 delay-1000 fill-mode-both motion-reduce:animate-none"
-            >
-              <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">
-                Scroll
-              </span>
-              <div className="w-[22px] h-[36px] rounded-full border border-white/30 flex items-start justify-center pt-[6px]">
-                <div className="w-[3px] h-[6px] rounded-full bg-white/60 animate-bounce motion-reduce:animate-none" />
-              </div>
+            <div className="md:-mt-60">
+              <TelefonoOla />
             </div>
           </div>
-        </section>
 
-        <Ticker />
+          <LineaOla className="mt-8 text-espuma/25" />
+          <ParteDeStock />
+        </div>
+      </section>
 
-        {/* Carrusel de iPhones */}
-        <section className="bg-[#F5F5F5] py-14 px-4 md:px-8">
-          <div className="w-[90%] max-w-6xl mx-auto">
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.15em] text-[#05467D]/80 mb-2">
-              Nuestros modelos
-            </p>
-            <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-              Encontrá tu iPhone ideal
+      {/* ── Por qué Wave ── */}
+      <section aria-labelledby="por-que" className="mx-auto grid max-w-6xl gap-12 px-4 py-28 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-16 md:py-36">
+        <h2 id="por-que" className={tituloSeccion}>
+          Comprar un iPhone en Argentina no debería ser un dolor de cabeza.
+        </h2>
+        <dl className="grid content-end gap-x-10 gap-y-9 sm:grid-cols-2">
+          {RAZONES.map((r) => (
+            <div key={r.titulo}>
+              <dt className="font-display text-2xl font-bold tracking-tight">{r.titulo}</dt>
+              <dd className="mt-1.5 text-tinta-suave">{r.detalle}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* ── Creadores ── */}
+      <section aria-labelledby="creadores" className="mx-auto max-w-6xl px-4">
+        <div className="grid auto-rows-[220px] grid-cols-2 gap-3 md:auto-rows-[260px] md:grid-cols-4">
+          <div className="col-span-2 row-span-2 flex flex-col justify-end rounded-[28px] bg-color-principal p-8 text-white md:p-11">
+            <h2 id="creadores" className="font-display text-[clamp(36px,4.6vw,60px)] font-extrabold leading-[0.95] tracking-[-0.025em]">
+              Grabá, editá y publicá con lo que usan los creadores.
             </h2>
-            <HomeCarousel />
+            <p className="mt-4 max-w-[40ch] text-white/80">
+              Armamos una guía con los equipos que usan todos los días para grabar y editar.
+            </p>
+            <Link href="/creadores" className="mt-7 inline-flex min-h-13 w-fit items-center rounded-control bg-white px-6 font-semibold text-color-principal transition-colors hover:bg-espuma">
+              Ver la guía para creadores
+            </Link>
           </div>
-        </section>
+          <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="group relative col-span-2 overflow-hidden rounded-[28px] bg-atlantico">
+            <Image src="/celu-wave-perfil-ig.webp" alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover opacity-80" />
+            <span className="absolute bottom-5 left-5 flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-[15px] font-semibold text-tinta">
+              Seguinos en Instagram
+              <ArrowUpRight size={16} strokeWidth={1.75} aria-label="(se abre en otra pestaña)" />
+            </span>
+          </a>
+          <Link href="/accesorios" className="relative overflow-hidden rounded-[28px] bg-atlantico">
+            <Image src="/mic.jpg" alt="" fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover opacity-85" />
+            <span className="absolute bottom-4 left-5 text-lg font-semibold text-white">Audio</span>
+          </Link>
+          <Link href="/creadores" className="relative grid place-items-center overflow-hidden rounded-[28px] bg-espuma">
+            <Image src="/macbook-pro.png" alt="" width={400} height={260} className="h-auto w-4/5" />
+            <span className="absolute bottom-4 left-5 text-lg font-semibold">Edición</span>
+          </Link>
+        </div>
+      </section>
 
-        {/* Sección trust signals con parallax */}
-        <ParallaxReveal className="relative h-screen bg-white flex items-center justify-center px-2 md:px-4 overflow-hidden">
-          <div className="relative h-[95vh] bg-gray-900 rounded-2xl overflow-hidden">
-            <Image
-              src={ASSET_PATHS.IPHONE_IMG}
-              alt="Por qué elegir Wave"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              loading="lazy"
+      {/* ── Testimonios ── */}
+      <section aria-labelledby="clientes" className="py-28 md:py-36">
+        <h2 id="clientes" className={`mx-auto mb-8 max-w-6xl px-4 ${tituloSeccion}`}>Lo que nos escriben.</h2>
+        <ul className="flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto scroll-pl-[max(1rem,calc((100%-72rem)/2+1rem))] pl-[max(1rem,calc((100%-72rem)/2+1rem))] pr-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <li className="w-[86vw] max-w-[620px] flex-shrink-0 snap-start overflow-hidden rounded-[24px]">
+            <LazyVideoFacade
+              mode="testimonial"
+              altText="Testimonios de clientes de Wave"
+              videoUrlMp4="/Wave-testimonios.mp4"
+              posterUrl="/posterURL.webp"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-white/50 font-semibold mb-3">
-                Por qué elegirnos
-              </p>
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">
-                La forma más confiable<br className="hidden md:block" /> de conseguir tu iPhone.
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {TRUST_SIGNALS.map(({ icon: Icon, title, desc }) => (
-                  <div
-                    key={title}
-                    className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 md:p-5"
-                  >
-                    <Icon size={20} strokeWidth={1.75} className="text-white/70 mb-3" />
-                    <p className="text-white font-semibold text-sm leading-snug mb-1">{title}</p>
-                    <p className="text-white/50 text-xs leading-snug">{desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </ParallaxReveal>
+          </li>
+          {TESTIMONIOS.map((t) => (
+            <li key={t.texto} className={`flex w-[78vw] max-w-[340px] flex-shrink-0 snap-start items-end rounded-[24px] p-7 ${t.fondo}`}>
+              <blockquote className="font-display text-2xl font-bold leading-tight tracking-tight">&ldquo;{t.texto}&rdquo;</blockquote>
+            </li>
+          ))}
+        </ul>
+        <p className="mx-auto mt-4 max-w-6xl px-4 text-sm text-tinta-suave">Mensajes que nos mandaron clientes por Instagram.</p>
+      </section>
 
-        <BentoCreadores />
-        <CommunitySection />
-        <LazyVideoFacade
-          mode="testimonial"
-          altText="Testimonios de clientes de Wave"
-          videoUrlMp4="/Wave-testimonios.mp4"
-          posterUrl="/posterURL.webp"
-        />
-        <FAQSection />
-      </div>
+      <FAQSection />
+
+      {/* ── Cierre ── */}
+      <section className="mt-28 bg-atlantico text-espuma md:mt-36">
+        <LineaOla className="text-espuma/25" />
+        <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-8 px-4 py-24 md:py-32">
+          <h2 className="font-display font-extrabold text-white text-[clamp(56px,9vw,120px)] leading-[0.9] tracking-[-0.03em]">
+            Surfeá tu<br />próximo nivel.
+          </h2>
+          <Link href="/products" className="inline-flex min-h-14 items-center rounded-control bg-white px-8 text-lg font-semibold text-atlantico transition-colors hover:bg-espuma">
+            Ver iPhone en stock
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

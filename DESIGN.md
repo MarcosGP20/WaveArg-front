@@ -22,6 +22,9 @@ Wave reservado para lo que importa. La confianza la da la claridad, no la decora
 | `color-principal` | `#05467D` | Acción principal, selección, links |
 | `principal-suave` | `#E8F0F7` | Fondo de badges de marca |
 | `exito` | `#1F6B3A` | Stock disponible |
+| `atlantico` | `#0B2533` | Fondo del hero y el cierre de la home: el Atlántico frío, no negro |
+| `espuma` | `#EEF2F0` | Texto sobre `atlantico` y fondos claros de la home |
+| `guardavidas` | `#F2611D` | Sólo datos en vivo (hora del parte, "quedan pocas") y sólo sobre `atlantico` (5:1) |
 | `radius-control` | `12px` | Botones, inputs, opciones |
 | `radius-panel` | `20px` | Paneles y tarjetas |
 
@@ -29,7 +32,7 @@ No se usan hex sueltos en componentes nuevos: si falta un color, se agrega acá 
 
 ## Tipografía
 
-**Geist** (`next/font`) en todo el sitio, sin segunda familia.
+**Geist** (`next/font`) para el texto y **Archivo** (`font-display`, con eje de ancho `wdth`) para los títulos de la home.
 
 - Título de página: 40–44px, semibold, `tracking-tight`.
 - Título de sección: 28px, semibold.
@@ -56,6 +59,27 @@ No se usan hex sueltos en componentes nuevos: si falta un color, se agrega acá 
 
 Transiciones de 150–250ms en estados (hover, selección). Nada que tape contenido mientras anima.
 Todo respeta `prefers-reduced-motion`.
+
+Lo único que se mueve solo es el hero: la ola tipográfica del titular (una vez, al cargar) y el
+teléfono 3D. El resto de la página queda quieto: nada de fade-in en cada sección.
+
+## Identidad de la home: "Parte de olas"
+
+Wave es de Necochea y Mar del Plata, con una ola en el logo. En la costa, el parte de olas dice cómo
+está el mar: preciso, con la hora, sin vueltas. La home muestra el stock igual.
+
+- **Hero en `atlantico`**: titular "Tu próximo iPhone, hoy en stock." en Archivo, con una ola que
+  recorre las letras ensanchando `wdth` (`TituloOla`).
+- **Teléfono 3D** (`TelefonoOla` + `lib/telefono3d.ts`, three.js con import dinámico): modelo
+  estilizado armado en código, cuya pantalla es una ola animada. Gira con el puntero y con el
+  scroll. Sin WebGL queda una foto; con reduced-motion, un cuadro quieto.
+- **Parte de stock** (`ParteDeStock`): modelo, estado, unidades y precio reales, con la hora de
+  lectura. Datos en lugar de adjetivos.
+- **`LineaOla`**: la ola del logo reemplaza las líneas rectas como separador.
+
+Evitar en la home (se ven como plantilla): numeración 01/02/03 si no es una secuencia, etiquetas
+sobre cada título, datos unidos con " · ", flechas agregadas a los links, una palabra del título en
+otro color, y tarjetas iguales para todo.
 
 ## Accesibilidad
 

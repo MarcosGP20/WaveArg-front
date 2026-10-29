@@ -21,6 +21,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-display: var(--font-archivo), var(--font-geist), system-ui, sans-serif;
 
   /* Sistema visual (DESIGN.md): tinta, superficies y bordes neutros; el azul de marca sólo
      para la acción principal y lo seleccionado. */
@@ -31,6 +32,11 @@
   --color-borde-fuerte: #D2D2D7;
   --color-principal-suave: #E8F0F7;
   --color-exito: #1F6B3A;
+  /* Identidad "Parte de olas" (DESIGN.md): el Atlántico frío de Necochea y Mar del Plata.
+     guardavidas sólo para datos en vivo y sólo sobre atlantico (5:1). */
+  --color-atlantico: #0B2533;
+  --color-espuma: #EEF2F0;
+  --color-guardavidas: #F2611D;
   --radius-control: 12px;
   --radius-panel: 20px;
 
@@ -267,5 +273,25 @@
     outline: 2px solid #2563eb;
     outline-offset: 2px;
     box-shadow: 0 0 0 2px #fff;
+  }
+}
+
+/* ── Home: ola tipográfica del titular (DESIGN.md) ───────────────────────────────────────────
+   Una ola recorre las letras ensanchando el eje wdth de Archivo y vuelve. Una sola vez al cargar;
+   el estado base es el final, así que con reduced-motion el titular queda quieto. */
+
+.titulo-ola-letra {
+  display: inline-block;
+}
+
+@keyframes titulo-ola {
+  0%, 100% { font-variation-settings: "wdth" 100; transform: none; }
+  45% { font-variation-settings: "wdth" 125; transform: translateY(-0.07em); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .titulo-ola-letra {
+    animation: titulo-ola 1100ms cubic-bezier(0.45, 0, 0.25, 1) both;
+    animation-delay: calc(var(--i) * 28ms + 300ms);
   }
 }
