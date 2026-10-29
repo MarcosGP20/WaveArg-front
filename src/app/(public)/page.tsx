@@ -5,14 +5,13 @@ import { ArrowUpRight } from "lucide-react";
 import FAQSection from "@/components/FAQSection";
 import HomeLoader from "@/components/HomeLoader";
 import { LazyVideoFacade } from "@/components/VideoPlayer";
+import HeroVideo from "@/components/home/HeroVideo";
 import LineaOla from "@/components/home/LineaOla";
 import ParteDeStock from "@/components/home/ParteDeStock";
-import TelefonoOla from "@/components/home/TelefonoOla";
-import TituloOla from "@/components/home/TituloOla";
 
 // Home con la identidad "Parte de olas" (DESIGN.md). Server Component (front#15): el texto viene
-// en el HTML; el teléfono 3D y el parte de stock son islas cliente. Lo único que se mueve solo es
-// el hero (la ola tipográfica una vez y el teléfono); el resto de la página queda quieto.
+// en el HTML; el video de portada y el parte de stock son islas cliente. Lo único que se mueve solo
+// es el video del hero; el resto de la página queda quieto.
 
 const RAZONES = [
   { titulo: "Stock real", detalle: "Lo que ves en el parte está para enviar hoy." },
@@ -39,35 +38,30 @@ export default function HomePage() {
     <>
       <HomeLoader />
 
-      {/* ── Hero: titular con ola, teléfono 3D y parte de stock ── */}
+      {/* ── Hero: video de portada (trae el titular y el teléfono) ── */}
+      <section className="relative h-svh w-full overflow-hidden bg-[#05080F]">
+        {/* El titular está dibujado en el video; acá va en texto para buscadores y lectores de pantalla. */}
+        <h1 className="sr-only">Tu próximo iPhone, en tus manos</h1>
+        <HeroVideo />
+      </section>
+
+      {/* ── Bajada, CTAs y parte de stock ── */}
       <section className="relative overflow-hidden bg-atlantico text-espuma">
-        <div className="mx-auto max-w-6xl px-4 pt-24 pb-10 md:pb-14">
-          {/* El titular va a todo el ancho y en dos líneas; el teléfono sube por detrás, a la derecha. */}
-          <TituloOla
-            lineas={["Tu próximo iPhone,", "hoy en stock."]}
-            className="relative z-10 font-display font-extrabold text-white text-[clamp(44px,8.2vw,120px)] leading-[0.9] tracking-[-0.035em]"
-          />
-          <div className="grid items-end gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
-            <div className="relative z-10 pb-4">
-              <p className="mt-6 max-w-[44ch] text-lg text-espuma/80">
-                iPhones originales, nuevos y usados, con 3 meses de garantía. Despachamos a todo el país desde
-                Necochea y Mar del Plata.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-                <Link href="/products" className="inline-flex min-h-14 items-center rounded-control bg-white px-7 font-semibold text-atlantico transition-colors hover:bg-espuma">
-                  Ver iPhone en stock
-                </Link>
-                <Link href="/accesorios" className="font-medium text-white underline decoration-espuma/40 underline-offset-[6px] hover:decoration-white">
-                  Ver accesorios
-                </Link>
-              </div>
-            </div>
-            <div className="md:-mt-60">
-              <TelefonoOla />
-            </div>
+        <div className="mx-auto max-w-6xl px-4 pt-14 pb-10 md:pt-20 md:pb-14">
+          <p className="max-w-[44ch] text-lg text-espuma/80">
+            iPhones originales, nuevos y usados, con 3 meses de garantía. Despachamos a todo el país desde
+            Necochea y Mar del Plata.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="/products" className="inline-flex min-h-14 items-center rounded-control bg-white px-7 font-semibold text-atlantico transition-colors hover:bg-espuma">
+              Ver iPhone en stock
+            </Link>
+            <Link href="/accesorios" className="font-medium text-white underline decoration-espuma/40 underline-offset-[6px] hover:decoration-white">
+              Ver accesorios
+            </Link>
           </div>
 
-          <LineaOla className="mt-8 text-espuma/25" />
+          <LineaOla className="mt-12 text-espuma/25" />
           <ParteDeStock />
         </div>
       </section>
