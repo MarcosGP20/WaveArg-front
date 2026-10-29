@@ -3,34 +3,29 @@
 import { useEffect, useState } from "react";
 import { getProductos } from "@/lib/api";
 import type { Producto } from "@/interfaces/producto";
-import { elegirDestacado } from "@/lib/home";
+import { horaDeLectura } from "@/lib/home";
 
-// El hero y el riel de modelos usan el mismo listado: una sola request por carga de la home.
-let pedido: Promise<Producto[]> | null = null;
+// Una sola request a /Productos por carga de la home, aunque la pidan varias islas.
+let pedido: Promise<{ productos: Producto[]; leido: Date }> | null = null;
 
-function cargar(): Promise<Producto[]> {
-  pedido ??= getProductos().catch((e) => {
-    pedido = null; // un error no queda cacheado: la próxima visita reintenta
-    throw e;
-  });
+function cargar() {
+  pedido ??= getProductos()
+    .then((productos) => ({ productos, leido: new Date() }))
+    .catch((e) => {
+      pedido = null; // un error no queda cacheado: la próxima visita reintenta
+      throw e;
+    });
   return pedido;
 }
 
-const CLAVE_DESTACADO = "wave-featured-product-id";
-
 export function useProductosHome() {
-  const [productos, setProductos] = useState<Producto[] | null>(null);
+  const [datos, setDatos] = useState<{ productos: Producto[]; leido: Date } | null>(null);
   const [error, setError] = useState(false);
-  const [destacadoId, setDestacadoId] = useState<number | null>(null);
 
   useEffect(() => {
     let vigente = true;
-    try {
-      const guardado = Number(localStorage.getItem(CLAVE_DESTACADO));
-      if (guardado) setDestacadoId(guardado);
-    } catch {}
     cargar()
-      .then((p) => vigente && setProductos(p))
+      .then((d) => vigente && setDatos(d))
       .catch(() => vigente && setError(true));
     return () => {
       vigente = false;
@@ -38,9 +33,9 @@ export function useProductosHome() {
   }, []);
 
   return {
-    productos,
-    cargando: productos === null && !error,
+    productos: datos?.productos ?? null,
+    cargando: datos === null && !error,
     error,
-    destacado: productos ? elegirDestacado(productos, destacadoId) : null,
+    leidoA: datos ? horaDeLectura(datos.leido) : null,
   };
 }

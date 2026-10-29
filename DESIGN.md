@@ -22,10 +22,9 @@ Wave reservado para lo que importa. La confianza la da la claridad, no la decora
 | `color-principal` | `#05467D` | Acción principal, selección, links |
 | `principal-suave` | `#E8F0F7` | Fondo de badges de marca |
 | `exito` | `#1F6B3A` | Stock disponible |
-| `noche` | `#0B0B0C` | Fondo de secciones oscuras (hero y cierre de la home) |
-| `noche-2` | `#1C1C1E` | Superficies sobre `noche` (tarjeta de compra, palabra gigante) |
-| `noche-borde` | `#2C2C2E` | Bordes sobre `noche` |
-| `niebla` | `#A1A1A6` | Texto secundario sobre `noche` (8:1) |
+| `atlantico` | `#0B2533` | Fondo del hero y el cierre de la home: el Atlántico frío, no negro |
+| `espuma` | `#EEF2F0` | Texto sobre `atlantico` y fondos claros de la home |
+| `guardavidas` | `#F2611D` | Sólo datos en vivo (hora del parte, "quedan pocas") y sólo sobre `atlantico` (5:1) |
 | `radius-control` | `12px` | Botones, inputs, opciones |
 | `radius-panel` | `20px` | Paneles y tarjetas |
 
@@ -33,7 +32,7 @@ No se usan hex sueltos en componentes nuevos: si falta un color, se agrega acá 
 
 ## Tipografía
 
-**Geist** (`next/font`) en todo el sitio, sin segunda familia.
+**Geist** (`next/font`) para el texto y **Archivo** (`font-display`, con eje de ancho `wdth`) para los títulos de la home.
 
 - Título de página: 40–44px, semibold, `tracking-tight`.
 - Título de sección: 28px, semibold.
@@ -61,15 +60,26 @@ No se usan hex sueltos en componentes nuevos: si falta un color, se agrega acá 
 Transiciones de 150–250ms en estados (hover, selección). Nada que tape contenido mientras anima.
 Todo respeta `prefers-reduced-motion`.
 
-El movimiento atado al scroll es **CSS** (`animation-timeline: view()`), no JS: clases `.revelar`
-(entrada de títulos y bloques) y `.hero-pulso-*` en `globals.css`. El estado base es el final, así
-que sin soporte del navegador o con reduced-motion todo se ve quieto y completo.
+Lo único que se mueve solo es el hero: la ola tipográfica del titular (una vez, al cargar) y el
+teléfono 3D. El resto de la página queda quieto: nada de fade-in en cada sección.
 
-## Home "Pulso"
+## Identidad de la home: "Parte de olas"
 
-Hero oscuro con la palabra "iPhone" gigante detrás del equipo y una tarjeta de compra real (stock,
-precio, agregar al carrito): se puede comprar sin pasar por el catálogo. Títulos de sección grandes
-(72px, tracking muy cerrado), bloques de `rounded-[32px]` y rieles horizontales con scroll-snap.
+Wave es de Necochea y Mar del Plata, con una ola en el logo. En la costa, el parte de olas dice cómo
+está el mar: preciso, con la hora, sin vueltas. La home muestra el stock igual.
+
+- **Hero en `atlantico`**: titular "Tu próximo iPhone, hoy en stock." en Archivo, con una ola que
+  recorre las letras ensanchando `wdth` (`TituloOla`).
+- **Teléfono 3D** (`TelefonoOla` + `lib/telefono3d.ts`, three.js con import dinámico): modelo
+  estilizado armado en código, cuya pantalla es una ola animada. Gira con el puntero y con el
+  scroll. Sin WebGL queda una foto; con reduced-motion, un cuadro quieto.
+- **Parte de stock** (`ParteDeStock`): modelo, estado, unidades y precio reales, con la hora de
+  lectura. Datos en lugar de adjetivos.
+- **`LineaOla`**: la ola del logo reemplaza las líneas rectas como separador.
+
+Evitar en la home (se ven como plantilla): numeración 01/02/03 si no es una secuencia, etiquetas
+sobre cada título, datos unidos con " · ", flechas agregadas a los links, una palabra del título en
+otro color, y tarjetas iguales para todo.
 
 ## Accesibilidad
 

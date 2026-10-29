@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { Producto, Variante } from "@/interfaces/producto";
-import { elegirDestacado, imagenSinFondo, varianteMasBarata } from "./home";
+import { estadoDelModelo, horaDeLectura, unidadesEnStock, varianteMasBarata } from "./home";
 
-function variante(id: number, precio: number, stock: number): Variante {
-  return { id, color: "Azul", memoria: "128GB", precio, stock, esUsado: false, detalleEstado: "", fotoEstadoUrl: null };
+function variante(id: number, precio: number, stock: number, esUsado = false): Variante {
+  return { id, color: "Azul", memoria: "128GB", precio, stock, esUsado, detalleEstado: "", fotoEstadoUrl: null };
 }
 
-function producto(id: number, variantes: Variante[]): Producto {
+function producto(variantes: Variante[]): Producto {
   return {
-    id,
-    nombre: `iPhone ${id}`,
+    id: 1,
+    nombre: "iPhone 14",
     modelo: "",
     descripcion: "",
     stockTotal: variantes.reduce((s, v) => s + v.stock, 0),
@@ -20,51 +20,35 @@ function producto(id: number, variantes: Variante[]): Producto {
 
 describe("varianteMasBarata", () => {
   it("elige la más barata entre las que tienen stock", () => {
-    const p = producto(1, [variante(1, 500, 0), variante(2, 900, 2), variante(3, 700, 1)]);
+    const p = producto([variante(1, 500, 0), variante(2, 900, 2), variante(3, 700, 1)]);
     expect(varianteMasBarata(p)?.id).toBe(3);
   });
 
   it("sin stock no hay variante", () => {
-    expect(varianteMasBarata(producto(1, [variante(1, 500, 0)]))).toBeNull();
+    expect(varianteMasBarata(producto([variante(1, 500, 0)]))).toBeNull();
   });
 });
 
-describe("elegirDestacado", () => {
-  const sinStock = producto(1, [variante(1, 500, 0)]);
-  const poco = producto(2, [variante(2, 600, 1)]);
-  const mucho = producto(3, [variante(3, 800, 9)]);
-
-  it("respeta el destacado del admin si tiene stock", () => {
-    expect(elegirDestacado([poco, mucho], 2)?.id).toBe(2);
+describe("estadoDelModelo", () => {
+  it("sólo cuenta las variantes con stock", () => {
+    expect(estadoDelModelo(producto([variante(1, 500, 2), variante(2, 400, 0, true)]))).toBe("Nuevo sellado");
+    expect(estadoDelModelo(producto([variante(1, 500, 0), variante(2, 400, 1, true)]))).toBe("Usado");
   });
 
-  it("si el destacado no tiene stock, va el de más stock", () => {
-    expect(elegirDestacado([sinStock, poco, mucho], 1)?.id).toBe(3);
-  });
-
-  it("sin destacado, va el de más stock", () => {
-    expect(elegirDestacado([poco, mucho], null)?.id).toBe(3);
-  });
-
-  it("si nada tiene stock, no hay hero de producto", () => {
-    expect(elegirDestacado([sinStock], null)).toBeNull();
+  it("con nuevos y usados en stock lo dice", () => {
+    expect(estadoDelModelo(producto([variante(1, 500, 2), variante(2, 400, 1, true)]))).toBe("Nuevo y usado");
   });
 });
 
-describe("imagenSinFondo", () => {
-  it("pide al CDN de Apple la versión transparente y limita el ancho", () => {
-    const { src, sinFondo } = imagenSinFondo(
-      "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14?wid=5120&hei=2880&fmt=p-jpg",
-    );
-    const url = new URL(src);
-    expect(sinFondo).toBe(true);
-    expect(url.searchParams.get("fmt")).toBe("png-alpha");
-    expect(url.searchParams.get("wid")).toBe("1040");
-    expect(url.searchParams.get("hei")).toBe("585");
+describe("unidadesEnStock", () => {
+  it("suma las variantes aunque stockTotal del back diga otra cosa", () => {
+    const p = { ...producto([variante(1, 500, 20), variante(2, 400, 3)]), stockTotal: 0 };
+    expect(unidadesEnStock(p)).toBe(23);
   });
+});
 
-  it("otras URLs (o rutas locales) vuelven sin tocar", () => {
-    expect(imagenSinFondo("https://http2.mlstatic.com/x.jpg")).toEqual({ src: "https://http2.mlstatic.com/x.jpg", sinFondo: false });
-    expect(imagenSinFondo("/placeholder.png")).toEqual({ src: "/placeholder.png", sinFondo: false });
+describe("horaDeLectura", () => {
+  it("devuelve horas y minutos en 24 h", () => {
+    expect(horaDeLectura(new Date(2026, 9, 28, 14, 5))).toBe("14:05");
   });
 });

@@ -38,7 +38,7 @@ src/
   components/
     icons/
       BrandIcons.tsx        → InstagramIcon, TikTokIcon, WhatsAppIcon (SVG inline — lucide no tiene íconos de marca)
-    home/                   → islas cliente de la home "Pulso": HeroPulso (iPhone + tarjeta de compra), RielModelos
+    home/                   → home "Parte de olas": TituloOla, TelefonoOla (3D, three.js en lib/telefono3d.ts), ParteDeStock, LineaOla
   hooks/          → custom hooks
   interfaces/     → tipos de dominio (producto.ts, accesorio.ts, auth.ts)
   schemas/        → validación con Zod (auth.schema.ts)
@@ -73,7 +73,7 @@ src/
 - Iconos: `lucide-react` con `strokeWidth=1.75` como estándar. Para íconos de marca (Instagram, TikTok, WhatsApp) usar `src/components/icons/BrandIcons.tsx` — **no reinstalar react-icons**.
 - `GoogleLoginButton` siempre se importa con `dynamic(..., { ssr: false })` — no renderiza en servidor.
 - El proxy `/api/backend/[...path]` reenvía las requests al backend .NET incluyendo el token desde la cookie. **No llamar al backend directamente desde el cliente** — siempre pasar por `fetchFromApi()`.
-- Los productos destacados en la home se almacenan con `localStorage` key `wave-featured-product-id` (elegido desde admin). Ojo: localStorage es del navegador del admin, así que para los clientes el hero cae al iPhone con más stock (`lib/home.ts`). Para que el destacado valga para todos tiene que guardarse en el back.
+- Los productos destacados en la home se almacenan con `localStorage` key `wave-featured-product-id` (elegido desde admin). Ojo: localStorage es del navegador del admin, así que no aplica a los clientes; la home ya no lo usa (muestra el parte de stock). Para que el destacado valga para todos tiene que guardarse en el back.
 - El id de CartItem tiene formato `"entityId-varianteId"`. El checkout parsea este formato para extraer `varianteId` y construir el payload de MercadoPago.
 - `CartItem` incluye `stock?: number`. Siempre pasarlo al llamar `addToCart()` para que el carrito pueda respetar el límite de stock en el botón `+`.
 - `CartContext` hidrata desde localStorage con try-catch — si los datos están corruptos, los limpia y arranca vacío.
@@ -108,7 +108,7 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - Carrito: botón `+` respeta el stock de la variante — se deshabilita al alcanzar el límite
 - Auth proxy: `POST /api/auth/session` setea cookie httpOnly con maxAge derivado del `exp` del JWT; `DELETE` la borra. `useAuthStore.setAuth()` llama este endpoint, nunca persiste el token en localStorage
 - Proxy backend: `/api/backend/[...path]` reenvía todas las requests al .NET adjuntando el token de la cookie como `Authorization: Bearer`
-- Home "Pulso" (DESIGN.md): hero oscuro con el iPhone destacado y tarjeta de compra real, razones numeradas, riel de modelos, bento de creadores, testimonios, FAQ y cierre. El movimiento es CSS atado al scroll (`animation-timeline`), sin JS
+- Home "Parte de olas" (DESIGN.md): hero con titular en Archivo y ola tipográfica, teléfono 3D (three.js, import dinámico) y parte de stock con datos reales; razones, bento de creadores, testimonios, FAQ y cierre
 
 ### Pendiente de backend 📋 (confirmado bloqueado — revisado con Swagger)
 - **Eliminar cuenta**: NO existe `DELETE /Usuarios/{id}` en el backend (solo `GET /Usuarios`). El botón en settings queda con `toast.info("Próximamente")` hasta que el backend lo implemente
@@ -117,7 +117,7 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 
 ### Bugs conocidos pendientes 🐛
 - Race condition en cambio rápido de variante en ProductDetailContent: `switchVariante` usa `setTimeout(150ms)` sin cancelar timeouts anteriores — el estado puede quedar desincronizado si el usuario cambia variantes muy rápido
-- Fetches de productos sin caché: `getProductos()` se llama de forma independiente en catálogo y detalle (para sugeridos). En la home, hero y riel comparten una sola request (`hooks/useProductosHome`)
+- Fetches de productos sin caché: `getProductos()` se llama de forma independiente en catálogo y detalle (para sugeridos). En la home, una sola request cacheada (`hooks/useProductosHome`)
 
 ### Mejoras de UI pendientes 📋
 - **FAQSection** ✅ refactorizada: datos en una lista y estilo del sistema "Precisión"

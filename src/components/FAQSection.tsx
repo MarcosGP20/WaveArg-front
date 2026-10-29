@@ -93,9 +93,9 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
 
 export default function FAQSection() {
   return (
-    <section aria-labelledby="faq" className="mx-auto max-w-6xl px-4 pt-32 md:pt-36">
+    <section aria-labelledby="faq" className="mx-auto max-w-6xl px-4">
       <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
-        <h2 id="faq" className="revelar text-5xl md:text-7xl font-semibold tracking-[-0.045em] leading-[0.98]">
+        <h2 id="faq" className="font-display font-extrabold tracking-[-0.025em] leading-[0.95] text-[clamp(40px,6vw,76px)]">
           Preguntas frecuentes
         </h2>
         <Accordion type="single" collapsible className="border-t border-borde">
