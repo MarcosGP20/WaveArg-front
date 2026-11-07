@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import GoogleAuth from "@/components/GoogleAuth";
 import { useEstado } from "@/context/EstadoContext";
 import { useAuthStore } from "@/store/useAuthStore";
+import { crearSesion } from "@/lib/crear-sesion";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 
 export function RegisterForm() {
@@ -71,7 +72,8 @@ export function RegisterForm() {
         rol: getRoleFromJWT(response.token) || "User",
       };
     }
-    await setAuth(response.token, user);
+    await crearSesion(response.token);
+    setAuth(user);
     setStatusMessage("¡Cuenta lista! Redirigiendo...");
     const isAdmin = user?.rol?.toLowerCase() === "admin";
     setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);
