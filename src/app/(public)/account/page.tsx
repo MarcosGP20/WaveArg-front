@@ -1,54 +1,8 @@
-"use client";
-
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Loader2, UserCircle, ShoppingBag, Settings } from "lucide-react";
+import { UserCircle, ShoppingBag, Settings } from "lucide-react";
 import Link from "next/link";
 
+// El acceso (sin sesión → /login, admin → /admin) lo resuelve account/layout.tsx en el servidor.
 export default function AccountPage() {
-  const { token, user } = useAuthStore();
-  const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    if (!token || !user) {
-      router.replace("/login");
-      return;
-    }
-    // Admins van al panel; el hub de cuenta es para usuarios
-    if (user.rol?.toLowerCase() === "admin") {
-      router.replace("/admin");
-    }
-  }, [mounted, token, user, router]);
-
-  if (!mounted) {
-    return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-600" />
-        <span className="text-gray-600">Cargando...</span>
-      </div>
-    );
-  }
-
-  if (!token || !user) {
-    return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-600" />
-        <span className="text-gray-600">Redirigiendo al login...</span>
-      </div>
-    );
-  }
-
-  if (user.rol?.toLowerCase() === "admin") {
-    return null; // redirect en efecto
-  }
-
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-semibold mb-6">Mi cuenta</h1>

@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Bell, Shield, Trash2, ChevronRight, Loader2, X } from "lucide-react";
@@ -17,28 +17,10 @@ interface CambiarContrasenaForm {
 }
 
 export default function SettingsPage() {
-  const { token, user, logout } = useAuthStore();
+  // El acceso lo resuelve account/layout.tsx en el servidor: acá ya hay sesión.
+  const { logout } = useAuthStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    if (!token || !user) router.replace("/login");
-  }, [mounted, token, user, router]);
-
-  if (!mounted || !token || !user) {
-    return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-500" />
-        <span className="text-gray-500">Cargando...</span>
-      </div>
-    );
-  }
 
   const handleDeleteAccount = () => {
     toast.info("Función disponible próximamente.");
