@@ -4,6 +4,7 @@ import { Mail } from "lucide-react";
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/icons/BrandIcons";
 import Image from "next/image";
 import Link from "next/link";
+import LineaOla from "@/components/home/LineaOla";
 import { useAuthStore } from "@/store/useAuthStore";
 
 // --- Data para los links ---
@@ -62,8 +63,10 @@ export default function Footer() {
   const { isLoggedIn } = useAuthStore();
 
   return (
-    <footer className="bg-color-principal text-white py-10 mt-20">
-      <div className="max-w-6xl mx-auto px-6">
+    <footer className="bg-atlantico text-white pb-10 mt-20">
+      {/* La ola del logo marca el borde, como en la home (DESIGN.md). */}
+      <LineaOla className="text-espuma/25" />
+      <div className="max-w-6xl mx-auto px-6 pt-12">
         <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
           {/* 1. Marca y Tagline */}
           <div className="md:col-span-2 space-y-2">
