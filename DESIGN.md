@@ -68,14 +68,15 @@ teléfono 3D. El resto de la página queda quieto: nada de fade-in en cada secci
 Wave es de Necochea y Mar del Plata, con una ola en el logo. En la costa, el parte de olas dice cómo
 está el mar: preciso, con la hora, sin vueltas. La home muestra el stock igual.
 
-- **Hero en `atlantico`**: titular "Tu próximo iPhone, hoy en stock." en Archivo, con una ola que
-  recorre las letras ensanchando `wdth` (`TituloOla`).
-- **Teléfono 3D** (`TelefonoOla` + `lib/telefono3d.ts`, three.js con import dinámico): modelo
-  estilizado armado en código, cuya pantalla es una ola animada. Gira con el puntero y con el
-  scroll. Sin WebGL queda una foto; con reduced-motion, un cuadro quieto.
-- **Parte de stock** (`ParteDeStock`): modelo, estado, unidades y precio reales, con la hora de
-  lectura. Datos en lugar de adjetivos.
-- **`LineaOla`**: la ola del logo reemplaza las líneas rectas como separador.
+- **Hero**: video de portada (`HeroVideo`), con pausa y cuadro quieto si se pide reducir movimiento.
+- **Parte de stock** (`ParteDeStock`): la pieza central. Título grande en Archivo ancho, la hora de
+  lectura en `guardavidas` y una fila por equipo concreto (modelo, capacidad, color, estado,
+  unidades y precio) que lleva a la ficha con esa variante (`?v=`). Filtro nuevos/usados sólo si
+  hay de los dos. Datos en lugar de adjetivos.
+- **Cómo es comprar**: cuatro pasos numerados (es una secuencia real) y el plan canje como link.
+- **Testimonios** como burbujas de chat, porque son mensajes de Instagram.
+- **`LineaOla`**: la ola del logo reemplaza las líneas rectas como separador (parte y footer).
+- El footer va en `atlantico`, igual que el parte: no hay banda de cierre aparte.
 
 Evitar en la home (se ven como plantilla): numeración 01/02/03 si no es una secuencia, etiquetas
 sobre cada título, datos unidos con " · ", flechas agregadas a los links, una palabra del título en

@@ -25,6 +25,31 @@ export function estadoDelModelo(producto: Producto): string {
   return usados ? "Usado" : "Nuevo sellado";
 }
 
+export type FilaDelParte = { producto: Producto; variante: Variante };
+export type FiltroEstado = "todos" | "nuevos" | "usados";
+
+/**
+ * Una fila por cada variante con stock: el parte dice qué equipo concreto hay (color, capacidad
+ * y estado), no sólo el modelo. Nuevos antes que usados y, dentro de cada modelo, del más barato
+ * al más caro. El modelo conserva el orden del back.
+ */
+export function filasDelParte(productos: Producto[], filtro: FiltroEstado = "todos"): FilaDelParte[] {
+  return productos.flatMap((producto) =>
+    (producto.variantes ?? [])
+      .filter((v) => v.stock > 0)
+      .filter((v) => filtro === "todos" || v.esUsado === (filtro === "usados"))
+      .sort((a, b) => Number(a.esUsado) - Number(b.esUsado) || a.precio - b.precio)
+      .map((variante) => ({ producto, variante })),
+  );
+}
+
+/** "Nuevo sellado" o "Usado, batería 91%": el estado tal como lo cargó el admin. */
+export function estadoDeLaVariante(v: Variante): string {
+  if (!v.esUsado) return "Nuevo sellado";
+  const detalle = v.detalleEstado?.trim();
+  return detalle ? `Usado, ${detalle.charAt(0).toLowerCase()}${detalle.slice(1)}` : "Usado";
+}
+
 /** La hora de una lectura del stock, como la dice un parte: "14:32". */
 export function horaDeLectura(fecha: Date): string {
   return fecha.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false });

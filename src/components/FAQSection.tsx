@@ -5,8 +5,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
+type Grupo = "Los equipos" | "Pago y canje" | "Envíos";
+
+export const PREGUNTAS: { grupo: Grupo; pregunta: string; respuesta: React.ReactNode }[] = [
   {
+    grupo: "Los equipos",
     pregunta: "¿Los iPhones son nuevos o usados?",
     respuesta: (
       <>
@@ -19,6 +22,7 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
     ),
   },
   {
+    grupo: "Los equipos",
     pregunta: "¿Qué significa que un iPhone sea reacondicionado?",
     respuesta: (
       <>
@@ -34,6 +38,7 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
     ),
   },
   {
+    grupo: "Envíos",
     pregunta: "¿Hacen envíos a todo el país?",
     respuesta: (
       <>
@@ -46,6 +51,7 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
     ),
   },
   {
+    grupo: "Pago y canje",
     pregunta: "¿Qué medios de pago aceptan?",
     respuesta: (
       <>
@@ -60,6 +66,7 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
     ),
   },
   {
+    grupo: "Pago y canje",
     pregunta: "¿Cómo funciona el plan canje?",
     respuesta: (
       <>
@@ -75,6 +82,7 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
     ),
   },
   {
+    grupo: "Los equipos",
     pregunta: "¿Tienen garantía?",
     respuesta: (
       <>
@@ -91,25 +99,35 @@ const PREGUNTAS: { pregunta: string; respuesta: React.ReactNode }[] = [
   },
 ];
 
+// Agrupadas por tema para encontrar rápido la respuesta (orden de los grupos: lo que más se pregunta).
+export const GRUPOS: Grupo[] = ["Los equipos", "Pago y canje", "Envíos"];
+
 export default function FAQSection() {
   return (
-    <section aria-labelledby="faq" className="mx-auto max-w-6xl px-4">
-      <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
-        <h2 id="faq" className="font-display font-extrabold tracking-[-0.025em] leading-[0.95] text-[clamp(40px,6vw,76px)]">
+    <section aria-labelledby="faq" className="border-t border-borde">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-24 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16 md:py-32">
+        <h2 id="faq" className="font-display font-extrabold tracking-[-0.025em] leading-[0.98] text-[clamp(32px,4.2vw,52px)]">
           Preguntas frecuentes
         </h2>
-        <Accordion type="single" collapsible className="border-t border-borde">
-          {PREGUNTAS.map(({ pregunta, respuesta }, i) => (
-            <AccordionItem key={pregunta} value={`item-${i}`} className="border-b border-borde">
-              <AccordionTrigger className="py-6 text-left text-xl font-medium text-tinta hover:no-underline">
-                {pregunta}
-              </AccordionTrigger>
-              <AccordionContent className="flex flex-col gap-3 pb-6 text-[17px] leading-relaxed text-tinta-suave [&_strong]:font-semibold [&_strong]:text-tinta">
-                {respuesta}
-              </AccordionContent>
-            </AccordionItem>
+        <div className="flex flex-col gap-12">
+          {GRUPOS.map((grupo) => (
+            <div key={grupo}>
+              <h3 className="mb-2 text-[15px] font-semibold text-tinta-suave">{grupo}</h3>
+              <Accordion type="single" collapsible className="border-t border-borde">
+                {PREGUNTAS.filter((p) => p.grupo === grupo).map(({ pregunta, respuesta }) => (
+                  <AccordionItem key={pregunta} value={pregunta} className="border-b border-borde">
+                    <AccordionTrigger className="py-5 text-left text-lg font-medium text-tinta hover:no-underline">
+                      {pregunta}
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-3 pb-6 text-[17px] leading-relaxed text-tinta-suave [&_strong]:font-semibold [&_strong]:text-tinta">
+                      {respuesta}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           ))}
-        </Accordion>
+        </div>
       </div>
     </section>
   );

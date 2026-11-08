@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { Producto, Variante } from "@/interfaces/producto";
-import { estadoDelModelo, horaDeLectura, unidadesEnStock, varianteMasBarata } from "./home";
+import {
+  estadoDeLaVariante,
+  estadoDelModelo,
+  filasDelParte,
+  horaDeLectura,
+  unidadesEnStock,
+  varianteMasBarata,
+} from "./home";
 
 function variante(id: number, precio: number, stock: number, esUsado = false): Variante {
   return { id, color: "Azul", memoria: "128GB", precio, stock, esUsado, detalleEstado: "", fotoEstadoUrl: null };
@@ -50,5 +57,30 @@ describe("unidadesEnStock", () => {
 describe("horaDeLectura", () => {
   it("devuelve horas y minutos en 24 h", () => {
     expect(horaDeLectura(new Date(2026, 9, 28, 14, 5))).toBe("14:05");
+  });
+});
+
+describe("filasDelParte", () => {
+  const usado = variante(1, 700, 1, true);
+  const nuevoCaro = variante(2, 1200, 2);
+  const nuevoBarato = variante(3, 900, 5);
+  const agotado = variante(4, 500, 0);
+  const p = producto([usado, nuevoCaro, nuevoBarato, agotado]);
+
+  it("da una fila por variante con stock: nuevos primero y del más barato al más caro", () => {
+    expect(filasDelParte([p]).map((f) => f.variante)).toEqual([nuevoBarato, nuevoCaro, usado]);
+  });
+
+  it("filtra por estado", () => {
+    expect(filasDelParte([p], "usados").map((f) => f.variante)).toEqual([usado]);
+    expect(filasDelParte([p], "nuevos").map((f) => f.variante)).toEqual([nuevoBarato, nuevoCaro]);
+  });
+});
+
+describe("estadoDeLaVariante", () => {
+  it("en usados suma el detalle que cargó el admin", () => {
+    expect(estadoDeLaVariante({ ...variante(1, 1, 1, true), detalleEstado: "Batería 91%" })).toBe("Usado, batería 91%");
+    expect(estadoDeLaVariante(variante(1, 1, 1, true))).toBe("Usado");
+    expect(estadoDeLaVariante(variante(1, 1, 1))).toBe("Nuevo sellado");
   });
 });
