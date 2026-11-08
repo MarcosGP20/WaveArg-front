@@ -38,7 +38,7 @@ src/
   components/
     icons/
       BrandIcons.tsx        → InstagramIcon, TikTokIcon, WhatsAppIcon (SVG inline — lucide no tiene íconos de marca)
-    home/                   → home "Parte de olas": TituloOla, TelefonoOla (3D, three.js en lib/telefono3d.ts), ParteDeStock, LineaOla
+    home/                   → home "Parte de olas": HeroVideo, ParteDeStock, LineaOla
   hooks/          → custom hooks
   interfaces/     → tipos de dominio (producto.ts, accesorio.ts, auth.ts)
   schemas/        → validación con Zod (auth.schema.ts)
@@ -108,7 +108,7 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - Carrito: botón `+` respeta el stock de la variante — se deshabilita al alcanzar el límite
 - Auth proxy: `POST /api/auth/session` setea cookie httpOnly con maxAge derivado del `exp` del JWT; `DELETE` la borra. `useAuthStore.setAuth()` llama este endpoint, nunca persiste el token en localStorage
 - Proxy backend: `/api/backend/[...path]` reenvía todas las requests al .NET adjuntando el token de la cookie como `Authorization: Bearer`
-- Home "Parte de olas" (DESIGN.md): hero con titular en Archivo y ola tipográfica, teléfono 3D (three.js, import dinámico) y parte de stock con datos reales; razones, bento de creadores, testimonios, FAQ y cierre
+- Home "Parte de olas" (DESIGN.md): hero con video de portada y parte de stock por equipo con datos reales; cómo es comprar, testimonios como chat, creadores y FAQ
 
 ### Pendiente de backend 📋 (confirmado bloqueado — revisado con Swagger)
 - **Eliminar cuenta**: NO existe `DELETE /Usuarios/{id}` en el backend (solo `GET /Usuarios`). El botón en settings queda con `toast.info("Próximamente")` hasta que el backend lo implemente

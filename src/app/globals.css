@@ -276,22 +276,3 @@
   }
 }
 
-/* ── Home: ola tipográfica del titular (DESIGN.md) ───────────────────────────────────────────
-   Una ola recorre las letras ensanchando el eje wdth de Archivo y vuelve. Una sola vez al cargar;
-   el estado base es el final, así que con reduced-motion el titular queda quieto. */
-
-.titulo-ola-letra {
-  display: inline-block;
-}
-
-@keyframes titulo-ola {
-  0%, 100% { font-variation-settings: "wdth" 100; transform: none; }
-  45% { font-variation-settings: "wdth" 125; transform: translateY(-0.07em); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .titulo-ola-letra {
-    animation: titulo-ola 1100ms cubic-bezier(0.45, 0, 0.25, 1) both;
-    animation-delay: calc(var(--i) * 28ms + 300ms);
-  }
-}
