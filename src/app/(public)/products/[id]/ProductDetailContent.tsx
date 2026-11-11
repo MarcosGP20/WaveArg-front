@@ -154,7 +154,7 @@ export default function ProductDetailContent({
     return () => observer.disconnect();
   }, [product, selectedVariante]);
 
-  // Con la barra visible, el botón de WhatsApp sube para no taparla (ver WhatsAppButton).
+  // Con la barra visible, el botón de WhatsApp sube para no taparla (ver WhatsAppButton; el lanzador del chat también sube, ver ChatAyuda).
   useEffect(() => {
     const raiz = document.documentElement.style;
     if (showStickyBar) raiz.setProperty("--barra-inferior", "4.5rem");

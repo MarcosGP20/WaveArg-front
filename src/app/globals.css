@@ -205,6 +205,15 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Sacudida del lanzador del chat (ChatAyuda): vaivén corto que además lo asoma ~6px hacia la izquierda. */
+@keyframes chatSacudida {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  15%      { transform: translateX(-6px) rotate(-8deg); }
+  35%      { transform: translateX(-6px) rotate(8deg); }
+  55%      { transform: translateX(-4px) rotate(-5deg); }
+  75%      { transform: translateX(-2px) rotate(3deg); }
+}
+
 @keyframes bounceOnce {
   0%   { transform: scale(0.6); opacity: 0; }
   60%  { transform: scale(1.15); opacity: 1; }

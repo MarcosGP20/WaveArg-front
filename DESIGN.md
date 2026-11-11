@@ -62,6 +62,8 @@ Todo respeta `prefers-reduced-motion`.
 
 Lo único que se mueve solo es el hero: la ola tipográfica del titular (una vez, al cargar) y el
 teléfono 3D. El resto de la página queda quieto: nada de fade-in en cada sección.
+Otra excepción, por pedido del cliente: el lanzador del chat de ayuda se agita cada 90 s hasta que se abre
+por primera vez (respeta `prefers-reduced-motion`).
 
 ## Identidad de la home: "Parte de olas"
 

@@ -7,6 +7,7 @@ import CartAbandonmentReminder from "@/components/CartAbandonmentReminder";
 import CartDrawer from "@/components/CartDrawer";
 import AdminFloatingButton from "@/components/AdminFloatingButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ChatAyuda from "@/components/ChatAyuda";
 import { GoogleProvider } from "@/components/GoogleProvider";
 import MotionProvider from "@/components/MotionProvider";
 
@@ -36,6 +37,7 @@ export default function PublicLayout({
           <CartDrawer />
           <AdminFloatingButton />
           <WhatsAppButton />
+          <ChatAyuda />
           <Footer />
         </div>
       </CompareProvider>

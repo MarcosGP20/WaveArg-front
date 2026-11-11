@@ -110,6 +110,8 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - Proxy backend: `/api/backend/[...path]` reenvía todas las requests al .NET adjuntando el token de la cookie como `Authorization: Bearer`
 - Home "Parte de olas" (DESIGN.md): hero con video de portada y parte de stock por equipo con datos reales; cómo es comprar, testimonios como chat, creadores y FAQ
 
+- Chat de ayuda (`ChatAyuda`): chat de preguntas frecuentes con respuestas automáticas (sin IA ni backend) que usa `PREGUNTAS`/`GRUPOS` de `faq-datos.tsx` (compartidos con `FAQSection`). Convive con el botón flotante de WhatsApp (no lo reemplaza); su lanzador (ícono + "¿Dudas?") asoma desde el borde derecho, arriba del de WhatsApp, y se agita cada 90 s hasta que se abre por primera vez (no con reduced-motion)
+
 ### Pendiente de backend 📋 (confirmado bloqueado — revisado con Swagger)
 - **Eliminar cuenta**: NO existe `DELETE /Usuarios/{id}` en el backend (solo `GET /Usuarios`). El botón en settings queda con `toast.info("Próximamente")` hasta que el backend lo implemente
 - **Dirección de envío**: ✅ Implementada. El endpoint ahora acepta `CrearPreferenciaRequestDto { items, direccionEnvio }`. El checkout solicita calle, ciudad, provincia y CP antes de redirigir a MP.
