@@ -27,6 +27,7 @@ src/
       login/, register/     → autenticación
       olvide-mi-contrasena/, reset-password/ → recuperación de contraseña
       contacto/, creadores/, nosotros/
+      terminos/, privacidad/, arrepentimiento/ → páginas legales (texto pendiente del cliente, usan components/PaginaLegal)
     admin/                  → panel admin (protegido por proxy.ts + rol admin)
       productos/, accesorios/, orders/, users/
       components/           → AdminShell, AdminSideBar, AdminHeader, Dashboard, DataGrid, MetridCard, TableVariants, TableAccesorioVariants
@@ -38,10 +39,10 @@ src/
   components/
     icons/
       BrandIcons.tsx        → InstagramIcon, TikTokIcon, WhatsAppIcon (SVG inline — lucide no tiene íconos de marca)
-    home/                   → home "Parte de olas": HeroVideo, ParteDeStock, LineaOla
+    home/                   → home "Parte de olas": HeroVideo, ParteEnVivo, ParteDeStock, FraseDeMarca, FormularioAvisos, Reveal, LineaOla, estilos.ts (clases compartidas)
   hooks/          → custom hooks
   interfaces/     → tipos de dominio (producto.ts, accesorio.ts, auth.ts)
-  schemas/        → validación con Zod (auth.schema.ts)
+  schemas/        → validación con Zod (auth.schema.ts, lead.schema.ts)
   lib/
     api.ts        → todos los servicios y DTOs de la API
     jwt.ts        → decodificación JWT sin validación de firma (sólo client-side, para la UI)
@@ -49,6 +50,10 @@ src/
     auth-cookie.ts → nombre y opciones de la cookie auth-token (única definición)
     backend.ts    → BACKEND_API_BASE para código server-side (route handlers, server components, sitemap)
     colorMap.ts   → mapeo de nombres de colores a valores hex
+    home.ts       → datos de la home: tarjetas por modelo, filas del parte, hora de lectura
+    cuotas.ts     → CUOTAS_SIN_INTERES (null hasta que el cliente confirme) y textoCuotas()
+    leads.ts      → avisos de stock de la home: por WhatsApp o POST /Leads según NEXT_PUBLIC_LEADS_API
+    vendedor.ts   → datos del vendedor para el footer y las páginas legales (null = pendiente)
   context/        → CartContext (localStorage), CompareContext (memoria)
   store/          → useAuthStore (Zustand)
   proxy.ts        → protección de rutas por JWT y rol (ex middleware.ts; Next 16 renombró la convención). Va en src/ (no en la raíz): con src/app, Next lo ignora en la raíz. No confundir con el proxy /api/backend
@@ -87,6 +92,7 @@ BACKEND_PROXY_SECRET           # Secreto compartido con el backend (Proxy__Clien
 JWT_SECRET                     # Misma clave que Jwt__Key del backend: proxy.ts y layout de admin verifican la firma del token
 BACKEND_TIMEOUT_MS             # Opcional: timeout del proxy /api/backend en ms (default 30000); vencido responde 504
 NEXT_PUBLIC_SITE_URL           # URL pública del frontend (para MercadoPago back_urls)
+NEXT_PUBLIC_LEADS_API          # Opcional: "true" cuando el back tenga POST /Leads. Sin eso, el formulario de avisos de la home sale por WhatsApp
 NEXT_PUBLIC_GOOGLE_CLIENT_ID
 MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producción)
 ```
@@ -108,13 +114,16 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - Carrito: botón `+` respeta el stock de la variante — se deshabilita al alcanzar el límite
 - Auth proxy: `POST /api/auth/session` setea cookie httpOnly con maxAge derivado del `exp` del JWT; `DELETE` la borra. `useAuthStore.setAuth()` llama este endpoint, nunca persiste el token en localStorage
 - Proxy backend: `/api/backend/[...path]` reenvía todas las requests al .NET adjuntando el token de la cookie como `Authorization: Bearer`
-- Home "Parte de olas" (DESIGN.md): hero con video de portada y parte de stock por equipo con datos reales; cómo es comprar, testimonios como chat, creadores y FAQ
+- Home "Parte de olas" (DESIGN.md), pensada para vender y captar contactos: hero con titular en HTML y video en loop, bloque de confianza, stock de hoy en tarjetas por modelo con datos reales, frase de marca, cómo es comprar, testimonios como chat, formulario de avisos, FAQ y cierre
+- Footer con datos del vendedor, Términos, Privacidad y botón de arrepentimiento
 
 - Chat de ayuda (`ChatAyuda`): chat de preguntas frecuentes con respuestas automáticas (sin IA ni backend) que usa `PREGUNTAS`/`GRUPOS` de `faq-datos.tsx` (compartidos con `FAQSection`). Convive con el botón flotante de WhatsApp (no lo reemplaza); su lanzador (ícono + "¿Dudas?") asoma desde el borde derecho, arriba del de WhatsApp, y se agita cada 90 s hasta que se abre por primera vez (no con reduced-motion)
 
 ### Pendiente de backend 📋 (confirmado bloqueado — revisado con Swagger)
 - **Eliminar cuenta**: NO existe `DELETE /Usuarios/{id}` en el backend (solo `GET /Usuarios`). El botón en settings queda con `toast.info("Próximamente")` hasta que el backend lo implemente
 - **Dirección de envío**: ✅ Implementada. El endpoint ahora acepta `CrearPreferenciaRequestDto { items, direccionEnvio }`. El checkout solicita calle, ciudad, provincia y CP antes de redirigir a MP.
+- **Avisos de stock (leads)**: no existe `POST /Leads`. El formulario de la home (`FormularioAvisos`) manda el pedido por WhatsApp hasta que exista; después se prende con `NEXT_PUBLIC_LEADS_API=true`. Cuerpo que manda: `{ email, modelo, whatsapp, origen: "home" }`
+- **Arrepentimiento**: `/arrepentimiento` pide la baja por WhatsApp o mail. Falta un endpoint que registre la solicitud y devuelva su código
 - **Notificaciones**: No hay ningún endpoint en el backend. Los toggles en settings muestran badge "Próximamente", contador en perfil hardcodeado a `0`
 
 ### Bugs conocidos pendientes 🐛
@@ -126,6 +135,9 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 
 ### Decisiones de diseño para MVP 📋
 - Carrito queda en localStorage (sin sincronización con backend)
+
+### Pendiente del cliente 📋
+- Cuotas sin interés (`CUOTAS_SIN_INTERES` en `lib/cuotas.ts`), datos del vendedor (`lib/vendedor.ts`) y textos legales: ver "Pendiente del cliente" en DESIGN.md
 
 ### Atención ⚠️
 - No existe ruta `/mayorista` como página en el App Router, aunque proxy.ts la lista como ruta pública.

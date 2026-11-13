@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { useProductosHome } from "@/hooks/useProductosHome";
-import { estadoDeLaVariante, filasDelParte, type FiltroEstado } from "@/lib/home";
+import { textoCuotas } from "@/lib/cuotas";
+import { resumenDeOpciones, tarjetasDeModelos, type FiltroEstado } from "@/lib/home";
 import { formatearPrecio } from "@/lib/precio";
-import { linkWhatsApp } from "@/lib/whatsapp";
-import LineaOla from "./LineaOla";
+import { botonPrincipal, enlace, seccion, tituloSeccion } from "./estilos";
 
-const MAXIMO_FILAS = 6;
+const MAXIMO = 6;
 
 const FILTROS: { valor: FiltroEstado; texto: string }[] = [
   { valor: "todos", texto: "Todo" },
@@ -17,53 +17,43 @@ const FILTROS: { valor: FiltroEstado; texto: string }[] = [
   { valor: "usados", texto: "Usados" },
 ];
 
-// El parte de stock es lo central de la home (DESIGN.md, "Parte de olas"): como el parte del mar,
-// dice qué hay, en qué estado, cuánto queda y a qué precio, con la hora en que se leyó. Una fila
-// por equipo concreto; cada una lleva a la ficha con esa variante elegida.
+// El parte de stock (DESIGN.md, "Parte de olas"): qué hay hoy, con la hora en que se leyó. Una
+// tarjeta por modelo con su precio más bajo, las cuotas y las unidades que quedan; cada una lleva
+// a la ficha con esa variante elegida. Los datos son los del back, nada escrito a mano.
 export default function ParteDeStock() {
   const { productos, cargando, error, leidoA } = useProductosHome();
   const [filtro, setFiltro] = useState<FiltroEstado>("todos");
 
-  const todas = filasDelParte(productos ?? []);
-  const filas = filasDelParte(productos ?? [], filtro);
-  const cuenta = (f: FiltroEstado) => filasDelParte(productos ?? [], f).length;
+  const todas = tarjetasDeModelos(productos ?? []);
+  const tarjetas = tarjetasDeModelos(productos ?? [], filtro);
+  const cuenta = (f: FiltroEstado) => tarjetasDeModelos(productos ?? [], f).length;
   // Los filtros sólo aparecen si hay de los dos estados: con uno solo no filtran nada.
   const hayDosEstados = cuenta("nuevos") > 0 && cuenta("usados") > 0;
-  const unidades = todas.reduce((s, f) => s + f.variante.stock, 0);
+  const unidades = todas.reduce((s, t) => s + t.unidades, 0);
 
   return (
-    <section aria-labelledby="parte" className="bg-atlantico text-espuma">
-      <div className="mx-auto max-w-6xl px-4 pt-20 pb-24 md:pt-28 md:pb-32">
-        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
-          <h2
-            id="parte"
-            className="font-display font-extrabold text-white leading-[0.88] tracking-[-0.03em] text-[clamp(52px,9vw,128px)] [font-variation-settings:'wdth'_118]"
-          >
-            Parte de stock
-          </h2>
-          <div className="pb-2 text-[15px] text-espuma/80">
-            {leidoA && (
-              <p className="flex items-center gap-2">
-                <span aria-hidden="true" className="size-2 rounded-full bg-guardavidas" />
-                <span className="text-guardavidas tabular-nums">Leído a las {leidoA}</span>
-              </p>
-            )}
-            {todas.length > 0 && (
-              <p className="mt-1 tabular-nums">
-                {todas.length} {todas.length === 1 ? "equipo" : "equipos"}, {unidades}{" "}
-                {unidades === 1 ? "unidad" : "unidades"} para enviar hoy
-              </p>
-            )}
+    <section aria-labelledby="stock">
+      <div className={seccion}>
+        <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
+          <div>
+            <h2 id="stock" className={tituloSeccion}>
+              En stock hoy
+            </h2>
+            <p className="mt-3 max-w-xl body-7 text-pretty text-tinta-suave">
+              iPhones originales, nuevos sellados y usados revisados, listos para despachar.
+            </p>
           </div>
+          {leidoA && todas.length > 0 && (
+            <p className="flex items-center gap-2 caption-1 tabular-nums text-tinta-suave">
+              <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-exito" />
+              {todas.length} {todas.length === 1 ? "modelo" : "modelos"}, {unidades}{" "}
+              {unidades === 1 ? "unidad" : "unidades"}. Leído a las {leidoA}
+            </p>
+          )}
         </div>
 
-        <p className="mt-6 max-w-[52ch] text-lg text-espuma/80">
-          iPhones originales, nuevos y usados, con 3 meses de garantía. Despachamos a todo el país desde
-          Necochea y Mar del Plata.
-        </p>
-
         {hayDosEstados && (
-          <div role="group" aria-label="Filtrar por estado" className="mt-10 flex flex-wrap gap-2">
+          <div role="group" aria-label="Filtrar por estado" className="mt-8 flex flex-wrap gap-2">
             {FILTROS.map(({ valor, texto }) => {
               const activo = filtro === valor;
               return (
@@ -72,96 +62,107 @@ export default function ParteDeStock() {
                   type="button"
                   onClick={() => setFiltro(valor)}
                   aria-pressed={activo}
-                  className={`min-h-11 rounded-full px-5 text-[15px] font-medium tabular-nums transition-colors ${
-                    activo ? "bg-espuma text-atlantico" : "border border-espuma/30 text-espuma hover:border-espuma/70"
+                  className={`rounded-full px-4 py-3 caption-1 tabular-nums ring-inset transition-shadow duration-300 ease-ola ${
+                    activo ? "text-color-principal ring-2 ring-color-principal" : "text-tinta ring-1 ring-borde-fuerte hover:ring-tinta-suave"
                   }`}
                 >
-                  {texto} <span className={activo ? "text-atlantico/60" : "text-espuma/60"}>{cuenta(valor)}</span>
+                  {texto} <span className="text-tinta-suave">{cuenta(valor)}</span>
                 </button>
               );
             })}
           </div>
         )}
 
-        <LineaOla className="mt-8 text-espuma/30" />
-
         {cargando && (
-          <div aria-hidden="true">
+          <ul aria-hidden="true" className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="py-6">
-                <div className="h-12 rounded-md bg-espuma/5 animate-pulse motion-reduce:animate-none" />
-              </div>
+              <li key={i} className={`rounded-panel bg-superficie p-3 md:p-6 ${i === 2 ? "hidden md:block" : ""}`}>
+                <div className="aspect-square animate-pulse rounded-lg bg-borde motion-reduce:animate-none md:aspect-[4/3]" />
+                <div className="mt-4 h-6 w-3/4 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+                <div className="mt-2 h-5 w-1/2 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+                <div className="mt-8 h-8 w-2/3 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+                <div className="mt-4 h-12 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
 
         {error && (
-          <p className="py-8 text-lg text-espuma/85">
+          <p className="mt-8 body-7 text-tinta">
             No pudimos leer el stock ahora.{" "}
-            <Link href="/products" className="font-semibold text-white underline underline-offset-4">
+            <Link href="/products" className={enlace}>
               Ver el catálogo
             </Link>
           </p>
         )}
 
         {!cargando && !error && todas.length === 0 && (
-          <p className="py-8 text-lg text-espuma/85">
-            Hoy no hay iPhones en stock.{" "}
-            <a
-              href={linkWhatsApp("Hola, quiero que me avisen cuando entren iPhones.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-white underline underline-offset-4"
-            >
-              Escribinos y te avisamos cuando entren
+          <div className="mt-8 rounded-panel bg-superficie p-6 md:p-8">
+            <p className="title-1 text-tinta">Hoy no hay iPhones en stock.</p>
+            <p className="mt-2 body-3 text-tinta-suave">Dejanos tu contacto y te escribimos cuando entren.</p>
+            <a href="#avisos" className={`${botonPrincipal} mt-6`}>
+              Avisame cuando entren
             </a>
-          </p>
+          </div>
         )}
 
-        <ul>
-          {filas.slice(0, MAXIMO_FILAS).map(({ producto, variante }) => {
-            const pocas = variante.stock <= 3;
-            return (
-              <li key={variante.id} className="border-b border-espuma/12">
+        {tarjetas.length > 0 && (
+          <ul className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6">
+            {tarjetas.slice(0, MAXIMO).map(({ producto, desde, unidades: quedan, estado, capacidades, colores }) => (
+              <li key={producto.id}>
                 <Link
-                  href={`/products/${producto.id}?v=${variante.id}`}
-                  className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-1.5 py-6 md:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_7.5rem_10.5rem_1.5rem] md:items-center md:py-7"
+                  href={`/products/${producto.id}?v=${desde.id}`}
+                  className="group flex h-full flex-col rounded-panel bg-superficie p-3 transition-colors duration-300 ease-ola hover:bg-borde md:p-6"
                 >
-                  <span className="font-display font-bold text-white leading-none tracking-[-0.02em] text-[clamp(24px,2.8vw,36px)] [font-variation-settings:'wdth'_108] group-hover:underline decoration-2 underline-offset-[6px]">
-                    {producto.nombre}
+                  <div className="relative aspect-square md:aspect-[4/3]">
+                    {/* mix-blend-multiply: el fondo blanco de las fotos se funde con el panel gris. */}
+                    <Image
+                      src={desde.imagenes?.[0] ?? producto.imagenes?.[0] ?? "/placeholder.png"}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1152px) 352px, (min-width: 768px) 33vw, 50vw"
+                      className="object-contain p-2 mix-blend-multiply transition-transform duration-500 ease-ola group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    />
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span
+                      className={`rounded-lg px-2 py-1 caption-1 ${
+                        estado === "Usado" ? "bg-white text-tinta" : "bg-principal-suave text-color-principal"
+                      }`}
+                    >
+                      {estado}
+                    </span>
+                    {quedan <= 3 && (
+                      <span className="rounded-lg bg-white px-2 py-1 caption-1 tabular-nums text-tinta">
+                        {quedan === 1 ? "Queda 1" : `Quedan ${quedan}`}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="mt-3 body-1 text-tinta md:heading-6">{producto.nombre}</h3>
+                  <p className="mt-1 caption-2 text-tinta-suave">{resumenDeOpciones(capacidades, colores)}</p>
+                  <p className="mt-auto pt-4 caption-2 text-tinta-suave">Desde</p>
+                  <p className="heading-6 tabular-nums text-tinta md:heading-5">{formatearPrecio(desde.precio)}</p>
+                  <p className="mt-1 caption-2 text-tinta-suave">{textoCuotas(desde.precio)}</p>
+                  {/* Toda la tarjeta es el link: el botón es su parte visible. */}
+                  <span className="mt-4 rounded-lg bg-white px-3 py-3 text-center button-sm text-tinta ring-1 ring-inset ring-borde-fuerte transition-colors duration-300 ease-ola group-hover:bg-color-principal group-hover:text-white group-hover:ring-color-principal md:rounded-control md:button-md">
+                    Comprar
                   </span>
-                  <span className="order-3 col-span-2 text-[15px] text-espuma/80 md:order-none md:col-span-1 md:text-base">
-                    {variante.memoria}, {variante.color.toLowerCase()}
-                    <span className="block text-espuma/65">{estadoDeLaVariante(variante)}</span>
-                  </span>
-                  <span className={`order-4 col-span-2 text-[15px] tabular-nums md:order-none md:col-span-1 md:text-base ${pocas ? "text-guardavidas" : "text-espuma/80"}`}>
-                    {pocas ? (variante.stock === 1 ? "Queda 1" : `Quedan ${variante.stock}`) : `${variante.stock} unidades`}
-                  </span>
-                  <span className="order-2 text-right text-[clamp(20px,2.2vw,28px)] font-semibold tabular-nums text-white md:order-none">
-                    {formatearPrecio(variante.precio)}
-                  </span>
-                  <ChevronRight
-                    size={22}
-                    strokeWidth={1.75}
-                    aria-hidden="true"
-                    className="hidden text-espuma/50 transition-transform group-hover:translate-x-1 group-hover:text-white motion-reduce:transition-none md:block"
-                  />
                 </Link>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        )}
 
         {todas.length > 0 && (
-          <div className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-4">
-            <Link
-              href="/products"
-              className="inline-flex min-h-14 items-center rounded-control bg-white px-7 font-semibold text-atlantico transition-colors hover:bg-espuma"
-            >
-              {filas.length > MAXIMO_FILAS ? `Ver los ${filas.length} equipos` : "Ver el catálogo"}
+          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <Link href="/products" className={`${botonPrincipal} w-full sm:w-auto`}>
+              {todas.length > MAXIMO ? `Ver los ${todas.length} modelos` : "Ver todo el catálogo"}
             </Link>
-            <Link href="/accesorios" className="font-medium text-white underline decoration-espuma/40 underline-offset-[6px] hover:decoration-white">
+            <Link href="/accesorios" className={`body-2 ${enlace}`}>
               Ver accesorios
+            </Link>
+            <Link href="/compare" className={`body-2 ${enlace}`}>
+              Comparar modelos
             </Link>
           </div>
         )}

@@ -12,6 +12,9 @@
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
+
+  /* Curva de todo lo que se mueve en la home: llega frenando. */
+  --curva-ola: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 
@@ -37,8 +40,11 @@
   --color-atlantico: #0B2533;
   --color-espuma: #EEF2F0;
   --color-guardavidas: #F2611D;
+  /* Fin del degradé del titular del hero (blanco → bruma), el único degradé de la home. */
+  --color-bruma: #9B9B9B;
   --radius-control: 12px;
   --radius-panel: 20px;
+  --ease-ola: var(--curva-ola);
 
   /* Brand colors */
   --color-color-principal: var(--color-principal);
@@ -168,6 +174,63 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
   }
+}
+
+/* ── Estilos de texto con nombre (DESIGN.md, "Tipografía") ────────────────────
+   Cada uno es un escalón de la escala de Tailwind con su interlineado: no se usan tamaños
+   sueltos. Los títulos van en Archivo, el resto en Geist. Se combinan con breakpoints
+   (heading-3 lg:heading-1). */
+@utility heading-1 { @apply font-display text-6xl font-semibold tracking-tight; }
+@utility heading-2 { @apply font-display text-5xl font-semibold tracking-tight; }
+@utility heading-3 { @apply font-display text-4xl font-semibold tracking-tight; }
+@utility heading-4 { @apply font-display text-3xl font-semibold tracking-tight; }
+@utility heading-5 { @apply font-display text-2xl font-semibold tracking-tight; }
+@utility heading-6 { @apply font-display text-xl font-semibold tracking-tight; }
+@utility title-1 { @apply text-xl font-medium; }
+@utility title-2 { @apply text-lg font-medium; }
+@utility title-3 { @apply text-base font-medium; }
+@utility title-4 { @apply text-sm font-medium; }
+@utility body-1 { @apply text-base font-semibold; }
+@utility body-2 { @apply text-base font-medium; }
+@utility body-3 { @apply text-base font-normal; }
+@utility body-4 { @apply text-sm font-semibold; }
+@utility body-5 { @apply text-sm font-medium; }
+@utility body-6 { @apply text-sm font-normal; }
+@utility body-7 { @apply text-lg font-normal; }
+@utility button-lg { @apply text-lg font-semibold; }
+@utility button-md { @apply text-base font-semibold; }
+@utility button-sm { @apply text-sm font-semibold; }
+@utility caption-1 { @apply text-sm font-medium; }
+@utility caption-2 { @apply text-sm font-normal; }
+
+/* ── Entradas de la home ───────────────────────────────────────────────────── */
+
+/* Reveal: la sección sube 32px y aparece una sola vez al entrar en pantalla. El estado oculto
+   sólo lo pone el JS (data-revelado="no") y sólo a lo que todavía está fuera de la pantalla: sin
+   JS, o si el script no llega, el contenido se ve igual. */
+.revelar[data-revelado] {
+  transition:
+    opacity 700ms var(--curva-ola),
+    transform 700ms var(--curva-ola);
+}
+.revelar[data-revelado="no"] {
+  opacity: 0;
+  transform: translateY(32px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .revelar[data-revelado="no"] {
+    transform: none;
+  }
+}
+
+/* Frase de marca: las palabras pasan de apagadas a tinta plena a medida que se scrollea.
+   La clase la pone el JS; sin JS o con reduced-motion el texto está entero desde el principio. */
+.frase-viva .palabra {
+  opacity: 0.3;
+  transition: opacity 500ms var(--curva-ola);
+}
+.frase-viva .palabra[data-activa] {
+  opacity: 1;
 }
 
 /* ── Keyframes ─────────────────────────────────────────────────────────────── */

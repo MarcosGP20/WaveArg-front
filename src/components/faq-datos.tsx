@@ -1,4 +1,6 @@
-export type Grupo = "Los equipos" | "Pago y canje" | "Envíos";
+import Link from "next/link";
+
+export type Grupo = "Los equipos" | "Pago y canje" | "Envíos" | "Cambios y devoluciones";
 
 export const PREGUNTAS: { grupo: Grupo; pregunta: string; respuesta: React.ReactNode }[] = [
   {
@@ -90,7 +92,38 @@ export const PREGUNTAS: { grupo: Grupo; pregunta: string; respuesta: React.React
       </>
     ),
   },
+  {
+    grupo: "Cambios y devoluciones",
+    pregunta: "¿Puedo arrepentirme de la compra?",
+    respuesta: (
+      <>
+        <p>
+          Sí. Si compraste por la web tenés <strong>10 días corridos</strong> desde que recibís el equipo para
+          arrepentirte, sin dar explicaciones y sin costo. Es un derecho de la Ley de Defensa del Consumidor.
+        </p>
+        <p>
+          Lo pedís desde el{" "}
+          <Link href="/arrepentimiento" className="text-color-principal underline underline-offset-4">
+            botón de arrepentimiento
+          </Link>
+          , que también está al pie de todas las páginas.
+        </p>
+      </>
+    ),
+  },
+  {
+    grupo: "Cambios y devoluciones",
+    pregunta: "¿Qué pasa si el equipo llega con una falla?",
+    respuesta: (
+      <>
+        <p>
+          Lo cubre la <strong>garantía de 3 meses</strong>. Escribinos por WhatsApp con tu número de pedido y lo
+          resolvemos nosotros.
+        </p>
+      </>
+    ),
+  },
 ];
 
 // Agrupadas por tema para encontrar rápido la respuesta (orden de los grupos: lo que más se pregunta).
-export const GRUPOS: Grupo[] = ["Los equipos", "Pago y canje", "Envíos"];
+export const GRUPOS: Grupo[] = ["Los equipos", "Pago y canje", "Envíos", "Cambios y devoluciones"];

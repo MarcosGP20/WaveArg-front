@@ -5,6 +5,8 @@ import {
   estadoDelModelo,
   filasDelParte,
   horaDeLectura,
+  resumenDeOpciones,
+  tarjetasDeModelos,
   unidadesEnStock,
   varianteMasBarata,
 } from "./home";
@@ -74,6 +76,43 @@ describe("filasDelParte", () => {
   it("filtra por estado", () => {
     expect(filasDelParte([p], "usados").map((f) => f.variante)).toEqual([usado]);
     expect(filasDelParte([p], "nuevos").map((f) => f.variante)).toEqual([nuevoBarato, nuevoCaro]);
+  });
+});
+
+describe("tarjetasDeModelos", () => {
+  const usado = { ...variante(1, 700, 1, true), memoria: "64GB", color: "Negro" };
+  const nuevoCaro = { ...variante(2, 1200, 2), memoria: "1TB", color: "Azul" };
+  const nuevoBarato = { ...variante(3, 900, 5), memoria: "256GB", color: "Azul" };
+  const agotado = { ...variante(4, 500, 0), memoria: "128GB", color: "Rosa" };
+  const p = producto([usado, nuevoCaro, nuevoBarato, agotado]);
+
+  it("arma una tarjeta por modelo sólo con lo que tiene stock", () => {
+    const [tarjeta] = tarjetasDeModelos([p]);
+    expect(tarjeta.desde).toEqual(usado);
+    expect(tarjeta.unidades).toBe(8);
+    expect(tarjeta.estado).toBe("Nuevo y usado");
+    expect(tarjeta.capacidades).toEqual(["64GB", "256GB", "1TB"]);
+    expect(tarjeta.colores).toEqual(["Negro", "Azul"]);
+  });
+
+  it("con filtro, el precio y el estado salen de ese estado", () => {
+    const [tarjeta] = tarjetasDeModelos([p], "nuevos");
+    expect(tarjeta.desde).toEqual(nuevoBarato);
+    expect(tarjeta.estado).toBe("Nuevo sellado");
+    expect(tarjetasDeModelos([p], "usados")[0].unidades).toBe(1);
+  });
+
+  it("un modelo sin stock no tiene tarjeta", () => {
+    expect(tarjetasDeModelos([producto([agotado])])).toEqual([]);
+    expect(tarjetasDeModelos([producto([nuevoBarato])], "usados")).toEqual([]);
+  });
+});
+
+describe("resumenDeOpciones", () => {
+  it("dice las capacidades y los colores como se leen", () => {
+    expect(resumenDeOpciones(["128GB", "256GB", "512GB"], ["Azul", "Negro", "Rosa"])).toBe("128GB, 256GB y 512GB en 3 colores");
+    expect(resumenDeOpciones(["128GB", "256GB"], ["Azul", "Negro"])).toBe("128GB y 256GB en 2 colores");
+    expect(resumenDeOpciones(["64GB"], ["Azul"])).toBe("64GB en azul");
   });
 });
 
