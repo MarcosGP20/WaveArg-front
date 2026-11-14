@@ -1,8 +1,11 @@
+import { encabezadoTabla, filaTabla, panel, td, th } from "./estilos";
+
 // Una columna por campo de la fila: render recibe el valor de ese campo con su tipo.
 export type Column<T> = {
   [K in keyof T & string]: {
     key: K;
     label: string;
+    align?: "left" | "right";
     render?: (value: T[K], row: T) => React.ReactNode;
   };
 }[keyof T & string];
@@ -11,6 +14,7 @@ interface DataGridProps<T> {
   columns: Column<T>[];
   data: T[];
   title?: string;
+  emptyMessage?: string;
 }
 
 function celda<T>(col: Column<T>, row: T): React.ReactNode {
@@ -19,39 +23,61 @@ function celda<T>(col: Column<T>, row: T): React.ReactNode {
   return render ? render(valor, row) : (valor as React.ReactNode);
 }
 
-export default function DataGrid<T>({ columns, data, title }: DataGridProps<T>) {
+export default function DataGrid<T>({
+  columns,
+  data,
+  title,
+  emptyMessage = "No hay datos para mostrar.",
+}: DataGridProps<T>) {
   return (
-    <div className="bg-white shadow-md rounded my-6 overflow-x-auto">
+    <div className={panel}>
       {title && (
-        <div className="px-6 py-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+        <div className="px-6 py-4">
+          <h2 className="text-lg font-semibold text-tinta">{title}</h2>
         </div>
       )}
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            {columns.map((col) => (
-              <th key={col.key} className="py-3 px-6 text-left">
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="text-gray-600 text-sm font-light">
-          {data.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className="border-b border-gray-200 hover:bg-gray-100"
-            >
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto" aria-label={title}>
+          <thead>
+            <tr className={encabezadoTabla}>
               {columns.map((col) => (
-                <td key={col.key} className="py-3 px-6 text-left">
-                  {celda(col, row)}
-                </td>
+                <th
+                  key={col.key}
+                  scope="col"
+                  className={`${th} ${col.align === "right" ? "text-right" : ""}`}
+                >
+                  {col.label}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="text-sm text-tinta">
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-16 text-center text-tinta-suave">
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+              data.map((row, rowIndex) => (
+                <tr
+                  key={rowIndex}
+                  className={filaTabla}
+                >
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={`${td} ${col.align === "right" ? "text-right tabular-nums" : ""}`}
+                    >
+                      {celda(col, row)}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

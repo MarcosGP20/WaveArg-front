@@ -24,7 +24,7 @@ export default function AdminShell({
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-white">
       {/* Overlay oscuro — solo en mobile cuando sidebar está abierto */}
       {sidebarOpen && (
         <div
@@ -45,7 +45,9 @@ export default function AdminShell({
         <header className="flex-shrink-0">
           <AdminHeader sesion={sesion} onMenuToggle={() => setSidebarOpen((v) => !v)} />
         </header>
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="mx-auto max-w-7xl">{children}</div>
+        </main>
         <Toaster />
       </div>
     </div>

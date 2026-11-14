@@ -122,7 +122,7 @@ export default function EditarAccesorioPage() {
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/admin/accesorios"
-          className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-superficie transition-colors"
         >
           <ArrowLeft size={20} />
         </Link>
@@ -134,7 +134,7 @@ export default function EditarAccesorioPage() {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6"
+        className="bg-superficie rounded-panel p-6 space-y-6"
       >
         {/* Nombre y Modelo */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -144,7 +144,7 @@ export default function EditarAccesorioPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+              className="w-full border border-borde-fuerte rounded-control bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: iPhone 15 Pro"
             />
             {errors.nombre && (
@@ -158,7 +158,7 @@ export default function EditarAccesorioPage() {
             </label>
             <input
               {...register("modelo", { required: "El modelo es obligatorio" })}
-              className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+              className="w-full border border-borde-fuerte rounded-control bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
               placeholder="Ej: A3293"
             />
             {errors.modelo && (
@@ -174,7 +174,7 @@ export default function EditarAccesorioPage() {
           </label>
           <select
             {...register("categoria", { valueAsNumber: true })}
-            className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+            className="w-full border border-borde-fuerte rounded-control bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
           >
             {Object.entries(CATEGORIA_LABELS).map(([val, label]) => (
               <option key={val} value={Number(val)}>
@@ -192,7 +192,7 @@ export default function EditarAccesorioPage() {
           <textarea
             {...register("descripcion", { required: "La descripción es obligatoria" })}
             rows={4}
-            className="w-full border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+            className="w-full border border-borde-fuerte rounded-control bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
           />
           {errors.descripcion && (
             <span className="text-red-500 text-xs mt-1">{errors.descripcion.message}</span>
@@ -207,12 +207,12 @@ export default function EditarAccesorioPage() {
           </label>
 
           {fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 p-3 bg-gray-50 border rounded-xl">
+            <div key={field.id} className="flex flex-col gap-2 p-3 bg-white rounded-control">
               <div className="flex gap-2">
                 <input
                   {...register(`imagenesUrls.${index}.url` as const)}
                   placeholder="https://ejemplo.com/imagen.jpg"
-                  className="flex-1 border border-gray-300 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
+                  className="flex-1 border border-borde-fuerte rounded-control bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal"
                 />
                 {fields.length > 1 && (
                   <button
@@ -261,7 +261,7 @@ export default function EditarAccesorioPage() {
           </button>
           <Link
             href="/admin/accesorios"
-            className="px-6 py-2.5 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="px-6 py-2.5 rounded-control border border-borde-fuerte text-tinta text-sm font-medium hover:bg-superficie transition-colors"
           >
             Cancelar
           </Link>
