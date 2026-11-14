@@ -122,6 +122,18 @@ Evitar en la home (se ven como plantilla): numeración 01/02/03 si no es una sec
 sobre cada título, datos unidos con " · ", flechas agregadas a los links, una palabra del título en
 otro color, y tarjetas iguales para todo.
 
+## Catálogo y ficha
+
+- **Tarjeta de modelo** (`TarjetaDeModelo`): la misma en la home y en /products. Panel `superficie`,
+  foto fundida, estado, "Desde" con el precio más bajo de lo que hay (o de lo filtrado), cuotas y
+  "Comprar". Toda la tarjeta lleva a la ficha con esa variante (`?v=`). Comparar va fuera del link.
+  Las tarjetas de accesorios usan el mismo lenguaje.
+- **Catálogo**: filtros y orden en la URL. Las opciones de capacidad y modelo salen del stock, no de
+  una lista fija. Una variante tiene que cumplir todos los filtros a la vez.
+- **Ficha**: configurador estado → color → capacidad; lo que no hay se ve deshabilitado. Sin stock,
+  ofrece el aviso por WhatsApp. Las especificaciones salen de `lib/especificaciones.ts`; si el
+  modelo no está en la tabla, no se muestran.
+
 ## Accesibilidad
 
 Objetivo WCAG 2.2 AA: contraste 4,5:1 en texto (incluidos los grises chicos), targets de 44px,

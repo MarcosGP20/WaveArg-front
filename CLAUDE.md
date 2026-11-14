@@ -37,6 +37,7 @@ src/
       backend/[...path]/    → proxy universal hacia el backend .NET
       mercadopago/webhook/  → webhook MP con validación HMAC implementada ✅
   components/
+    TarjetaDeModelo.tsx     → tarjeta de un modelo de iPhone (home y catálogo): precio desde, cuotas, unidades, link a la ficha con ?v=
     icons/
       BrandIcons.tsx        → InstagramIcon, TikTokIcon, WhatsAppIcon (SVG inline — lucide no tiene íconos de marca)
     home/                   → home "Parte de olas": HeroVideo, ParteEnVivo, ParteDeStock, FraseDeMarca, FormularioAvisos, Reveal, LineaOla, estilos.ts (clases compartidas)
@@ -50,6 +51,9 @@ src/
     auth-cookie.ts → nombre y opciones de la cookie auth-token (única definición)
     backend.ts    → BACKEND_API_BASE para código server-side (route handlers, server components, sitemap)
     colorMap.ts   → mapeo de nombres de colores a valores hex
+    catalogo.ts   → filtros y orden de /products (viven en la URL) y opciones de filtro sacadas del stock
+    configurador.ts → configurador de la ficha: estado → color → capacidad, variante del link (?v=)
+    especificaciones.ts → specs por modelo de iPhone para la ficha (tabla a mano; modelo desconocido = no se muestran)
     home.ts       → datos de la home: tarjetas por modelo, filas del parte, hora de lectura
     cuotas.ts     → CUOTAS_SIN_INTERES (null hasta que el cliente confirme) y textoCuotas()
     leads.ts      → avisos de stock de la home: por WhatsApp o POST /Leads según NEXT_PUBLIC_LEADS_API
@@ -127,7 +131,6 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - **Notificaciones**: No hay ningún endpoint en el backend. Los toggles en settings muestran badge "Próximamente", contador en perfil hardcodeado a `0`
 
 ### Bugs conocidos pendientes 🐛
-- Race condition en cambio rápido de variante en ProductDetailContent: `switchVariante` usa `setTimeout(150ms)` sin cancelar timeouts anteriores — el estado puede quedar desincronizado si el usuario cambia variantes muy rápido
 - Fetches de productos sin caché: `getProductos()` se llama de forma independiente en catálogo y detalle (para sugeridos). En la home, una sola request cacheada (`hooks/useProductosHome`)
 
 ### Mejoras de UI pendientes 📋

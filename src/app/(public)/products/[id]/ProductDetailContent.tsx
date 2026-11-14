@@ -5,10 +5,15 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { Camera, Battery, ShieldCheck, Truck, RefreshCw, ArrowUpRight } from "lucide-react";
-import { getProductoById, getProductos, Producto, Variante } from "@/lib/api";
+import { Camera, Battery, ShieldCheck, Truck, RefreshCw, ArrowUpRight, Undo2 } from "lucide-react";
+import { ApiError, getProductoById, getProductos, Producto, Variante } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import Breadcrumb from "@/components/Breadcrumb";
+import { botonPrincipal } from "@/components/home/estilos";
+import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
+import { textoCuotas } from "@/lib/cuotas";
+import { especificacionesDe } from "@/lib/especificaciones";
+import { tarjetasDeModelos, type TarjetaDeModelo } from "@/lib/home";
 import { formatearPrecio } from "@/lib/precio";
 import { linkWhatsApp } from "@/lib/whatsapp";
 import {
@@ -22,23 +27,6 @@ import {
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
-function mapColorToHex(color: string): string {
-  const map: Record<string, string> = {
-    Negro: "#1a1a1a", Blanco: "#f5f5f7", Azul: "#1e40af",
-    "Azul Oscuro": "#1e3a5f", Rojo: "#be1b1b", Medianoche: "#0f172a",
-    Estelar: "#e8e3d5", Púrpura: "#6b21a8", Verde: "#15803d",
-    Amarillo: "#ca8a04", Rosa: "#db2777", Titanio: "#8a8a8e",
-    "Titanio Natural": "#c8b89a", "Titanio Negro": "#2c2c2e",
-    "Titanio Blanco": "#f2f2f2", "Titanio Desierto": "#c9a96e",
-    Grafito: "#374151", Plata: "#d1d5db", Dorado: "#b8962e",
-  };
-  return map[color] ?? "#9ca3af";
-}
-
-function needsDarkBorder(color: string): boolean {
-  return ["Blanco", "Estelar", "Plata", "Titanio Blanco", "Titanio Natural", "Dorado", "Titanio Desierto", "Titanio"].includes(color);
-}
-
 function getGalleryImages(product: Producto, variante: Variante): string[] {
   const varImgs = (variante as unknown as Record<string, unknown>)?.imagenes as string[] | undefined;
   if (varImgs && varImgs.length > 0) return varImgs;
@@ -47,53 +35,13 @@ function getGalleryImages(product: Producto, variante: Variante): string[] {
   return stockImg ? [stockImg] : ["/placeholder.png"];
 }
 
-type Spec = { label: string; value: string };
-
 // Lo que Wave promete en todos los equipos (mismos textos que la home).
 const GARANTIAS: { icon: LucideIcon; titulo: string; detalle: string }[] = [
   { icon: ShieldCheck, titulo: "Garantía de 3 meses", detalle: "en todos los equipos" },
   { icon: Truck, titulo: "Envío a todo el país", detalle: "con número de seguimiento" },
   { icon: RefreshCw, titulo: "Plan canje", detalle: "tu iPhone como parte de pago" },
+  { icon: Undo2, titulo: "10 días para arrepentirte", detalle: "si lo compraste por la web" },
 ];
-
-function getSpecs(product: Producto): Spec[] {
-  const n = product.nombre.toLowerCase();
-  const isProMax = n.includes("pro max");
-  const isPro    = n.includes("pro") && !isProMax;
-  const isMini   = n.includes("mini");
-  const isPlus   = n.includes("plus");
-  const gen15    = n.includes("15");
-  const gen14    = n.includes("14");
-  const gen13    = n.includes("13");
-  const gen12    = n.includes("12");
-
-  let chip = "Apple Silicon";
-  if      (gen15 && (isPro || isProMax))             chip = "A17 Pro";
-  else if (gen15 || (gen14 && (isPro || isProMax)))  chip = "A16 Bionic";
-  else if (gen14 || gen13)                            chip = "A15 Bionic";
-  else if (gen12)                                     chip = "A14 Bionic";
-
-  let pantalla = "Super Retina XDR";
-  if      (isProMax || isPlus) pantalla = `6.7" Super Retina XDR`;
-  else if (isMini)             pantalla = `5.4" Super Retina XDR`;
-  else                          pantalla = `6.1" Super Retina XDR`;
-  if ((isPro || isProMax) && (gen13 || gen14 || gen15)) pantalla += " ProMotion";
-
-  const camara = (isPro || isProMax) && (gen14 || gen15) ? "48 MP Fusion" : "12 MP avanzada";
-
-  let video = "Dolby Vision 4K 60 fps";
-  if      (isProMax && gen15) video = "4K 120 fps ProRes";
-  else if (isPro || isProMax) video = "ProRes 4K";
-
-  return [
-    { label: "Chip",         value: chip },
-    { label: "Pantalla",     value: pantalla },
-    { label: "Cámara",       value: camara },
-    { label: "Video",        value: video },
-    { label: "Conectividad", value: "5G + Wi-Fi 6" },
-    { label: "Seguridad",    value: "Face ID + SOS" },
-  ];
-}
 
 // ─── componente ────────────────────────────────────────────────────────────
 
@@ -115,7 +63,9 @@ export default function ProductDetailContent({
   const [added, setAdded]                   = useState(false);
   const [activeImage, setActiveImage]       = useState<string | null>(null);
   const [fading, setFading]                 = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState<Producto[]>([]);
+  const [relacionados, setRelacionados]     = useState<TarjetaDeModelo[]>([]);
+  const [noExiste, setNoExiste]             = useState(false);
+  const [intento, setIntento]               = useState(0);
   const [showStickyBar, setShowStickyBar]   = useState(false);
 
   const addBtnRef = useRef<HTMLButtonElement>(null);
@@ -136,22 +86,21 @@ export default function ProductDetailContent({
           setActiveImage(primera.fotoEstadoUrl ?? data.imagenes?.[0] ?? null);
         }
       } catch (e) {
-        console.error(e);
+        // Sólo un 404 es "no existe": si falló la conexión se ofrece reintentar, no un "no encontrado".
+        if (e instanceof ApiError && e.status === 404) setNoExiste(true);
+        else console.error(e);
       } finally {
         setLoading(false);
       }
     }
     load();
-  }, [id, varianteDelLink]);
+  }, [id, varianteDelLink, intento]);
 
   useEffect(() => {
     if (!product) return;
     getProductos()
-      .then((all) =>
-        setRelatedProducts(
-          all.filter((p) => p.id !== product.id && p.stockTotal > 0).slice(0, 4)
-        )
-      )
+      // Sólo modelos con stock, con su precio más bajo: cada uno abre su ficha en esa variante.
+      .then((all) => setRelacionados(tarjetasDeModelos(all.filter((p) => p.id !== product.id)).slice(0, 4)))
       .catch(() => {});
   }, [product]);
 
@@ -182,11 +131,43 @@ export default function ProductDetailContent({
 
   if (loading)
     return (
-      <div className="py-20 text-center text-tinta-suave text-sm animate-pulse motion-reduce:animate-none">
-        Cargando producto...
+      <div aria-hidden="true" className="mx-auto max-w-6xl px-4 pb-24 pt-6">
+        <div className="h-5 w-48 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+        <div className="mt-6 flex flex-col gap-8 md:flex-row lg:gap-12">
+          <div className="aspect-square w-full animate-pulse rounded-panel bg-superficie motion-reduce:animate-none md:w-[56%]" />
+          <div className="flex flex-1 flex-col gap-6">
+            <div className="h-12 w-3/4 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+            <div className="h-24 animate-pulse rounded-panel bg-superficie motion-reduce:animate-none" />
+            <div className="h-16 animate-pulse rounded-control bg-superficie motion-reduce:animate-none" />
+            <div className="h-16 animate-pulse rounded-control bg-superficie motion-reduce:animate-none" />
+            <div className="h-14 animate-pulse rounded-control bg-borde motion-reduce:animate-none" />
+          </div>
+        </div>
       </div>
     );
-  if (!product || !selectedVariante) return notFound();
+  if (noExiste) return notFound();
+  if (!product || !selectedVariante)
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16 text-tinta md:py-24">
+        <h1 className="heading-4 md:heading-3">No pudimos cargar este iPhone</h1>
+        <p className="mt-3 body-7 text-tinta-suave">Puede ser la conexión. Probá de nuevo en un momento.</p>
+        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              setIntento((n) => n + 1);
+            }}
+            className={botonPrincipal}
+          >
+            Reintentar
+          </button>
+          <Link href="/products" className="body-2 text-color-principal underline underline-offset-4">
+            Volver al catálogo
+          </Link>
+        </div>
+      </div>
+    );
 
   const galleryImages = getGalleryImages(product, selectedVariante);
 
@@ -241,8 +222,7 @@ export default function ProductDetailContent({
     selectedVariante.fotoEstadoUrl &&
     activeImage === selectedVariante.fotoEstadoUrl;
 
-  const specs = getSpecs(product);
-  const minPrice = (p: Producto) => Math.min(...p.variantes.map((v) => v.precio));
+  const specs = especificacionesDe(product.nombre);
 
   const sinStock = selectedVariante.stock < 1;
   const ultimas = selectedVariante.stock > 0 && selectedVariante.stock <= 3;
@@ -359,7 +339,9 @@ export default function ProductDetailContent({
               <p className="text-[32px] font-semibold tracking-tight tabular-nums leading-tight">
                 {formatearPrecio(selectedVariante.precio)}
               </p>
-              <p className="mt-0.5 text-sm text-tinta-suave">Pagás con MercadoPago: tarjeta, débito o transferencia.</p>
+              <p className="mt-0.5 text-sm text-tinta-suave">
+                {textoCuotas(selectedVariante.precio)}. Pagás con tarjeta, débito o transferencia.
+              </p>
             </div>
 
             {estados.length > 1 && (
@@ -509,6 +491,20 @@ export default function ProductDetailContent({
                       : `En stock, quedan las últimas ${selectedVariante.stock} unidades`
                     : `En stock, ${selectedVariante.stock} unidades para enviar`}
               </p>
+              {sinStock && (
+                <p className="text-sm text-tinta-suave">
+                  <a
+                    href={linkWhatsApp(
+                      `Hola, quiero que me avisen cuando entre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}, ${estadoTexto}.`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-color-principal underline underline-offset-[3px] hover:text-color-principal-oscuro"
+                  >
+                    Avisame por WhatsApp cuando vuelva
+                  </a>
+                </p>
+              )}
               <p className="text-sm text-tinta-suave">
                 ¿Tenés dudas?{" "}
                 <a
@@ -541,6 +537,7 @@ export default function ProductDetailContent({
         </div>
 
         {/* ── Especificaciones ── */}
+        {specs && (
         <section aria-labelledby="specs" className="mt-20">
           <h2 id="specs" className="mb-5 text-[28px] font-semibold tracking-tight">Especificaciones</h2>
           <dl className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -552,32 +549,31 @@ export default function ProductDetailContent({
             ))}
           </dl>
         </section>
+        )}
 
         {/* ── Relacionados ── */}
-        {relatedProducts.length > 0 && (
+        {relacionados.length > 0 && (
           <section aria-labelledby="relacionados" className="mt-20">
             <h2 id="relacionados" className="mb-5 text-[28px] font-semibold tracking-tight">También te puede interesar</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {relatedProducts.map((p) => (
+              {relacionados.map(({ producto: p, desde }) => (
                 <Link
                   key={p.id}
-                  href={`/products/${p.id}`}
+                  href={`/products/${p.id}?v=${desde.id}`}
                   className="group rounded-panel bg-superficie p-4 transition-colors hover:bg-borde"
                 >
                   <div className="relative aspect-square">
-                    {p.imagenes?.[0] && (
-                      <Image
-                        src={p.imagenes[0]}
-                        alt=""
-                        fill
-                        sizes="(min-width: 768px) 25vw, 50vw"
-                        className="object-contain p-3 mix-blend-multiply transition-transform duration-300 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                      />
-                    )}
+                    <Image
+                      src={desde.imagenes?.[0] ?? p.imagenes?.[0] ?? "/placeholder.png"}
+                      alt=""
+                      fill
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="object-contain p-3 mix-blend-multiply transition-transform duration-300 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    />
                   </div>
                   <p className="mt-3 text-[15px] font-semibold line-clamp-1">{p.nombre}</p>
-                  <p className="mt-0.5 flex items-center justify-between text-sm text-tinta-suave">
-                    Desde {formatearPrecio(minPrice(p))}
+                  <p className="mt-0.5 flex items-center justify-between text-sm text-tinta-suave tabular-nums">
+                    Desde {formatearPrecio(desde.precio)}
                     <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" className="group-hover:text-color-principal" />
                   </p>
                 </Link>

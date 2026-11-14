@@ -1,5 +1,6 @@
 // Datos del parte de stock de la home (identidad "Parte de olas", DESIGN.md).
 import type { Producto, Variante } from "@/interfaces/producto";
+import { memoriaEnGB } from "@/lib/configurador";
 
 /** La variante más barata con stock, o null si no queda ninguna. */
 export function varianteMasBarata(producto: Producto): Variante | null {
@@ -53,35 +54,35 @@ export type TarjetaDeModelo = {
   colores: string[];
 };
 
-function gigas(memoria: string): number {
-  const n = parseFloat(memoria);
-  if (Number.isNaN(n)) return Infinity;
-  return /tb/i.test(memoria) ? n * 1024 : n;
+/**
+ * La tarjeta de un modelo armada con las variantes que se le pasan, que ya vienen filtradas (con
+ * stock, y lo que haya elegido la persona): el precio más bajo, cuántas unidades quedan y en qué
+ * capacidades y colores. null si no queda ninguna.
+ */
+export function tarjetaDeModelo(producto: Producto, variantes: Variante[]): TarjetaDeModelo | null {
+  if (variantes.length === 0) return null;
+  const nuevos = variantes.some((v) => !v.esUsado);
+  const usados = variantes.some((v) => v.esUsado);
+  return {
+    producto,
+    desde: variantes.reduce((min, v) => (v.precio < min.precio ? v : min)),
+    unidades: variantes.reduce((s, v) => s + v.stock, 0),
+    estado: nuevos && usados ? "Nuevo y usado" : usados ? "Usado" : "Nuevo sellado",
+    capacidades: [...new Set(variantes.map((v) => v.memoria))].sort((a, b) => memoriaEnGB(a) - memoriaEnGB(b)),
+    colores: [...new Set(variantes.map((v) => v.color))],
+  };
 }
 
 /**
- * Una tarjeta por modelo con stock, para comprar desde la home: el precio más bajo, cuántas
- * unidades quedan y en qué capacidades y colores. Sólo cuenta las variantes con stock (y del
- * estado filtrado). El modelo conserva el orden del back.
+ * Una tarjeta por modelo con stock, para comprar desde la home. Sólo cuenta las variantes con
+ * stock (y del estado filtrado). El modelo conserva el orden del back.
  */
 export function tarjetasDeModelos(productos: Producto[], filtro: FiltroEstado = "todos"): TarjetaDeModelo[] {
   return productos.flatMap((producto) => {
     const variantes = (producto.variantes ?? [])
       .filter((v) => v.stock > 0)
       .filter((v) => filtro === "todos" || v.esUsado === (filtro === "usados"));
-    if (variantes.length === 0) return [];
-    const nuevos = variantes.some((v) => !v.esUsado);
-    const usados = variantes.some((v) => v.esUsado);
-    return [
-      {
-        producto,
-        desde: variantes.reduce((min, v) => (v.precio < min.precio ? v : min)),
-        unidades: variantes.reduce((s, v) => s + v.stock, 0),
-        estado: nuevos && usados ? "Nuevo y usado" : usados ? "Usado" : "Nuevo sellado",
-        capacidades: [...new Set(variantes.map((v) => v.memoria))].sort((a, b) => gigas(a) - gigas(b)),
-        colores: [...new Set(variantes.map((v) => v.color))],
-      },
-    ];
+    return tarjetaDeModelo(producto, variantes) ?? [];
   });
 }
 

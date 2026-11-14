@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import TarjetaDeModelo from "@/components/TarjetaDeModelo";
 import { useProductosHome } from "@/hooks/useProductosHome";
-import { textoCuotas } from "@/lib/cuotas";
-import { resumenDeOpciones, tarjetasDeModelos, type FiltroEstado } from "@/lib/home";
-import { formatearPrecio } from "@/lib/precio";
+import { tarjetasDeModelos, type FiltroEstado } from "@/lib/home";
 import { botonPrincipal, enlace, seccion, tituloSeccion } from "./estilos";
 
 const MAXIMO = 6;
@@ -108,46 +106,9 @@ export default function ParteDeStock() {
 
         {tarjetas.length > 0 && (
           <ul className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6">
-            {tarjetas.slice(0, MAXIMO).map(({ producto, desde, unidades: quedan, estado, capacidades, colores }) => (
-              <li key={producto.id}>
-                <Link
-                  href={`/products/${producto.id}?v=${desde.id}`}
-                  className="group flex h-full flex-col rounded-panel bg-superficie p-3 transition-colors duration-300 ease-ola hover:bg-borde md:p-6"
-                >
-                  <div className="relative aspect-square md:aspect-[4/3]">
-                    {/* mix-blend-multiply: el fondo blanco de las fotos se funde con el panel gris. */}
-                    <Image
-                      src={desde.imagenes?.[0] ?? producto.imagenes?.[0] ?? "/placeholder.png"}
-                      alt=""
-                      fill
-                      sizes="(min-width: 1152px) 352px, (min-width: 768px) 33vw, 50vw"
-                      className="object-contain p-2 mix-blend-multiply transition-transform duration-500 ease-ola group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                    />
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span
-                      className={`rounded-lg px-2 py-1 caption-1 ${
-                        estado === "Usado" ? "bg-white text-tinta" : "bg-principal-suave text-color-principal"
-                      }`}
-                    >
-                      {estado}
-                    </span>
-                    {quedan <= 3 && (
-                      <span className="rounded-lg bg-white px-2 py-1 caption-1 tabular-nums text-tinta">
-                        {quedan === 1 ? "Queda 1" : `Quedan ${quedan}`}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-3 body-1 text-tinta md:heading-6">{producto.nombre}</h3>
-                  <p className="mt-1 caption-2 text-tinta-suave">{resumenDeOpciones(capacidades, colores)}</p>
-                  <p className="mt-auto pt-4 caption-2 text-tinta-suave">Desde</p>
-                  <p className="heading-6 tabular-nums text-tinta md:heading-5">{formatearPrecio(desde.precio)}</p>
-                  <p className="mt-1 caption-2 text-tinta-suave">{textoCuotas(desde.precio)}</p>
-                  {/* Toda la tarjeta es el link: el botón es su parte visible. */}
-                  <span className="mt-4 rounded-lg bg-white px-3 py-3 text-center button-sm text-tinta ring-1 ring-inset ring-borde-fuerte transition-colors duration-300 ease-ola group-hover:bg-color-principal group-hover:text-white group-hover:ring-color-principal md:rounded-control md:button-md">
-                    Comprar
-                  </span>
-                </Link>
+            {tarjetas.slice(0, MAXIMO).map((tarjeta) => (
+              <li key={tarjeta.producto.id}>
+                <TarjetaDeModelo tarjeta={tarjeta} />
               </li>
             ))}
           </ul>
