@@ -28,7 +28,7 @@ async function tokenA_medida(
 }
 
 const ahora = () => Math.floor(Date.now() / 1000);
-const claimsValidos = () => ({
+const claimsValidos = (): Record<string, unknown> => ({
   id: "42",
   email: "cliente@wave.local",
   rol: "Cliente",
@@ -64,8 +64,9 @@ describe("verificarSesion", () => {
   });
 
   it("rechaza un token sin exp", async () => {
-    const { exp: _exp, ...sinExp } = claimsValidos();
-    expect(await verificarSesion(await tokenA_medida(sinExp))).toBeNull();
+    const claims = claimsValidos();
+    delete claims.exp;
+    expect(await verificarSesion(await tokenA_medida(claims))).toBeNull();
   });
 
   it("rechaza un token de otro issuer", async () => {
@@ -86,10 +87,11 @@ describe("verificarSesion", () => {
   });
 
   it("rechaza un token sin id o sin rol (ej. el de reset de contraseña)", async () => {
-    const { id: _id, ...sinId } = claimsValidos();
-    const { rol: _rol, ...sinRol } = claimsValidos();
-    expect(await verificarSesion(await tokenA_medida(sinId))).toBeNull();
-    expect(await verificarSesion(await tokenA_medida(sinRol))).toBeNull();
+    for (const claim of ["id", "rol"]) {
+      const claims = claimsValidos();
+      delete claims[claim];
+      expect(await verificarSesion(await tokenA_medida(claims))).toBeNull();
+    }
   });
 
   it("rechaza tokens mal formados sin lanzar", async () => {
