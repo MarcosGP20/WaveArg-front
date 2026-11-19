@@ -142,10 +142,6 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 ### Pendiente del cliente 📋
 - Cuotas sin interés (`CUOTAS_SIN_INTERES` en `lib/cuotas.ts`), datos del vendedor (`lib/vendedor.ts`) y textos legales: ver "Pendiente del cliente" en DESIGN.md
 
-### Atención ⚠️
-- No existe ruta `/mayorista` como página en el App Router, aunque proxy.ts la lista como ruta pública.
-
-## Dominios de imagen permitidos (next.config.ts)
 - `store.storeimages.cdn-apple.com`, `www.apple.com` (Apple)
 - `http2.mlstatic.com` (MercadoLibre)
 - `www.sagitariodigital.com.ar`
