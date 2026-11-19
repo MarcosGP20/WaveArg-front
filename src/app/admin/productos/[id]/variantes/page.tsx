@@ -311,7 +311,6 @@ export default function GestionVariantesPage() {
 
   useEffect(() => {
     if (!id) return;
-    setLoadingProducto(true);
     ProductService.getById(Number(id))
       .then(setProducto)
       .catch(() => toast.error("No se pudo cargar el producto"))

@@ -299,7 +299,6 @@ export default function GestionVariantesAccesorioPage() {
 
   useEffect(() => {
     if (!id) return;
-    setLoadingAccesorio(true);
     AccesoriosService.getById(Number(id))
       .then(setAccesorio)
       .catch(() => toast.error("No se pudo cargar el accesorio"))
