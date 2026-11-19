@@ -44,9 +44,8 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  function cargarUsuarios() {
-    setLoading(true);
-    setError(null);
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  function traerUsuarios() {
     UsuariosService.getAll()
       .then((data) => {
         setUsuarios(data);
@@ -55,8 +54,14 @@ export default function UsersPage() {
       .finally(() => setLoading(false));
   }
 
+  function cargarUsuarios() {
+    setLoading(true);
+    setError(null);
+    traerUsuarios();
+  }
+
   useEffect(() => {
-    cargarUsuarios();
+    traerUsuarios();
   }, []);
 
   // Filtrado local (por rol y búsqueda de email/nombre)

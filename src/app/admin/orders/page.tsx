@@ -122,9 +122,8 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  function cargarPedidos(estado?: string) {
-    setLoading(true);
-    setError(null);
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  function traerPedidos(estado?: string) {
     PedidosService.getAll(estado)
       .then((data) => {
         setPedidos(data);
@@ -133,8 +132,14 @@ export default function OrdersPage() {
       .finally(() => setLoading(false));
   }
 
+  function cargarPedidos(estado?: string) {
+    setLoading(true);
+    setError(null);
+    traerPedidos(estado);
+  }
+
   useEffect(() => {
-    cargarPedidos(filtroEstado || undefined);
+    traerPedidos(filtroEstado || undefined);
   }, [filtroEstado]);
 
   // Se recarga en vez de actualizar en el lugar: el cambio de estado modifica las
@@ -166,7 +171,11 @@ export default function OrdersPage() {
       >
         <select
           value={filtroEstado}
-          onChange={(e) => setFiltroEstado(e.target.value)}
+          onChange={(e) => {
+            setLoading(true);
+            setError(null);
+            setFiltroEstado(e.target.value);
+          }}
           aria-label="Filtrar por estado"
           className={control}
         >

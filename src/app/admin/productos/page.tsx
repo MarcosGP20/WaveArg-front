@@ -46,18 +46,23 @@ export default function InventarioPage() {
     }
   };
 
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  const traerProductos = useCallback(
+    () =>
+      ProductService.getAll()
+        .then(setProductos)
+        .catch((err: unknown) =>
+          setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario."),
+        )
+        .finally(() => setLoading(false)),
+    [],
+  );
+
   const cargarProductos = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const data = await ProductService.getAll();
-      setProductos(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await traerProductos();
+  }, [traerProductos]);
 
   const handleDelete = async (id: number) => {
     setIsDeleting(true);
@@ -74,8 +79,8 @@ export default function InventarioPage() {
   };
 
   useEffect(() => {
-    cargarProductos();
-  }, [cargarProductos]);
+    traerProductos();
+  }, [traerProductos]);
 
   // Lógica de agrupación
   const productosAgrupados = productos.reduce((acc: Producto[], current) => {

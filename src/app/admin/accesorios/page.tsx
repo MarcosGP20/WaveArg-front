@@ -26,18 +26,23 @@ export default function InventarioPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  const traerAccesorios = useCallback(
+    () =>
+      AccesoriosService.getAll()
+        .then(setAccesorios)
+        .catch((err: unknown) =>
+          setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario."),
+        )
+        .finally(() => setLoading(false)),
+    [],
+  );
+
   const cargarAccesorios = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const data = await AccesoriosService.getAll();
-      setAccesorios(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await traerAccesorios();
+  }, [traerAccesorios]);
 
   const handleDelete = async (id: number) => {
     setIsDeleting(true);
@@ -54,8 +59,8 @@ export default function InventarioPage() {
   };
 
   useEffect(() => {
-    cargarAccesorios();
-  }, [cargarAccesorios]);
+    traerAccesorios();
+  }, [traerAccesorios]);
 
   // Lógica de agrupación
   const accesoriosAgrupados = accesorios.reduce((acc: Accesorio[], current) => {
