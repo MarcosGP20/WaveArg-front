@@ -62,7 +62,7 @@ export default function NuevoProductoPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-sm">
+    <div className="max-w-4xl mx-auto p-6 bg-superficie rounded-panel">
       <h1 className="text-2xl font-bold mb-6 text-color-principal">
         Crear Nuevo Producto
       </h1>
@@ -76,7 +76,7 @@ export default function NuevoProductoPage() {
             </label>
             <input
               {...register("nombre", { required: "El nombre es obligatorio" })}
-              className="mt-1 block w-full border border-gray-300 rounded-full p-2 focus:ring-color-principal focus:border-color-principal"
+              className="mt-1 block w-full border border-borde-fuerte rounded-control bg-white p-2 focus:ring-color-principal focus:border-color-principal"
               placeholder="Ej: iPhone 14 Pro"
             />
             {errors.nombre && (
@@ -92,7 +92,7 @@ export default function NuevoProductoPage() {
             </label>
             <input
               {...register("modelo", { required: "El modelo es obligatorio" })}
-              className="mt-1 block w-full border border-gray-300 rounded-full p-2 focus:ring-color-principal focus:border-color-principal"
+              className="mt-1 block w-full border border-borde-fuerte rounded-control bg-white p-2 focus:ring-color-principal focus:border-color-principal"
               placeholder="Ej: A2894"
             />
             {errors.modelo && (
@@ -112,7 +112,7 @@ export default function NuevoProductoPage() {
               required: "La descripción es obligatoria",
             })}
             rows={4}
-            className="mt-1 block w-full border border-gray-300 rounded-full p-2 focus:ring-color-principal focus:border-color-principal"
+            className="mt-1 block w-full border border-borde-fuerte rounded-control bg-white p-2 focus:ring-color-principal focus:border-color-principal"
           />
         </div>
 
@@ -125,13 +125,13 @@ export default function NuevoProductoPage() {
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="flex flex-col gap-2 p-3 border rounded-xl bg-gray-50"
+              className="flex flex-col gap-2 p-3 bg-white rounded-control"
             >
               <div className="flex gap-2">
                 <input
                   {...register(`imagenesUrls.${index}.url` as const)}
                   placeholder="https://ejemplo.com/imagen.jpg"
-                  className="flex-1 border border-gray-300 rounded-full p-2 text-sm"
+                  className="flex-1 border border-borde-fuerte rounded-control bg-white p-2 text-sm"
                 />
                 {fields.length > 1 && (
                   <button

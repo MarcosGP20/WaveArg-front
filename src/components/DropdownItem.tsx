@@ -58,7 +58,11 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, link
   }, [isOpen]);
 
   // Navegar con un link del panel lo cierra.
-  useEffect(() => setIsOpen(false), [pathname]);
+  const [pathnameAnterior, setPathnameAnterior] = useState(pathname);
+  if (pathnameAnterior !== pathname) {
+    setPathnameAnterior(pathname);
+    setIsOpen(false);
+  }
 
   return (
     <div ref={raizRef} className="relative" onMouseEnter={open} onMouseLeave={scheduleClose}>

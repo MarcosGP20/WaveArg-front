@@ -10,7 +10,8 @@ const WA_URL = linkWhatsApp("Hola, me interesa saber más sobre los productos de
 // En las pantallas de compra el aviso no aparece solo: la venta se concreta en la web y el globo
 // tapaba la ficha (DESIGN.md). El botón sigue disponible.
 function esPantallaDeCompra(pathname: string): boolean {
-  return /^\/(products|accesorios)\/[^/]+/.test(pathname) || pathname.startsWith("/cart") || pathname.startsWith("/checkout");
+  // La home también: el hero tiene la tarjeta de compra del iPhone destacado.
+  return pathname === "/" || /^\/(products|accesorios)\/[^/]+/.test(pathname) || pathname.startsWith("/cart") || pathname.startsWith("/checkout");
 }
 
 export default function WhatsAppButton() {

@@ -3,8 +3,12 @@ import {
   AccesorioVariantesService,
   ApiError,
   CODIGO_VINCULAR_GOOGLE,
+  getProductos,
+  invalidarProductos,
   loginUser,
   loginWithGoogle,
+  MENSAJE_REGISTRO_POR_DEFECTO,
+  registerUser,
   stockActualSiCambio,
   VariantesService,
   vincularGoogle,
@@ -130,5 +134,91 @@ describe("edición de stock desde el admin (api.ts)", () => {
     expect(stockActualSiCambio(new ApiError("Ya existe", 409, { message: "Ya existe" }))).toBeNull();
     expect(stockActualSiCambio(new ApiError("Error", 500, { stockActual: 2 }))).toBeNull();
     expect(stockActualSiCambio(new Error("red"))).toBeNull();
+  });
+});
+
+describe("getProductos: una sola request compartida (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+    vi.useFakeTimers();
+    invalidarProductos();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  const lista = [{ id: 1, nombre: "iPhone", variantes: [] }];
+
+  it("dos pedidos simultáneos (catálogo y ficha) hacen una sola request", async () => {
+    fetchMock.mockImplementation(async () => respuesta(200, lista));
+    const [a, b] = await Promise.all([getProductos(), getProductos()]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(a).toEqual(lista);
+    expect(b).toEqual(lista);
+  });
+
+  it("reusa el resultado dentro de la ventana de caché y vuelve a pedir después", async () => {
+    fetchMock.mockImplementation(async () => respuesta(200, lista));
+    await getProductos();
+    vi.advanceTimersByTime(10_000);
+    await getProductos();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(60_000);
+    await getProductos();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("un error no queda cacheado: el siguiente pedido reintenta", async () => {
+    fetchMock.mockResolvedValueOnce(respuesta(500, { message: "caído" }));
+    await expect(getProductos()).rejects.toBeInstanceOf(ApiError);
+    fetchMock.mockImplementation(async () => respuesta(200, lista));
+    expect(await getProductos()).toEqual(lista);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("cada llamador recibe su copia: ordenar una no altera la de otro", async () => {
+    fetchMock.mockImplementation(async () => respuesta(200, lista));
+    const a = await getProductos();
+    const b = await getProductos();
+    expect(a).not.toBe(b);
+    a[0].nombre = "mutado";
+    expect(b[0].nombre).toBe("iPhone");
+  });
+
+  it("invalidarProductos fuerza una request nueva", async () => {
+    fetchMock.mockImplementation(async () => respuesta(200, lista));
+    await getProductos();
+    invalidarProductos();
+    await getProductos();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("registro (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const datos = { email: "ana@test.local", contraseña: "Segura123!", rolId: 0 };
+
+  it("devuelve el mensaje del back, que es el mismo exista o no la cuenta (back#104)", async () => {
+    const mensaje = "Listo. Si el email ya tenía una cuenta, te mandamos un mail para que ingreses.";
+    fetchMock.mockResolvedValue(respuesta(200, { message: mensaje }));
+
+    expect(await registerUser(datos)).toBe(mensaje);
+  });
+
+  it("si el back no manda un mensaje (versión anterior), usa uno por defecto", async () => {
+    fetchMock.mockResolvedValue(respuesta(200, "Usuario Registrado"));
+
+    expect(await registerUser(datos)).toBe(MENSAJE_REGISTRO_POR_DEFECTO);
   });
 });

@@ -115,7 +115,7 @@ function UrlListField({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
           placeholder="https://..."
-          className={`flex-1 text-xs px-3 py-2 border border-gray-200 rounded-full outline-none ring-2 ring-transparent transition-all ${s.inputRing}`}
+          className={`flex-1 text-xs px-3 py-2 border border-borde-fuerte rounded-control bg-white outline-none ring-2 ring-transparent transition-all ${s.inputRing}`}
         />
         <button
           type="button"
@@ -130,12 +130,12 @@ function UrlListField({
         <ul className="space-y-2 pt-1">
           {urls.map((url, i) => (
             <li key={i} className={`flex items-center gap-3 px-3 py-2 rounded-xl border text-xs ${s.item}`}>
-              <div className="w-12 h-12 flex-shrink-0 rounded-xl border border-white overflow-hidden bg-white shadow-sm">
+              <div className="w-12 h-12 flex-shrink-0 rounded-xl border border-white overflow-hidden bg-white">
                 <div className="relative w-full h-full">
                   <Image src={url} alt={`foto-${i + 1}`} fill className="object-contain p-0.5" />
                 </div>
               </div>
-              <span className="flex-1 truncate font-mono text-[10px] opacity-60">{url}</span>
+              <span className="flex-1 truncate font-mono text-xs opacity-60">{url}</span>
               <button type="button" onClick={() => remove(i)} className="text-gray-500 hover:text-red-500 flex-shrink-0 transition-colors">
                 <X size={14} />
               </button>
@@ -167,9 +167,9 @@ function VarianteCard({
   const imagenesReales = (useWatch({ control, name: `variantes.${index}.imagenesReales` })) ?? [];
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-superficie rounded-panel overflow-hidden">
       {/* Cabecera */}
-      <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-borde">
         <span className="text-sm font-bold text-gray-600">Variante #{index + 1}</span>
         <button
           type="button"
@@ -185,32 +185,32 @@ function VarianteCard({
         {/* Fila de campos base */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Color *</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Color *</label>
             <input
               {...register(`variantes.${index}.color`)}
               placeholder="ej: Negro Titanio"
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-borde-fuerte rounded-control bg-white focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Memoria *</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Memoria *</label>
             <select
               {...register(`variantes.${index}.memoria`)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal outline-none"
+              className="w-full px-3 py-2 text-sm border border-borde-fuerte rounded-control bg-white focus:border-color-principal outline-none"
             >
               {MEMORIAS.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Condición *</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Condición *</label>
             <select
               {...register(`variantes.${index}.esUsado`, {
                 setValueAs: (v: string) => v === "true",
               })}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal outline-none"
+              className="w-full px-3 py-2 text-sm border border-borde-fuerte rounded-control bg-white focus:border-color-principal outline-none"
             >
               <option value="false">🆕 Nuevo</option>
               <option value="true">📦 Usado</option>
@@ -218,12 +218,12 @@ function VarianteCard({
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batería %</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Batería %</label>
             <input
               {...register(`variantes.${index}.detalleEstado`)}
               placeholder="ej: 87"
               disabled={!esUsado}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal outline-none disabled:bg-gray-50 disabled:text-gray-300 transition-colors"
+              className="w-full px-3 py-2 text-sm border border-borde-fuerte rounded-control bg-white focus:border-color-principal outline-none disabled:bg-superficie disabled:text-tinta-suave transition-colors"
             />
           </div>
         </div>
@@ -231,13 +231,13 @@ function VarianteCard({
         {/* Precio + Stock */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Precio (USD) *</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Precio (USD) *</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-bold">$</span>
               <input
                 type="number"
                 {...register(`variantes.${index}.precio`)}
-                className="w-full pl-7 pr-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none font-semibold"
+                className="w-full pl-7 pr-3 py-2 text-sm border border-borde-fuerte rounded-control bg-white focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none font-semibold"
                 required
                 min={0}
               />
@@ -245,18 +245,18 @@ function VarianteCard({
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Stock (u.) *</label>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Stock (u.) *</label>
             <input
               type="number"
               {...register(`variantes.${index}.stock`)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-full focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
+              className="w-full px-3 py-2 text-sm border border-borde-fuerte rounded-control bg-white focus:border-color-principal focus:ring-2 focus:ring-color-principal/20 outline-none"
               required
               min={0}
             />
           </div>
         </div>
 
-        <hr className="border-gray-100" />
+        <hr className="border-borde" />
 
         {/* 📸 Fotos de stock del color */}
         <UrlListField
@@ -270,7 +270,7 @@ function VarianteCard({
         {/* 📷 Fotos reales — solo si es usado */}
         {esUsado && (
           <>
-            <hr className="border-gray-100" />
+            <hr className="border-borde" />
             <UrlListField
               label="📷 Fotos reales del equipo"
               hint="Fotos del equipo físico que estás vendiendo: pantalla, dorso, laterales, detalle de la batería, etc."
@@ -311,7 +311,6 @@ export default function GestionVariantesPage() {
 
   useEffect(() => {
     if (!id) return;
-    setLoadingProducto(true);
     ProductService.getById(Number(id))
       .then(setProducto)
       .catch(() => toast.error("No se pudo cargar el producto"))
@@ -417,7 +416,7 @@ export default function GestionVariantesPage() {
         <button
           type="button"
           onClick={() => append({ ...VARIANTE_DEFAULT })}
-          className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-sm font-semibold text-gray-500 hover:border-color-principal hover:text-color-principal transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 border-2 border-dashed border-borde-fuerte rounded-panel text-sm font-semibold text-gray-500 hover:border-color-principal hover:text-color-principal transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={16} />
           Agregar otra variante
@@ -427,7 +426,7 @@ export default function GestionVariantesPage() {
         <button
           type="submit"
           disabled={isSubmitting || loadingProducto}
-          className="w-full bg-color-principal text-white py-4 rounded-full font-bold flex justify-center items-center gap-2 shadow-lg hover:bg-color-principal-oscuro transition-all disabled:opacity-60"
+          className="w-full bg-color-principal text-white py-4 rounded-control font-semibold flex justify-center items-center gap-2 hover:bg-color-principal-oscuro transition-all disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {isSubmitting ? "Guardando..." : "Guardar Variantes"}

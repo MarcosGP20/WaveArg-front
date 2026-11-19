@@ -33,7 +33,7 @@ export function decodeJWT(token: string) {
     }
     const payload = JSON.parse(json);
     return payload;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

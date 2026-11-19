@@ -7,6 +7,7 @@ import { useEstado } from "@/context/EstadoContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { esUrlDePagoValida } from "@/lib/pago";
 import { ShoppingCart, CreditCard, Loader2, AlertCircle, LogIn, Check, MapPin, PauseCircle } from "lucide-react";
 import {
   primerCampoInvalido,
@@ -115,6 +116,10 @@ export default function CheckoutPage() {
         throw new Error(
           "No se recibió la URL de pago de MercadoPago. Revisá la consola para ver la respuesta del backend."
         );
+      }
+
+      if (!esUrlDePagoValida(urlPago)) {
+        throw new Error("La URL de pago recibida no es de MercadoPago. No te redirigimos por seguridad.");
       }
 
       window.location.href = urlPago;

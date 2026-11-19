@@ -25,7 +25,9 @@ interface IPhoneCarouselProps {
 export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const [imageError, setImageError] = useState(false); // Control de placeholder
+  // Slide cuya imagen falló (placeholder). Guardar el índice evita resetearlo al cambiar de slide.
+  const [slideConError, setSlideConError] = useState<number | null>(null);
+  const imageError = slideConError === current;
 
   // Autoplay (front#15): corre solo si el usuario no lo pausó, no hay mouse ni foco adentro y
   // no pidió reducir movimiento.
@@ -37,11 +39,6 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
   const isAnimatingRef = useRef(false);
 
   const total = items.length;
-
-  // Resetear el error de imagen cada vez que cambia el slide
-  useEffect(() => {
-    setImageError(false);
-  }, [current]);
 
   const goTo = useCallback(
     (index: number, dir: 1 | -1) => {
@@ -99,7 +96,8 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
         onTouchEnd={(e) => {
           if (!touchStartX.current) return;
           const delta = e.changedTouches[0].clientX - touchStartX.current;
-          if (Math.abs(delta) > 50) delta < 0 ? next() : prev();
+          if (Math.abs(delta) > 50) if (delta < 0) next();
+          else prev();
           touchStartX.current = null;
         }}
       >
@@ -130,7 +128,7 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
                     alt={slide.model}
                     fill
                     className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)]"
-                    onError={() => setImageError(true)}
+                    onError={() => setSlideConError(current)}
                     priority
                   />
                 ) : (

@@ -4,13 +4,18 @@ import { useId } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatearPrecio } from "@/lib/precio";
 
-/** "iphones"  → muestra Precio + Condición + Memoria + Modelo  (página /products)
- *  "accesorios" → muestra Precio + Condición                   (página /accesorios) */
+/** "iphones"  → muestra Precio + Condición + Capacidad + Modelo  (página /products)
+ *  "accesorios" → muestra Precio + Condición                     (página /accesorios) */
 type FilterMode = "iphones" | "accesorios";
+
+type Opcion = { valor: string; texto: string };
 
 interface FilterSidebarProps {
   mode?: FilterMode;
   priceRange?: { min: number; max: number };
+  /** Capacidades y modelos que hay en stock (lib/catalogo.ts): las opciones no se escriben a mano. */
+  memorias?: Opcion[];
+  modelos?: Opcion[];
   /** Cuando se renderiza dentro de un bottom sheet, omite el card wrapper */
   flat?: boolean;
 }
@@ -18,6 +23,8 @@ interface FilterSidebarProps {
 export default function FilterSidebar({
   mode = "iphones",
   priceRange,
+  memorias = [],
+  modelos = [],
   flat = false,
 }: FilterSidebarProps) {
   const router = useRouter();
@@ -30,7 +37,8 @@ export default function FilterSidebar({
 
     if (current.includes(value)) {
       const next = current.filter((v) => v !== value);
-      next.length > 0 ? params.set(key, next.join(",")) : params.delete(key);
+      if (next.length > 0) params.set(key, next.join(","));
+      else params.delete(key);
     } else {
       params.set(key, [...current, value].join(","));
     }
@@ -56,46 +64,44 @@ export default function FilterSidebar({
     const isDefault =
       (key === "precioMin" && val === priceRange!.min) ||
       (key === "precioMax" && val === priceRange!.max);
-    isDefault ? params.delete(key) : params.set(key, String(val));
+    if (isDefault) params.delete(key);
+    else params.set(key, String(val));
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   const content = (
-    <>
-      <div className="mb-6 flex justify-between items-center">
-        <h2 id={tituloId} className="font-bold text-xl text-color-principal dark:text-white">Filtros</h2>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between gap-4">
+        <h2 id={tituloId} className="heading-6 text-tinta">Filtros</h2>
         {hasActiveFilters && (
           <button
             type="button"
             onClick={() => router.push("?", { scroll: false })}
-            className="text-xs text-red-700 hover:underline"
+            className="py-2 caption-1 text-color-principal underline underline-offset-4 hover:text-color-principal-oscuro"
           >
             Limpiar todo
           </button>
         )}
       </div>
 
-      {/* Precio */}
-      {priceRange && currentPrecioMin !== null && currentPrecioMax !== null && (
-        <>
-          <FilterSection title="Precio">
-            <PriceRangeSlider
-              min={priceRange.min}
-              max={priceRange.max}
-              low={currentPrecioMin}
-              high={currentPrecioMax}
-              onChangeLow={(v) => handlePriceChange("precioMin", v)}
-              onChangeHigh={(v) => handlePriceChange("precioMax", v)}
-            />
-          </FilterSection>
-          <div className="border-t border-gray-100 dark:border-neutral-800 my-4" />
-        </>
+      {/* Precio: sólo si hay un rango para elegir */}
+      {priceRange && priceRange.max > priceRange.min && currentPrecioMin !== null && currentPrecioMax !== null && (
+        <FilterSection title="Precio">
+          <PriceRangeSlider
+            min={priceRange.min}
+            max={priceRange.max}
+            low={currentPrecioMin}
+            high={currentPrecioMax}
+            onChangeLow={(v) => handlePriceChange("precioMin", v)}
+            onChangeHigh={(v) => handlePriceChange("precioMax", v)}
+          />
+        </FilterSection>
       )}
 
       {/* Condición — aplica a ambos modos */}
       <FilterSection title="Condición">
         <FilterOption
-          label="Nuevo (sellado)"
+          label="Nuevo sellado"
           checked={isChecked("estado", "nuevo")}
           onChange={() => handleFilterChange("estado", "nuevo")}
         />
@@ -106,49 +112,42 @@ export default function FilterSidebar({
         />
       </FilterSection>
 
-      {/* Memoria y Modelo — solo para iPhones */}
-      {mode === "iphones" && (
-        <>
-          <div className="border-t border-gray-100 dark:border-neutral-800 my-4" />
-
-          <FilterSection title="Memoria">
-            {["64GB", "128GB", "256GB", "512GB"].map((mem) => (
-              <FilterOption
-                key={mem}
-                label={mem}
-                checked={isChecked("memoria", mem.toLowerCase())}
-                onChange={() => handleFilterChange("memoria", mem.toLowerCase())}
-              />
-            ))}
-          </FilterSection>
-
-          <div className="border-t border-gray-100 dark:border-neutral-800 my-4" />
-
-          <FilterSection title="Modelo">
-            {["iPhone 16", "iPhone 15 Pro", "iPhone 15", "iPhone 14", "iPhone 13", "iPhone 11"].map(
-              (model) => (
-                <FilterOption
-                  key={model}
-                  label={model}
-                  checked={isChecked("modelo", model.replace(/ /g, "-").toLowerCase())}
-                  onChange={() =>
-                    handleFilterChange("modelo", model.replace(/ /g, "-").toLowerCase())
-                  }
-                />
-              )
-            )}
-          </FilterSection>
-        </>
+      {/* Capacidad y Modelo — solo para iPhones */}
+      {mode === "iphones" && memorias.length > 1 && (
+        <FilterSection title="Capacidad">
+          {memorias.map(({ valor, texto }) => (
+            <FilterOption
+              key={valor}
+              label={texto}
+              checked={isChecked("memoria", valor)}
+              onChange={() => handleFilterChange("memoria", valor)}
+            />
+          ))}
+        </FilterSection>
       )}
-    </>
+
+      {mode === "iphones" && modelos.length > 1 && (
+        <FilterSection title="Modelo">
+          {modelos.map(({ valor, texto }) => (
+            <FilterOption
+              key={valor}
+              label={texto}
+              checked={isChecked("modelo", valor)}
+              onChange={() => handleFilterChange("modelo", valor)}
+            />
+          ))}
+        </FilterSection>
+      )}
+    </div>
   );
 
-  if (flat) return <div>{content}</div>;
+  if (flat) return content;
 
   return (
     <section
       aria-labelledby={tituloId}
-      className="w-full bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 h-fit sticky top-4"
+      // top-20: debajo de la barra de navegación, que es sticky y mide 64px.
+      className="sticky top-20 h-fit w-full rounded-panel border border-borde bg-white p-6"
     >
       {content}
     </section>
@@ -179,17 +178,17 @@ function PriceRangeSlider({
 
   return (
     <div className="pt-1">
-      <div className="flex justify-between text-xs font-medium text-gray-600 mb-4" aria-hidden="true">
+      <div className="mb-4 flex justify-between caption-1 tabular-nums text-tinta" aria-hidden="true">
         <span>{formatearPrecio(low)}</span>
         <span>{formatearPrecio(high)}</span>
       </div>
 
-      <div className="relative h-5 flex items-center">
+      <div className="relative flex h-6 items-center">
         {/* Track background */}
-        <div className="absolute inset-x-0 h-1.5 bg-gray-200 rounded-full" />
+        <div className="absolute inset-x-0 h-1.5 rounded-full bg-borde" />
         {/* Active fill */}
         <div
-          className="absolute h-1.5 bg-color-principal rounded-full"
+          className="absolute h-1.5 rounded-full bg-color-principal"
           style={{ left: `${lowPct}%`, right: `${100 - highPct}%` }}
         />
 
@@ -204,7 +203,7 @@ function PriceRangeSlider({
           step={step}
           value={low}
           onChange={(e) => onChangeLow(Math.min(Number(e.target.value), high - step))}
-          className="peer/min absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="peer/min absolute inset-0 h-full w-full cursor-pointer opacity-0"
           style={{ zIndex: lowPct > 90 ? 5 : 3 }}
         />
         {/* Max input — invisible pero interactivo */}
@@ -217,18 +216,18 @@ function PriceRangeSlider({
           step={step}
           value={high}
           onChange={(e) => onChangeHigh(Math.max(Number(e.target.value), low + step))}
-          className="peer/max absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="peer/max absolute inset-0 h-full w-full cursor-pointer opacity-0"
           style={{ zIndex: 4 }}
         />
 
         {/* Visual thumb — min */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none peer-focus-visible/min:ring-2 peer-focus-visible/min:ring-[#2563eb] peer-focus-visible/min:ring-offset-2"
+          className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-color-principal bg-white peer-focus-visible/min:ring-2 peer-focus-visible/min:ring-[#2563eb] peer-focus-visible/min:ring-offset-2"
           style={{ left: `${lowPct}%` }}
         />
         {/* Visual thumb — max */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white border-2 border-color-principal shadow pointer-events-none peer-focus-visible/max:ring-2 peer-focus-visible/max:ring-[#2563eb] peer-focus-visible/max:ring-offset-2"
+          className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-color-principal bg-white peer-focus-visible/max:ring-2 peer-focus-visible/max:ring-[#2563eb] peer-focus-visible/max:ring-offset-2"
           style={{ left: `${highPct}%` }}
         />
       </div>
@@ -240,8 +239,8 @@ function PriceRangeSlider({
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <fieldset className="flex flex-col gap-2">
-      <legend className="font-bold text-sm mb-1 dark:text-gray-200">{title}</legend>
+    <fieldset className="flex flex-col">
+      <legend className="mb-2 body-4 text-tinta">{title}</legend>
       {children}
     </fieldset>
   );
@@ -259,17 +258,17 @@ function FilterOption({
   onChange: () => void;
 }) {
   return (
-    <label className="flex items-center gap-3 cursor-pointer group py-1">
-      <div className="relative flex items-center justify-center w-5 h-5 flex-shrink-0">
+    <label className="group flex min-h-11 cursor-pointer items-center gap-3">
+      <span className="relative flex size-5 flex-shrink-0 items-center justify-center">
         <input
           type="checkbox"
-          className="peer appearance-none w-5 h-5 border-2 border-gray-500 rounded checked:bg-color-principal checked:border-color-principal transition-all cursor-pointer"
+          className="peer size-5 cursor-pointer appearance-none rounded border-2 border-tinta-suave transition-colors duration-300 checked:border-color-principal checked:bg-color-principal"
           checked={checked}
           onChange={onChange}
         />
         <svg
           aria-hidden="true"
-          className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+          className="pointer-events-none absolute size-3.5 text-white opacity-0 transition-opacity peer-checked:opacity-100"
           viewBox="0 0 12 12"
           fill="none"
           stroke="currentColor"
@@ -279,12 +278,8 @@ function FilterOption({
         >
           <polyline points="2 5 5 9 10 3" />
         </svg>
-      </div>
-      <span
-        className={`text-sm ${
-          checked ? "font-medium text-color-principal" : "text-gray-600 dark:text-gray-400"
-        } group-hover:text-color-principal transition-colors`}
-      >
+      </span>
+      <span className={`body-6 transition-colors duration-300 group-hover:text-tinta ${checked ? "font-medium text-tinta" : "text-tinta-suave"}`}>
         {label}
       </span>
     </label>

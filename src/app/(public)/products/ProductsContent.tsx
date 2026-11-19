@@ -1,349 +1,271 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import { m } from "framer-motion";
-import { getProductos, AccesoriosService } from "@/lib/api";
-import { Producto } from "@/interfaces/producto";
-import { Accesorio, CATEGORIA_LABELS, CategoriaAccesorio } from "@/interfaces/accesorio";
-import ProductCard from "@/components/ProductCards";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Check, Plus } from "lucide-react";
 import AccesorioCard from "@/components/AccesorioCard";
 import FilterSidebar from "@/components/FilterSide";
 import FiltrosMovil from "@/components/FiltrosMovil";
-import { Package, Smartphone } from "lucide-react";
-import Link from "next/link";
+import TarjetaDeModelo from "@/components/TarjetaDeModelo";
+import { botonPrincipal, enlace } from "@/components/home/estilos";
+import { useCompare } from "@/context/CompareContext";
+import { Accesorio, CATEGORIA_LABELS } from "@/interfaces/accesorio";
+import { Producto } from "@/interfaces/producto";
+import { AccesoriosService, getProductos } from "@/lib/api";
+import { leerFiltros, opcionesDeFiltro, tarjetasDelCatalogo, type Orden } from "@/lib/catalogo";
+import CatalogoEsqueleto from "./CatalogoEsqueleto";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
-};
+const MAXIMO_A_COMPARAR = 3;
+const CLAVE_DESTACADO = "wave-featured-product-id";
 
-const cardGrid = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
-};
+const ORDENES: { valor: Orden; texto: string }[] = [
+  { valor: "predeterminado", texto: "Predeterminado" },
+  { valor: "precio-asc", texto: "Menor precio" },
+  { valor: "precio-desc", texto: "Mayor precio" },
+];
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
-
-function toSlug(name: string): string {
-  return name.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+// El destacado lo elige el admin y queda en su navegador (ver CLAUDE.md): sólo lo ve él.
+function useDestacado(): number | null {
+  const valor = useSyncExternalStore(
+    () => () => {},
+    () => {
+      try {
+        return localStorage.getItem(CLAVE_DESTACADO);
+      } catch {
+        return null;
+      }
+    },
+    () => null,
+  );
+  return valor ? Number(valor) : null;
 }
 
-function normalizeMemoria(mem: string): string {
-  return mem.toLowerCase().replace(/\s/g, "");
-}
-
-// ─── componente ───────────────────────────────────────────────────────────────
-
+// Catálogo: una tarjeta por modelo con el precio de lo que se filtró. Filtros y orden viven en la
+// URL (lib/catalogo.ts), así se pueden compartir y el botón Atrás los deshace.
 export default function ProductsContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { toggleCompare, compareList } = useCompare();
+  const destacadoId = useDestacado();
 
   const [products, setProducts] = useState<Producto[]>([]);
   const [accesorios, setAccesorios] = useState<Accesorio[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [featuredId, setFeaturedId] = useState<number | null>(null);
+  const [estado, setEstado] = useState<"cargando" | "listo" | "error">("cargando");
+
+  const cargar = useCallback(async () => {
+    setEstado("cargando");
+    const [productosData, accesoriosData] = await Promise.allSettled([getProductos(), AccesoriosService.getAll(true)]);
+    // Sin iPhones no hay catálogo; sin accesorios, la página sigue sin esa sección.
+    if (productosData.status === "rejected") {
+      setEstado("error");
+      return;
+    }
+    setProducts(productosData.value);
+    setAccesorios(accesoriosData.status === "fulfilled" ? accesoriosData.value : []);
+    setEstado("listo");
+  }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("wave-featured-product-id");
-    if (stored) setFeaturedId(Number(stored));
-  }, []);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial de datos
+    cargar();
+  }, [cargar]);
+
+  const filtros = useMemo(() => leerFiltros(searchParams), [searchParams]);
+  const tarjetas = useMemo(() => tarjetasDelCatalogo(products, filtros), [products, filtros]);
+  const opciones = useMemo(() => opcionesDeFiltro(products), [products]);
 
   // Filtro de categoría para accesorios (en la URL como ?cat=0,1,2)
-  const catParam = searchParams.get("cat");
-  const categoriasActivas: number[] = catParam
-    ? catParam.split(",").map(Number).filter((n) => !isNaN(n))
-    : [];
+  const categoriasActivas = useMemo(
+    () => (searchParams.get("cat")?.split(",").map(Number).filter((n) => !isNaN(n)) ?? []),
+    [searchParams],
+  );
+  const accesoriosFiltrados = useMemo(
+    () => (categoriasActivas.length === 0 ? accesorios : accesorios.filter((a) => categoriasActivas.includes(a.categoria))),
+    [accesorios, categoriasActivas],
+  );
 
-  // Rango de precios derivado de los productos cargados
-  const priceRange = useMemo(() => {
-    const all = products.flatMap(
-      (p) => p.variantes?.map((v) => v.precio).filter((p) => p > 0) ?? []
-    );
-    if (all.length === 0) return undefined;
-    return { min: Math.min(...all), max: Math.max(...all) };
-  }, [products]);
+  const filtrosActivos = ["estado", "memoria", "modelo", "familia", "cat", "precioMin", "precioMax"].filter((clave) =>
+    searchParams.get(clave),
+  ).length;
+  const hayFiltrosDeIphone = ["estado", "memoria", "modelo", "familia", "precioMin", "precioMax"].some((clave) =>
+    searchParams.get(clave),
+  );
 
-  // Badge de filtros activos
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    for (const key of ["estado", "memoria", "modelo", "familia", "cat", "precioMin", "precioMax"]) {
-      if (searchParams.get(key)) count++;
-    }
-    return count;
-  }, [searchParams]);
+  const conParametro = (clave: string, valor: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (valor) params.set(clave, valor);
+    else params.delete(clave);
+    const query = params.toString();
+    return query ? `/products?${query}` : "/products";
+  };
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const [productosData, accesoriosData] = await Promise.allSettled([
-          getProductos(),
-          AccesoriosService.getAll(true),
-        ]);
-        if (productosData.status === "fulfilled") setProducts(productosData.value);
-        if (accesoriosData.status === "fulfilled") setAccesorios(accesoriosData.value);
-      } catch (err) {
-        setError("No se pudo cargar el catálogo.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, []);
+  if (estado === "cargando") return <CatalogoEsqueleto />;
 
-  // Filtros para iPhones
-  const filteredProducts = useMemo(() => {
-    const estado = searchParams.get("estado")?.split(",").filter(Boolean) ?? [];
-    const memoria = searchParams.get("memoria")?.split(",").map((m) => m.trim().toLowerCase()).filter(Boolean) ?? [];
-    const modelo = searchParams.get("modelo")?.split(",").map((m) => m.trim().toLowerCase()).filter(Boolean) ?? [];
-    const familia = searchParams.get("familia")?.trim().toLowerCase();
-    const precioMin = searchParams.get("precioMin") ? Number(searchParams.get("precioMin")) : null;
-    const precioMax = searchParams.get("precioMax") ? Number(searchParams.get("precioMax")) : null;
-
-    return products.filter((product) => {
-      const slug = toSlug(product.nombre);
-      if (familia && !slug.startsWith(familia)) return false;
-      if (modelo.length > 0) {
-        const matchModelo = modelo.some((m) => slug === m || (familia && slug === `${familia}-${m}`));
-        if (!matchModelo) return false;
-      }
-      if (estado.length > 0) {
-        const matchEstado = product.variantes?.some((v) => {
-          if (estado.includes("usado") && v.esUsado) return true;
-          if (estado.includes("nuevo") && !v.esUsado) return true;
-          return false;
-        });
-        if (!matchEstado) return false;
-      }
-      if (memoria.length > 0) {
-        const matchMemoria = product.variantes?.some((v) => memoria.includes(normalizeMemoria(v.memoria)));
-        if (!matchMemoria) return false;
-      }
-      if (precioMin !== null || precioMax !== null) {
-        const matchPrecio = product.variantes?.some((v) => {
-          if (precioMin !== null && v.precio < precioMin) return false;
-          if (precioMax !== null && v.precio > precioMax) return false;
-          return true;
-        });
-        if (!matchPrecio) return false;
-      }
-      return true;
-    });
-  }, [products, searchParams]);
-
-  // Filtros para accesorios (solo por categoría)
-  const filteredAccesorios = useMemo(() => {
-    if (categoriasActivas.length === 0) return accesorios;
-    return accesorios.filter((a) => categoriasActivas.includes(a.categoria));
-  }, [accesorios, categoriasActivas]);
-
-  if (loading)
+  if (estado === "error")
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div className="space-y-2">
-            <div className="h-8 w-48 bg-gray-200 rounded-full animate-pulse" />
-            <div className="h-4 w-32 bg-gray-100 rounded-full animate-pulse" />
-          </div>
-          <div className="h-9 w-28 bg-gray-200 rounded-full animate-pulse lg:hidden" />
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar skeleton */}
-          <div className="hidden lg:flex flex-col gap-3 w-64 flex-shrink-0">
-            <div className="h-5 w-20 bg-gray-200 rounded-full animate-pulse" />
-            {[75, 60, 80, 55, 70, 65].map((w, i) => (
-              <div key={i} className="h-4 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
-            ))}
-            <div className="h-px bg-gray-100 my-2" />
-            <div className="h-5 w-24 bg-gray-200 rounded-full animate-pulse" />
-            {[65, 50, 72, 58].map((w, i) => (
-              <div key={i} className="h-4 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
-            ))}
-          </div>
-
-          {/* Cards skeleton */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100 flex flex-col animate-pulse">
-                <div className="h-52 bg-gray-200" />
-                <div className="p-5 flex flex-col gap-3">
-                  <div className="h-4 bg-gray-200 rounded-full w-2/3 mx-auto" />
-                  <div className="h-3 bg-gray-100 rounded-full w-1/3 mx-auto" />
-                  <div className="flex justify-center gap-2">
-                    {[0, 1, 2].map((j) => (
-                      <div key={j} className="w-6 h-6 rounded-full bg-gray-200" />
-                    ))}
-                  </div>
-                  <div className="h-7 bg-gray-200 rounded-full w-1/3 mx-auto" />
-                  <div className="h-10 bg-gray-200 rounded-full mt-1" />
-                  <div className="h-10 bg-gray-100 rounded-full" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="mx-auto max-w-6xl px-4 py-16 md:py-24">
+        <h1 className="heading-4 text-tinta md:heading-3">No pudimos cargar el catálogo</h1>
+        <p className="mt-3 body-7 text-tinta-suave">Puede ser la conexión. Probá de nuevo en un momento.</p>
+        <button type="button" onClick={cargar} className={`${botonPrincipal} mt-8`}>
+          Reintentar
+        </button>
       </div>
     );
 
-  if (error)
-    return <div className="p-20 text-center text-red-500">{error}</div>;
-
-  const hayFiltrosDeProducto = !!(
-    searchParams.get("estado") ||
-    searchParams.get("memoria") ||
-    searchParams.get("modelo") ||
-    searchParams.get("familia")
+  const filtrosDeIphone = (
+    <FilterSidebar priceRange={opciones.precio} memorias={opciones.memorias} modelos={opciones.modelos} flat />
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 pb-32">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    // pb-32: lugar para la barra de comparación, que es fija abajo.
+    <div className="mx-auto max-w-6xl px-4 py-8 pb-32 text-tinta md:py-12 md:pb-32">
+      {/* ── Encabezado ── */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <m.h1
-            className="text-3xl font-bold text-color-principal"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-          >
-            Nuestro Catálogo
-          </m.h1>
-          <m.p
-            className="text-gray-500 text-sm mt-1"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            {filteredProducts.length} iPhone{filteredProducts.length !== 1 ? "s" : ""} ·{" "}
-            {filteredAccesorios.length} accesorio{filteredAccesorios.length !== 1 ? "s" : ""}
-          </m.p>
+          <h1 className="heading-4 md:heading-3">Catálogo</h1>
+          <p className="mt-2 body-3 text-tinta-suave" role="status">
+            {tarjetas.length} {tarjetas.length === 1 ? "modelo de iPhone" : "modelos de iPhone"}
+            {accesoriosFiltrados.length > 0 &&
+              ` y ${accesoriosFiltrados.length} ${accesoriosFiltrados.length === 1 ? "accesorio" : "accesorios"}`}{" "}
+            en stock
+          </p>
         </div>
 
-        <FiltrosMovil activeFilterCount={activeFilterCount}>
-          <FilterSidebar priceRange={priceRange} flat />
-        </FiltrosMovil>
+        <div className="flex flex-wrap items-center gap-3">
+          <FiltrosMovil activeFilterCount={filtrosActivos} resultados={tarjetas.length}>
+            {filtrosDeIphone}
+          </FiltrosMovil>
+          <label className="flex items-center gap-2 body-5 text-tinta-suave">
+            Ordenar
+            <select
+              value={filtros.orden}
+              onChange={(e) =>
+                router.replace(conParametro("orden", e.target.value === "predeterminado" ? null : e.target.value), { scroll: false })
+              }
+              className="rounded-control border border-borde-fuerte bg-white py-3 pl-3 pr-8 body-5 text-tinta transition-colors duration-300 hover:border-tinta-suave"
+            >
+              {ORDENES.map(({ valor, texto }) => (
+                <option key={valor} value={valor}>
+                  {texto}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
-      {/* ── Layout principal ─────────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar — solo desktop */}
-        <div className="hidden lg:block w-64 flex-shrink-0">
-          <FilterSidebar priceRange={priceRange} />
+      {/* ── Filtros y resultados ── */}
+      <div className="mt-8 flex flex-col gap-8 lg:flex-row">
+        <div className="hidden w-64 flex-shrink-0 lg:block">
+          <FilterSidebar priceRange={opciones.precio} memorias={opciones.memorias} modelos={opciones.modelos} />
         </div>
 
-        <div className="flex-1 space-y-12">
-          {/* ── SECCIÓN IPHONES ─────────────────────────────────────────── */}
-          {!hayFiltrosDeProducto || filteredProducts.length > 0 ? (
-            <section>
-              <div className="flex items-center gap-3 mb-5">
-                <h2 className="text-xl font-bold text-gray-800">iPhones</h2>
-                <span className="text-xs bg-color-principal/10 text-color-principal font-semibold px-2.5 py-1 rounded-full">
-                  {filteredProducts.length} disponibles
-                </span>
-              </div>
+        <div className="min-w-0 flex-1 space-y-16">
+          <section aria-labelledby="catalogo-iphones">
+            <h2 id="catalogo-iphones" className="heading-6 md:heading-5">
+              iPhone
+            </h2>
 
-              {filteredProducts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-14 gap-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <Smartphone size={44} className="text-gray-200" />
-                  <div className="text-center text-gray-500">
-                    <p className="font-medium mb-1">Ningún iPhone coincide con los filtros</p>
-                    <p className="text-sm">Probá cambiar o limpiar los filtros.</p>
-                  </div>
-                  <Link
-                    href="/products"
-                    className="px-5 py-2 bg-color-principal text-white text-sm font-medium rounded-full hover:bg-color-principal-oscuro transition-colors"
-                  >
-                    Limpiar filtros
+            {tarjetas.length === 0 ? (
+              <div className="mt-4 rounded-panel bg-superficie p-6 md:p-8">
+                <p className="title-1">
+                  {hayFiltrosDeIphone ? "Ningún iPhone coincide con los filtros." : "Hoy no hay iPhones en stock."}
+                </p>
+                <p className="mt-2 body-3 text-tinta-suave">
+                  {hayFiltrosDeIphone
+                    ? "Probá sacando alguno, o dejanos tu contacto y te avisamos cuando entre."
+                    : "Dejanos tu contacto y te escribimos cuando entren."}
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  {hayFiltrosDeIphone ? (
+                    <Link href="/products" scroll={false} className={botonPrincipal}>
+                      Limpiar filtros
+                    </Link>
+                  ) : null}
+                  <Link href="/#avisos" className={hayFiltrosDeIphone ? `body-2 ${enlace}` : botonPrincipal}>
+                    Avisame cuando entre
                   </Link>
                 </div>
-              ) : (
-                <m.div
-                  className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
-                  variants={cardGrid}
-                  initial="hidden"
-                  animate="visible"
-                >
-                  {filteredProducts.map((product) => (
-                    <m.div key={product.id} variants={fadeUp}>
-                      <ProductCard product={product} featured={featuredId === product.id} />
-                    </m.div>
-                  ))}
-                </m.div>
-              )}
-            </section>
-          ) : null}
+              </div>
+            ) : (
+              <ul className="mt-4 grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3">
+                {tarjetas.map((tarjeta) => {
+                  const { producto } = tarjeta;
+                  const elegido = compareList.some((p) => p.id === producto.id);
+                  const lleno = !elegido && compareList.length >= MAXIMO_A_COMPARAR;
+                  return (
+                    <li key={producto.id}>
+                      <TarjetaDeModelo tarjeta={tarjeta} destacado={destacadoId === producto.id}>
+                        <button
+                          type="button"
+                          onClick={() => toggleCompare(producto)}
+                          disabled={lleno}
+                          aria-pressed={elegido}
+                          aria-label={`Comparar ${producto.nombre}`}
+                          className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 caption-1 transition-colors duration-300 disabled:cursor-not-allowed disabled:text-tinta-suave md:rounded-control ${
+                            elegido ? "text-color-principal" : "text-tinta-suave enabled:hover:text-tinta"
+                          }`}
+                        >
+                          {elegido ? (
+                            <Check size={16} strokeWidth={1.75} aria-hidden="true" />
+                          ) : (
+                            <Plus size={16} strokeWidth={1.75} aria-hidden="true" />
+                          )}
+                          {elegido ? "En comparación" : lleno ? `Máximo ${MAXIMO_A_COMPARAR}` : "Comparar"}
+                        </button>
+                      </TarjetaDeModelo>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
 
-          {/* ── SECCIÓN ACCESORIOS ──────────────────────────────────────── */}
           {accesorios.length > 0 && (
-            <section>
-              {/* Header de sección + filtros por categoría */}
-              <div className="flex flex-wrap items-center gap-3 mb-5">
-                <div className="flex items-center gap-2">
-                  <Package size={20} className="text-gray-600" />
-                  <h2 className="text-xl font-bold text-gray-800">Accesorios</h2>
-                  <span className="text-xs bg-gray-100 text-gray-600 font-semibold px-2.5 py-1 rounded-full">
-                    {filteredAccesorios.length} disponibles
-                  </span>
-                </div>
-
-                {/* Pills de categoría */}
-                <div className="flex gap-2 flex-wrap">
-                  {Object.entries(CATEGORIA_LABELS).map(([val, label]) => {
-                    const numVal = Number(val);
-                    const isActive = categoriasActivas.includes(numVal);
-                    const tieneItems = accesorios.some((a) => a.categoria === numVal);
-                    if (!tieneItems) return null;
-
-                    const buildHref = () => {
-                      const params = new URLSearchParams(searchParams.toString());
-                      if (isActive) {
-                        const nextCats = categoriasActivas.filter((c) => c !== numVal);
-                        nextCats.length > 0
-                          ? params.set("cat", nextCats.join(","))
-                          : params.delete("cat");
-                      } else {
-                        params.set("cat", [...categoriasActivas, numVal].join(","));
-                      }
-                      return `/products?${params.toString()}`;
-                    };
-
-                    return (
-                      <a
-                        key={val}
-                        href={buildHref()}
-                        className={`text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
-                          isActive
-                            ? "bg-color-principal text-white border-color-principal"
-                            : "bg-white text-gray-600 border-gray-200 hover:border-color-principal hover:text-color-principal"
-                        }`}
-                      >
-                        {label}
-                      </a>
-                    );
-                  })}
-                </div>
+            <section aria-labelledby="catalogo-accesorios">
+              <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
+                <h2 id="catalogo-accesorios" className="heading-6 md:heading-5">
+                  Accesorios
+                </h2>
+                <Link href="/accesorios" className={`body-5 ${enlace}`}>
+                  Ver todos los accesorios
+                </Link>
               </div>
 
-              {filteredAccesorios.length === 0 ? (
-                <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <p className="font-medium">No hay accesorios en esa categoría</p>
-                </div>
+              {/* Categorías: sólo las que tienen algo */}
+              <div role="group" aria-label="Filtrar accesorios por categoría" className="mt-4 flex flex-wrap gap-2">
+                {Object.entries(CATEGORIA_LABELS).map(([val, label]) => {
+                  const numVal = Number(val);
+                  if (!accesorios.some((a) => a.categoria === numVal)) return null;
+                  const activa = categoriasActivas.includes(numVal);
+                  const siguientes = activa ? categoriasActivas.filter((c) => c !== numVal) : [...categoriasActivas, numVal];
+                  return (
+                    <Link
+                      key={val}
+                      href={conParametro("cat", siguientes.join(",") || null)}
+                      scroll={false}
+                      aria-current={activa ? "true" : undefined}
+                      className={`rounded-full px-4 py-3 caption-1 ring-inset transition-shadow duration-300 ease-ola ${
+                        activa ? "text-color-principal ring-2 ring-color-principal" : "text-tinta ring-1 ring-borde-fuerte hover:ring-tinta-suave"
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {accesoriosFiltrados.length === 0 ? (
+                <p className="mt-4 rounded-panel bg-superficie p-6 body-3 text-tinta-suave">No hay accesorios en esa categoría.</p>
               ) : (
-                <m.div
-                  className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
-                  variants={cardGrid}
-                  initial="hidden"
-                  animate="visible"
-                >
-                  {filteredAccesorios.map((acc) => (
-                    <m.div key={acc.id} variants={fadeUp}>
-                      <AccesorioCard accesorio={acc} />
-                    </m.div>
+                <ul className="mt-4 grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3">
+                  {accesoriosFiltrados.map((acc) => (
+                    <li key={acc.id}>
+                      <AccesorioCard accesorio={acc} titulo="h3" />
+                    </li>
                   ))}
-                </m.div>
+                </ul>
               )}
             </section>
           )}

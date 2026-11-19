@@ -173,7 +173,7 @@ export default function AboutPage() {
               <p className="text-color-principal/80 leading-relaxed text-sm">
                 {/* Lógica simple para renderizar negritas si es necesario, 
                     o simplemente renderizar el texto plano */}
-                {val.text.split(/(:|\.)/).map((part, i, arr) => {
+                {val.text.split(/(:|\.)/).map((part, i) => {
                   // Un pequeño hack para detectar las partes clave según tu imagen
                   // O podes renderizar val.text directo si no queres complicarte con negritas dinámicas
                   if (

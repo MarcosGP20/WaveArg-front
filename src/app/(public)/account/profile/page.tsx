@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useMontado } from "@/hooks/useMontado";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { PedidosService, UsuariosService } from "@/lib/api";
@@ -28,16 +29,12 @@ interface EditForm {
 export default function ProfilePage() {
   const router = useRouter();
   const { user, token, logout, updateUser } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMontado();
   const [pedidosActivos, setPedidosActivos] = useState<number | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<EditForm>();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!mounted) return;
