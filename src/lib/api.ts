@@ -346,12 +346,22 @@ export function esCheckoutPausado(error: unknown): boolean {
   return error instanceof ApiError && error.status === 503 && error.data.codigo === CODIGO_CHECKOUT_PAUSADO;
 }
 
-export async function registerUser(data: RegisterDTO) {
-  // Ahora usamos fetchFromApi para ser consistentes
-  return fetchFromApi<{ message: string }>("/Auth/register", {
+export const MENSAJE_REGISTRO_POR_DEFECTO = "¡Cuenta creada! Ya podés iniciar sesión.";
+
+/**
+ * Registra y devuelve el mensaje para mostrar. El back (back#104) responde lo mismo exista o no
+ * la cuenta, y si ya existía le manda un mail al dueño: por eso el texto lo decide el back.
+ */
+export async function registerUser(data: RegisterDTO): Promise<string> {
+  const respuesta = await fetchFromApi<unknown>("/Auth/register", {
     method: "POST",
     body: JSON.stringify(data),
   });
+  if (typeof respuesta === "object" && respuesta !== null && "message" in respuesta) {
+    const { message } = respuesta;
+    if (typeof message === "string" && message) return message;
+  }
+  return MENSAJE_REGISTRO_POR_DEFECTO;
 }
 
 export async function solicitarResetContrasena(email: string) {
