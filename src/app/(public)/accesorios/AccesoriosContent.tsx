@@ -62,7 +62,7 @@ export default function AccesoriosContent() {
         setLoading(true);
         const data = await AccesoriosService.getAll(true);
         setProducts(data);
-      } catch (err) {
+      } catch {
         setError("No se pudieron obtener los productos de la base de datos.");
       } finally {
         setLoading(false);

@@ -11,7 +11,6 @@ const PUBLIC_ROUTES = [
   "/creadores",
   "/nosotros",
   "/contacto",
-  "/mayorista",
   "/compare",
 ];
 

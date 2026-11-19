@@ -2,18 +2,15 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useMontado } from "@/hooks/useMontado";
 import { Loader2, UserCircle, ShoppingBag, Settings } from "lucide-react";
 import Link from "next/link";
 
 export default function AccountPage() {
   const { token, user } = useAuthStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMontado();
 
   useEffect(() => {
     if (!mounted) return;

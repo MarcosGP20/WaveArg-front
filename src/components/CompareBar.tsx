@@ -3,7 +3,7 @@
 import { useCompare } from "@/context/CompareContext";
 import { useRouter } from "next/navigation";
 import { X, Plus, Search, Loader2, ArrowLeftRight } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getProductos } from "@/lib/api";
 import { Producto } from "@/interfaces/producto";
 

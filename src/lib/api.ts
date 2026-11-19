@@ -382,11 +382,31 @@ export async function cambiarContrasena(data: CambiarContrasenaDTO) {
 
 // Ejemplo de lo que necesitas para el catálogo
 // lib/api.ts
+// Catálogo, ficha, comparador y home piden la misma lista: una sola request compartida, que
+// se reusa un rato corto para que el stock mostrado no quede viejo.
+const VIGENCIA_PRODUCTOS_MS = 30_000;
+let productosEnCurso: { promesa: Promise<Producto[]>; pedidoEn: number } | null = null;
+
+export function invalidarProductos() {
+  productosEnCurso = null;
+}
+
 export async function getProductos() {
-  // Según tu Swagger es /api/Productos?soloDisponibles=true
-  return fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
-    method: "GET",
-  });
+  const ahora = Date.now();
+  if (!productosEnCurso || ahora - productosEnCurso.pedidoEn > VIGENCIA_PRODUCTOS_MS) {
+    // Según tu Swagger es /api/Productos?soloDisponibles=true
+    const promesa = fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
+      method: "GET",
+    });
+    const entrada = { promesa, pedidoEn: ahora };
+    productosEnCurso = entrada;
+    // Un error no queda cacheado: la próxima llamada reintenta.
+    promesa.catch(() => {
+      if (productosEnCurso === entrada) productosEnCurso = null;
+    });
+  }
+  // Cada llamador recibe su copia: varios ordenan o filtran la lista.
+  return structuredClone(await productosEnCurso.promesa);
 }
 
 export async function getProductoById(id: number | string) {

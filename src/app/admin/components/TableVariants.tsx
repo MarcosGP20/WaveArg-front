@@ -77,7 +77,7 @@ export const TableVariants = ({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-dashed border-gray-300">
+      <div className="flex flex-col items-center justify-center p-12 bg-superficie rounded-panel">
         <Loader2 className="animate-spin text-color-principal mb-4" size={40} />
         <p className="text-gray-500 font-medium">
           Consultando stock en base de datos...
@@ -88,9 +88,9 @@ export const TableVariants = ({
 
   if (!variantes || variantes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-16 bg-white rounded-2xl border-2 border-dashed border-gray-100">
-        <div className="bg-gray-50 p-4 rounded-full mb-4">
-          <PackageOpen size={40} className="text-gray-300" />
+      <div className="flex flex-col items-center justify-center p-16 bg-superficie rounded-panel">
+        <div className="bg-white p-4 rounded-full mb-4">
+          <PackageOpen size={40} className="text-tinta-suave" />
         </div>
         <h3 className="text-gray-900 font-semibold">No hay stock registrado</h3>
         <p className="text-gray-500 text-sm max-w-[250px] text-center mt-1">
@@ -102,10 +102,10 @@ export const TableVariants = ({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-superficie rounded-panel overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 border-b text-gray-600 uppercase text-[10px] font-bold tracking-wider">
+          <thead className="border-b border-borde text-tinta-suave text-xs font-semibold">
             <tr>
               <th className="px-6 py-4">Color</th>
               <th className="px-6 py-4">Memoria</th>
@@ -143,7 +143,7 @@ export const TableVariants = ({
                         <a
                           href={v.imagenes[0]}
                           target="_blank"
-                          className="text-blue-500 hover:underline flex items-center gap-1 text-[11px]"
+                          className="text-blue-500 hover:underline flex items-center gap-1 text-xs"
                         >
                           <ExternalLink size={10} /> Ver primera
                         </a>
@@ -157,7 +157,7 @@ export const TableVariants = ({
                         <ExternalLink size={12} /> Ver
                       </a>
                     ) : (
-                      <span className="text-gray-300 text-xs">-</span>
+                      <span className="text-tinta-suave text-xs">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -200,7 +200,7 @@ export const TableVariants = ({
                                 precio: e.target.value,
                               }))
                             }
-                            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-color-principal"
+                            className="border border-borde-fuerte rounded-lg px-3 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-color-principal"
                           />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -217,7 +217,7 @@ export const TableVariants = ({
                                 stock: e.target.value,
                               }))
                             }
-                            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-color-principal"
+                            className="border border-borde-fuerte rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-color-principal"
                           />
                         </div>
                         <div className="flex gap-2 pb-0.5">
@@ -236,7 +236,7 @@ export const TableVariants = ({
                           <button
                             onClick={cancelEdit}
                             disabled={isSaving}
-                            className="flex items-center gap-1.5 bg-white border border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                            className="flex items-center gap-1.5 bg-white border border-borde-fuerte text-tinta px-4 py-2 rounded-control text-sm font-medium hover:bg-superficie transition-colors"
                           >
                             <X size={14} />
                             Cancelar

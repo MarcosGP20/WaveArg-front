@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { NextRequest } from "next/server";
 import { beforeAll, describe, expect, it } from "vitest";
 import { proxy } from "@/proxy";
@@ -21,6 +21,10 @@ describe("proxy.ts (ex middleware)", () => {
     expect(existsSync("src/proxy.ts")).toBe(true);
     expect(existsSync("proxy.ts")).toBe(false);
     expect(existsSync("src/middleware.ts")).toBe(false);
+  });
+
+  it("no lista /mayorista como ruta pública: no existe como página", () => {
+    expect(readFileSync("src/proxy.ts", "utf-8")).not.toContain("/mayorista");
   });
 
   describe("sin sesión", () => {

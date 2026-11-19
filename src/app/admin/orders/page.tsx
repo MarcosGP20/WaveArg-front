@@ -3,13 +3,10 @@
 import { useEffect, useState } from "react";
 import { PedidosService, Pedido, PedidoItem } from "@/lib/api";
 import { ESTADOS_PEDIDO, estadoClase, estadoLabel, requiereAtencion } from "@/lib/pedidos";
-import {
-  Package,
-  AlertCircle,
-  ChevronDown,
-  Loader2,
-  RefreshCw,
-} from "lucide-react";
+import EstadoBadge from "../components/EstadoBadge";
+import { CabeceraPagina, EstadoError, EstadoVacio, TablaSkeleton } from "../components/PaginaAdmin";
+import { botonIcono, control, encabezadoTabla, filaTabla, panel, td, th } from "../components/estilos";
+import { ClipboardList, ChevronDown, Loader2, RefreshCw } from "lucide-react";
 
 // ================================================================
 // HELPERS
@@ -40,19 +37,6 @@ function resumeItems(items: PedidoItem[]): string {
     : `${first.nombreProducto} x${first.cantidad}`;
   const extra = items.length > 1 ? ` (+${items.length - 1} más)` : "";
   return `${label}${extra}`;
-}
-
-// ================================================================
-// SKELETON
-// ================================================================
-function TableSkeleton() {
-  return (
-    <div className="animate-pulse space-y-2 mt-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="h-12 bg-gray-100 rounded-lg" />
-      ))}
-    </div>
-  );
 }
 
 // ================================================================
@@ -91,11 +75,7 @@ function EstadoSelector({
 
   // Sin transiciones manuales (p. ej. Vencido, Reembolsado): solo el badge.
   if (transiciones.length === 0) {
-    return (
-      <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${estadoClase(estadoActual)}`}>
-        {estadoLabel(estadoActual)}
-      </span>
-    );
+    return <EstadoBadge estado={estadoActual} />;
   }
 
   const opciones = [estadoActual, ...transiciones];
@@ -104,14 +84,14 @@ function EstadoSelector({
     <div className="flex flex-col gap-1">
       <div className="relative flex items-center">
         {loading ? (
-          <Loader2 size={16} className="animate-spin text-blue-500" />
+          <Loader2 size={16} className="animate-spin text-color-principal" />
         ) : (
           <>
             <select
               value={estadoActual}
               onChange={handleChange}
               aria-label={`Estado del pedido ${pedidoId}`}
-              className={`appearance-none pr-7 pl-2 py-1 rounded-full text-xs font-semibold border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 ${estadoClase(estadoActual)}`}
+              className={`appearance-none pr-7 pl-2 py-1 rounded-full text-xs font-semibold border-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-color-principal/40 ${estadoClase(estadoActual)}`}
             >
               {opciones.map((e) => (
                 <option key={e} value={e}>
@@ -127,7 +107,7 @@ function EstadoSelector({
         )}
       </div>
       {error && (
-        <p className="text-[10px] text-red-500 max-w-[140px]">{error}</p>
+        <p className="max-w-[160px] text-xs text-destructive">{error}</p>
       )}
     </div>
   );
@@ -142,9 +122,8 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  function cargarPedidos(estado?: string) {
-    setLoading(true);
-    setError(null);
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  function traerPedidos(estado?: string) {
     PedidosService.getAll(estado)
       .then((data) => {
         setPedidos(data);
@@ -153,8 +132,14 @@ export default function OrdersPage() {
       .finally(() => setLoading(false));
   }
 
+  function cargarPedidos(estado?: string) {
+    setLoading(true);
+    setError(null);
+    traerPedidos(estado);
+  }
+
   useEffect(() => {
-    cargarPedidos(filtroEstado || undefined);
+    traerPedidos(filtroEstado || undefined);
   }, [filtroEstado]);
 
   // Se recarga en vez de actualizar en el lugar: el cambio de estado modifica las
@@ -165,135 +150,114 @@ export default function OrdersPage() {
 
   const enRevision = pedidos.filter((p) => requiereAtencion(p.estado)).length;
 
+  const recargar = () => cargarPedidos(filtroEstado || undefined);
+
   return (
-    <div className="my-8 px-2 md:px-8">
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-color-principal">Pedidos</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {loading
-              ? "Cargando..."
-              : `${pedidos.length} pedido${pedidos.length !== 1 ? "s" : ""}`}
-            {!loading && enRevision > 0 && (
-              <span className="ml-2 font-semibold text-orange-700">
-                · {enRevision} para revisar
-              </span>
-            )}
-          </p>
-        </div>
+    <div>
+      <CabeceraPagina
+        titulo="Pedidos"
+        subtitulo={
+          loading ? (
+            "Cargando…"
+          ) : (
+            <>
+              {pedidos.length} {pedidos.length === 1 ? "pedido" : "pedidos"}
+              {enRevision > 0 && (
+                <span className="ml-2 font-semibold text-orange-700">· {enRevision} para revisar</span>
+              )}
+            </>
+          )
+        }
+      >
+        <select
+          value={filtroEstado}
+          onChange={(e) => {
+            setLoading(true);
+            setError(null);
+            setFiltroEstado(e.target.value);
+          }}
+          aria-label="Filtrar por estado"
+          className={control}
+        >
+          <option value="">Todos los estados</option>
+          {ESTADOS_PEDIDO.map((e) => (
+            <option key={e} value={e}>
+              {estadoLabel(e)}
+            </option>
+          ))}
+        </select>
 
-        <div className="flex items-center gap-2">
-          <select
-            value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value)}
-            aria-label="Filtrar por estado"
-            className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200"
-          >
-            <option value="">Todos los estados</option>
-            {ESTADOS_PEDIDO.map((e) => (
-              <option key={e} value={e}>
-                {estadoLabel(e)}
-              </option>
-            ))}
-          </select>
+        <button onClick={recargar} disabled={loading} aria-label="Actualizar pedidos" className={botonIcono}>
+          <RefreshCw size={16} strokeWidth={1.75} className={loading ? "animate-spin" : ""} />
+        </button>
+      </CabeceraPagina>
 
-          <button
-            onClick={() => cargarPedidos(filtroEstado || undefined)}
-            disabled={loading}
-            title="Actualizar"
-            className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition disabled:opacity-50"
-          >
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-          </button>
-        </div>
-      </div>
+      {loading && <TablaSkeleton filas={6} />}
 
-      {/* ERROR */}
-      {error && !loading && (
-        <div className="flex flex-col items-center justify-center h-48 gap-3 text-red-500">
-          <AlertCircle size={36} />
-          <p className="text-sm font-medium text-center max-w-xs">{error}</p>
-          <button
-            onClick={() => cargarPedidos(filtroEstado || undefined)}
-            className="text-xs underline"
-          >
-            Reintentar
-          </button>
-        </div>
-      )}
+      {error && !loading && <EstadoError mensaje={error} onReintentar={recargar} />}
 
-      {/* SKELETON */}
-      {loading && <TableSkeleton />}
-
-      {/* EMPTY */}
       {!loading && !error && pedidos.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-48 gap-3 text-gray-500">
-          <Package size={40} className="text-gray-300" />
-          <p className="text-sm">
-            {filtroEstado
-              ? `No hay pedidos con estado "${estadoLabel(filtroEstado)}"`
-              : "No hay pedidos todavía"}
-          </p>
-        </div>
+        <EstadoVacio
+          icono={<ClipboardList size={40} strokeWidth={1.75} />}
+          mensaje={
+            filtroEstado
+              ? `No hay pedidos con estado "${estadoLabel(filtroEstado)}".`
+              : "Todavía no hay pedidos."
+          }
+        />
       )}
 
-      {/* TABLA */}
       {!loading && !error && pedidos.length > 0 && (
-        <div className="bg-white shadow-sm rounded-xl overflow-x-auto border border-gray-100">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 text-gray-500 uppercase text-xs leading-normal border-b border-gray-100">
-                <th className="py-3 px-4 text-left">#</th>
-                <th className="py-3 px-4 text-left">Cliente</th>
-                <th className="py-3 px-4 text-left">Producto</th>
-                <th className="py-3 px-4 text-left">Total</th>
-                <th className="py-3 px-4 text-left">Dirección</th>
-                <th className="py-3 px-4 text-left">Fecha</th>
-                <th className="py-3 px-4 text-left">Estado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {pedidos.map((pedido) => (
-                <tr
-                  key={pedido.id}
-                  className={`transition-colors ${requiereAtencion(pedido.estado) ? "bg-orange-50 hover:bg-orange-100" : "hover:bg-gray-50"}`}
-                >
-                  <td className="py-3 px-4 font-mono text-xs text-gray-500">
-                    #{pedido.id}
-                  </td>
-                  <td className="py-3 px-4">
-                    <p className="font-medium text-gray-800">
-                      {pedido.usuario?.nombre ?? "—"}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {pedido.usuario?.email ?? "—"}
-                    </p>
-                  </td>
-                  <td className="py-3 px-4 text-gray-600 max-w-[200px] truncate">
-                    {resumeItems(pedido.items)}
-                  </td>
-                  <td className="py-3 px-4 font-semibold text-gray-800">
-                    {formatMonto(pedido.total)}
-                  </td>
-                  <td className="py-3 px-4 text-gray-500 text-xs">
-                    {pedido.direccionEnvio ?? "—"}
-                  </td>
-                  <td className="py-3 px-4 text-gray-500 text-xs">
-                    {formatFecha(pedido.fecha)}
-                  </td>
-                  <td className="py-3 px-4">
-                    <EstadoSelector
-                      pedidoId={pedido.id}
-                      estadoActual={pedido.estado}
-                      transiciones={pedido.transicionesPermitidas ?? []}
-                      onUpdated={handleEstadoUpdated}
-                    />
-                  </td>
+        <div className={panel}>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-tinta">
+              <thead>
+                <tr className={encabezadoTabla}>
+                  <th scope="col" className={th}>#</th>
+                  <th scope="col" className={th}>Cliente</th>
+                  <th scope="col" className={th}>Producto</th>
+                  <th scope="col" className={`${th} text-right`}>Total</th>
+                  <th scope="col" className={th}>Dirección</th>
+                  <th scope="col" className={th}>Fecha</th>
+                  <th scope="col" className={th}>Estado</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {pedidos.map((pedido) => (
+                  <tr
+                    key={pedido.id}
+                    className={
+                      requiereAtencion(pedido.estado)
+                        ? "border-t border-borde bg-orange-50 transition-colors duration-300 ease-ola hover:bg-orange-100"
+                        : filaTabla
+                    }
+                  >
+                    <td className={`${td} font-mono text-tinta-suave`}>#{pedido.id}</td>
+                    <td className={td}>
+                      <p className="font-medium">{pedido.usuario?.nombre ?? "—"}</p>
+                      <p className="text-xs text-tinta-suave">{pedido.usuario?.email ?? "—"}</p>
+                    </td>
+                    <td className={`${td} max-w-[220px] truncate text-tinta-suave`}>
+                      {resumeItems(pedido.items)}
+                    </td>
+                    <td className={`${td} text-right font-semibold tabular-nums`}>
+                      {formatMonto(pedido.total)}
+                    </td>
+                    <td className={`${td} text-tinta-suave`}>{pedido.direccionEnvio ?? "—"}</td>
+                    <td className={`${td} whitespace-nowrap text-tinta-suave`}>{formatFecha(pedido.fecha)}</td>
+                    <td className={td}>
+                      <EstadoSelector
+                        pedidoId={pedido.id}
+                        estadoActual={pedido.estado}
+                        transiciones={pedido.transicionesPermitidas ?? []}
+                        onUpdated={handleEstadoUpdated}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
