@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useMontado } from "@/hooks/useMontado";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Bell, Shield, Trash2, ChevronRight, Loader2, X } from "lucide-react";
@@ -19,12 +20,8 @@ interface CambiarContrasenaForm {
 export default function SettingsPage() {
   const { token, user, logout } = useAuthStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMontado();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!mounted) return;

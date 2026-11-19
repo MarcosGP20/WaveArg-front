@@ -3,17 +3,14 @@
 import { LoginForm } from "@/components/LoginComponent";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useMontado } from "@/hooks/useMontado";
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const { token, user, isLoggedIn } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMontado();
 
   useEffect(() => {
     if (!mounted) return;

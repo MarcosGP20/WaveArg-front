@@ -9,7 +9,7 @@ import { LogOut, Settings, User, ChevronDown, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMontado } from "@/hooks/useMontado";
 import { usuarioAdmin } from "@/lib/usuario-admin";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -28,8 +28,7 @@ export default function AdminHeader({ sesion, onMenuToggle }: AdminHeaderProps) 
 
   // Zustand se hidrata desde localStorage, que el servidor no tiene: el nombre guardado se usa
   // recién después de montar, para que el primer render coincida con el HTML del servidor.
-  const [montado, setMontado] = useState(false);
-  useEffect(() => setMontado(true), []);
+  const montado = useMontado();
   const usuario = usuarioAdmin(sesion, montado ? guardado : null);
 
   const handleLogout = async () => {

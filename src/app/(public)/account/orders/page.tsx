@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useMontado } from "@/hooks/useMontado";
 import { PedidosService, Pedido, PedidoItem } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
@@ -69,14 +70,10 @@ function CardSkeleton() {
 export default function MisPedidosPage() {
   const { token, user } = useAuthStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMontado();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!mounted) return;
