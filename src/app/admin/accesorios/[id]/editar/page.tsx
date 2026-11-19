@@ -3,7 +3,7 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AccesoriosService, AccesorioImagenesService, CategoriaAccesorio, CATEGORIA_LABELS } from "@/lib/api";
+import { AccesoriosService, AccesorioImagenesService, CATEGORIA_LABELS } from "@/lib/api";
 import { Plus, Trash2, Image as ImageIcon, Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";

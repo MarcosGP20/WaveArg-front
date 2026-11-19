@@ -99,7 +99,8 @@ export default function IPhoneCarousel({ items = [] }: IPhoneCarouselProps) {
         onTouchEnd={(e) => {
           if (!touchStartX.current) return;
           const delta = e.changedTouches[0].clientX - touchStartX.current;
-          if (Math.abs(delta) > 50) delta < 0 ? next() : prev();
+          if (Math.abs(delta) > 50) if (delta < 0) next();
+          else prev();
           touchStartX.current = null;
         }}
       >
