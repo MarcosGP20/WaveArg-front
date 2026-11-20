@@ -500,7 +500,8 @@ export const PedidosService = {
 export interface Usuario {
   id: number | string;
   nombre: string | null;
-  email: string;
+  /** null en una cuenta borrada (el back la anonimiza). */
+  email: string | null;
   rol: string;
   fechaRegistro?: string;
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { UsuariosService, Usuario } from "@/lib/api";
+import { filtrarUsuarios, inicialDeUsuario } from "@/lib/usuarios";
 import { Users, RefreshCw, ShieldCheck, User } from "lucide-react";
 import { CabeceraPagina, EstadoError, EstadoVacio, TablaSkeleton } from "../components/PaginaAdmin";
 import { botonIcono, control, encabezadoTabla, filaTabla, panel, td, th } from "../components/estilos";
@@ -65,15 +66,7 @@ export default function UsersPage() {
   }, []);
 
   // Filtrado local (por rol y búsqueda de email/nombre)
-  const usuariosFiltrados = usuarios.filter((u) => {
-    const coincideRol = filtroRol ? u.rol.toLowerCase() === filtroRol.toLowerCase() : true;
-    const query = busqueda.toLowerCase();
-    const coincideBusqueda = query
-      ? u.email.toLowerCase().includes(query) ||
-        (u.nombre ?? "").toLowerCase().includes(query)
-      : true;
-    return coincideRol && coincideBusqueda;
-  });
+  const usuariosFiltrados = filtrarUsuarios(usuarios, filtroRol, busqueda);
 
   // Roles únicos para el filtro
   const rolesUnicos = [...new Set(usuarios.map((u) => u.rol))];
@@ -151,12 +144,12 @@ export default function UsersPage() {
                     <td className={td}>
                       <div className="flex items-center gap-3">
                         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-color-principal text-xs font-semibold text-white">
-                          {(usuario.nombre ?? usuario.email)[0].toUpperCase()}
+                          {inicialDeUsuario(usuario)}
                         </div>
                         <span className="font-medium">{usuario.nombre ?? "—"}</span>
                       </div>
                     </td>
-                    <td className={`${td} text-tinta-suave`}>{usuario.email}</td>
+                    <td className={`${td} text-tinta-suave`}>{usuario.email ?? "Cuenta eliminada"}</td>
                     <td className={td}>
                       <RolBadge rol={usuario.rol} />
                     </td>
