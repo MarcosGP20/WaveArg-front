@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { BACKEND_API_BASE } from "@/lib/backend";
 
 const MP_WEBHOOK_SECRET = process.env.MERCADOPAGO_WEBHOOK_SECRET;
@@ -25,11 +25,12 @@ function isValidSignature(req: NextRequest, dataId: string, secret: string): boo
     (dataId ? `id:${dataId};` : "") +
     (xRequestId ? `request-id:${xRequestId};` : "") +
     `ts:${ts};`;
-  const expected = createHmac("sha256", secret)
-    .update(message)
-    .digest("hex");
+  const expected = createHmac("sha256", secret).update(message).digest();
+  const recibida = Buffer.from(v1.toLowerCase(), "hex");
 
-  return expected === v1;
+  // Comparación en tiempo constante (#100), como FixedTimeEquals en el back. Buffer.from con "hex"
+  // corta en el primer carácter inválido, así que una firma que no es hex queda de otro largo.
+  return recibida.length === expected.length && timingSafeEqual(recibida, expected);
 }
 
 /**
