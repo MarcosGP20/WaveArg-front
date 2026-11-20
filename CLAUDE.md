@@ -127,8 +127,8 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 ### Pendiente de backend 📋 (confirmado bloqueado — revisado con Swagger)
 - **Eliminar cuenta**: ✅ `/account/settings` llama a `DELETE /Usuarios/{id}` (back rama `cierre-entrega`): anonimiza la cuenta, conserva los pedidos y cierra la sesión
 - **Dirección de envío**: ✅ Implementada. El endpoint ahora acepta `CrearPreferenciaRequestDto { items, direccionEnvio }`. El checkout solicita calle, ciudad, provincia y CP antes de redirigir a MP.
-- **Avisos de stock (leads)**: no existe `POST /Leads`. El formulario de la home (`FormularioAvisos`) manda el pedido por WhatsApp hasta que exista; después se prende con `NEXT_PUBLIC_LEADS_API=true`. Cuerpo que manda: `{ email, modelo, whatsapp, origen: "home" }`
-- **Arrepentimiento**: `/arrepentimiento` pide la baja por WhatsApp o mail. Falta un endpoint que registre la solicitud y devuelva su código
+- **Avisos de stock (leads)**: `POST /Leads` ya existe en el back (rama `cierre-entrega`); falta prender `NEXT_PUBLIC_LEADS_API=true` cuando ese back esté deployado. Antes no existía `POST /Leads`. El formulario de la home (`FormularioAvisos`) manda el pedido por WhatsApp hasta que exista; después se prende con `NEXT_PUBLIC_LEADS_API=true`. Cuerpo que manda: `{ email, modelo, whatsapp, origen: "home" }`
+- **Arrepentimiento**: ✅ `/arrepentimiento` tiene un formulario (`components/FormularioArrepentimiento`, `lib/arrepentimiento.ts`) que llama a `POST /Arrepentimientos` (back rama `cierre-entrega`) y muestra el código de la solicitud; WhatsApp y mail quedan como alternativa
 - **Notificaciones**: No hay ningún endpoint en el backend. Los toggles en settings muestran badge "Próximamente", contador en perfil hardcodeado a `0`
 
 ### Bugs conocidos pendientes 🐛

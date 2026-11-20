@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FormularioArrepentimiento from "@/components/FormularioArrepentimiento";
 import PaginaLegal from "@/components/PaginaLegal";
-import { botonPrincipal, enlace } from "@/components/home/estilos";
+import { enlace } from "@/components/home/estilos";
 import { VENDEDOR } from "@/lib/vendedor";
 import { linkWhatsApp } from "@/lib/whatsapp";
 
@@ -12,9 +13,9 @@ export const metadata: Metadata = {
 
 const PEDIDO = "Quiero arrepentirme de una compra hecha en la web.\nNombre:\nNúmero de pedido:";
 
-// Botón de arrepentimiento (Res. 424/2020): sin registro ni trámite previo. Hoy el pedido sale por
-// WhatsApp o mail con los datos ya pedidos en el mensaje; falta un endpoint en el back que lo
-// registre y devuelva el código de la solicitud.
+// Botón de arrepentimiento (Res. 424/2020): sin registro ni trámite previo. El formulario registra
+// la solicitud en el back (POST /Arrepentimientos) y muestra su código; WhatsApp y mail quedan
+// como alternativa si el back no responde.
 export default function ArrepentimientoPage() {
   return (
     <PaginaLegal
@@ -27,15 +28,17 @@ export default function ArrepentimientoPage() {
         Defensa del Consumidor).
       </p>
       <p>
-        Para pedirlo no hace falta tener cuenta ni iniciar sesión. Mandanos tu nombre y el número de pedido, que está
-        en{" "}
+        Para pedirlo no hace falta tener cuenta ni iniciar sesión. Completá tus datos; si lo tenés a mano, sumá el
+        número de pedido, que está en{" "}
         <Link href="/account/orders" className={enlace}>
           Mis pedidos
         </Link>
-        , por cualquiera de estos medios:
+        .
       </p>
+      <FormularioArrepentimiento />
+      <p>También podés pedirlo por WhatsApp o por email, con tu nombre y el número de pedido:</p>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
-        <a href={linkWhatsApp(`Hola. ${PEDIDO}`)} target="_blank" rel="noopener noreferrer" className={botonPrincipal}>
+        <a href={linkWhatsApp(`Hola. ${PEDIDO}`)} target="_blank" rel="noopener noreferrer" className={`body-2 ${enlace}`}>
           Pedir por WhatsApp
         </a>
         <a
@@ -46,7 +49,10 @@ export default function ArrepentimientoPage() {
         </a>
       </div>
       <h2>Qué pasa después</h2>
-      <p>Dentro de las 24 horas te respondemos por el mismo medio con el código de tu solicitud.</p>
+      <p>
+        Con el formulario, el código de tu solicitud aparece en pantalla y te llega por mail. Si la pediste por WhatsApp
+        o email, te lo mandamos por el mismo medio dentro de las 24 horas.
+      </p>
     </PaginaLegal>
   );
 }
