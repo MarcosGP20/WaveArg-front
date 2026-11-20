@@ -516,6 +516,10 @@ export const UsuariosService = {
       method: "PUT",
       body: JSON.stringify(data),
     }),
+  /** Borra la propia cuenta: el back la anonimiza y conserva los pedidos. Responde 204. */
+  borrarCuenta: async (id: string | number): Promise<void> => {
+    await fetchFromApi<unknown>(`/Usuarios/${id}`, { method: "DELETE" });
+  },
 };
 
 // --- MercadoPago ---

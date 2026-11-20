@@ -9,7 +9,18 @@ import { Button } from "@/components/ui/button";
 import { Bell, Shield, Trash2, ChevronRight, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { cambiarContrasena } from "@/lib/api";
+import { cambiarContrasena, UsuariosService } from "@/lib/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface CambiarContrasenaForm {
   contrasenaActual: string;
@@ -22,6 +33,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const mounted = useMontado();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [borrando, setBorrando] = useState(false);
 
   useEffect(() => {
     if (!mounted) return;
@@ -37,8 +49,18 @@ export default function SettingsPage() {
     );
   }
 
-  const handleDeleteAccount = () => {
-    toast.info("Función disponible próximamente.");
+  // El back anonimiza la cuenta (saca email, nombre y contraseña) y conserva los pedidos.
+  const handleDeleteAccount = async () => {
+    setBorrando(true);
+    try {
+      await UsuariosService.borrarCuenta(user.id);
+      await logout();
+      toast.success("Tu cuenta fue eliminada.");
+      router.replace("/");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No pudimos eliminar tu cuenta. Probá de nuevo.");
+      setBorrando(false);
+    }
   };
 
   return (
@@ -135,14 +157,33 @@ export default function SettingsPage() {
                 Esta acción es permanente e irreversible.
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 rounded-full shrink-0"
-              onClick={handleDeleteAccount}
-            >
-              <Trash2 size={14} className="mr-2" />
-              Eliminar cuenta
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 rounded-full shrink-0"
+                  disabled={borrando}
+                >
+                  {borrando ? <Loader2 size={14} className="mr-2 animate-spin" /> : <Trash2 size={14} className="mr-2" />}
+                  Eliminar cuenta
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar tu cuenta?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Borramos tu email, tu nombre y tu contraseña, y se cierra tu sesión. Tus pedidos quedan
+                    registrados sin tus datos de contacto. No se puede deshacer.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700">
+                    Eliminar cuenta
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>

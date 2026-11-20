@@ -10,6 +10,7 @@ import {
   MENSAJE_REGISTRO_POR_DEFECTO,
   registerUser,
   stockActualSiCambio,
+  UsuariosService,
   VariantesService,
   vincularGoogle,
 } from "./api";
@@ -220,5 +221,25 @@ describe("registro (api.ts)", () => {
     fetchMock.mockResolvedValue(respuesta(200, "Usuario Registrado"));
 
     expect(await registerUser(datos)).toBe(MENSAJE_REGISTRO_POR_DEFECTO);
+  });
+});
+
+describe("borrar la propia cuenta (api.ts)", () => {
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("manda DELETE /Usuarios/{id} y acepta el 204 sin cuerpo del back", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+
+    await expect(UsuariosService.borrarCuenta(7)).resolves.toBeUndefined();
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(String(url)).toMatch(/\/Usuarios\/7$/);
+    expect(init.method).toBe("DELETE");
   });
 });
