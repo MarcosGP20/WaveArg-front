@@ -4,10 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
+  BellRing,
   ClipboardList,
   Headphones,
   LayoutDashboard,
   Smartphone,
+  Undo2,
   Users,
   X,
 } from "lucide-react";
@@ -18,6 +20,8 @@ const navLinks = [
   { name: "Accesorios", href: "/admin/accesorios", icon: Headphones },
   { name: "Pedidos", href: "/admin/orders", icon: ClipboardList },
   { name: "Usuarios", href: "/admin/users", icon: Users },
+  { name: "Avisos de stock", href: "/admin/avisos", icon: BellRing },
+  { name: "Arrepentimientos", href: "/admin/arrepentimientos", icon: Undo2 },
 ];
 
 interface AdminSidebarProps {

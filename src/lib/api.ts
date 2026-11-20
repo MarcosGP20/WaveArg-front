@@ -523,6 +523,35 @@ export const UsuariosService = {
   },
 };
 
+// --- Avisos de stock y arrepentimientos (sólo admin) ---
+
+export interface LeadAdmin {
+  id: number;
+  email: string;
+  modelo: string | null;
+  whatsapp: string | null;
+  origen: string;
+  creadoEn: string;
+}
+
+export interface ArrepentimientoAdmin {
+  id: number;
+  codigo: string;
+  nombre: string;
+  email: string;
+  numeroPedido: string | null;
+  detalle: string | null;
+  creadoEn: string;
+}
+
+export const LeadsService = {
+  getAll: () => fetchFromApi<LeadAdmin[]>("/Leads"),
+};
+
+export const ArrepentimientosService = {
+  getAll: () => fetchFromApi<ArrepentimientoAdmin[]>("/Arrepentimientos"),
+};
+
 // --- MercadoPago ---
 
 export interface MPPreferenciaItem {

@@ -29,7 +29,7 @@ src/
       contacto/, creadores/, nosotros/
       terminos/, privacidad/, arrepentimiento/ → páginas legales (texto pendiente del cliente, usan components/PaginaLegal)
     admin/                  → panel admin (protegido por proxy.ts + rol admin)
-      productos/, accesorios/, orders/, users/
+      productos/, accesorios/, orders/, users/, avisos/ (GET /Leads), arrepentimientos/ (GET /Arrepentimientos)
       components/           → AdminShell, AdminSideBar, AdminHeader, Dashboard, DataGrid, MetridCard, TableVariants, TableAccesorioVariants
       types/product.ts
     api/
