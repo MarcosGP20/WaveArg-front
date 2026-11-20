@@ -48,6 +48,7 @@ src/
     api.ts        → todos los servicios y DTOs de la API
     jwt.ts        → decodificación JWT sin validación de firma (sólo client-side, para la UI)
     sesion.ts     → verificarSesion(): firma HS256, vencimiento, issuer y audience (server-side)
+    acceso-admin.ts → accesoAdmin(): el layout de admin revalida el rol con GET /Auth/me (#119); si el back no responde usa el del token
     auth-cookie.ts → nombre y opciones de la cookie auth-token (única definición)
     backend.ts    → BACKEND_API_BASE para código server-side (route handlers, server components, sitemap)
     colorMap.ts   → mapeo de nombres de colores a valores hex
@@ -65,7 +66,7 @@ src/
 
 ## Autenticación y autorización
 - `src/proxy.ts` verifica la firma del JWT (`lib/sesion.ts`, con `JWT_SECRET`), maneja redirecciones y protege rutas por rol (primera capa)
-- `app/admin/layout.tsx` hace una segunda validación server-side (segunda capa) antes de renderizar el panel
+- `app/admin/layout.tsx` hace una segunda validación server-side (segunda capa) antes de renderizar el panel: además de la firma, pide el rol de hoy al back (`GET /Auth/me`)
 - El token vive **solo en la cookie** `auth-token` (httpOnly). Zustand persiste `user` e `isLoggedIn` en localStorage, pero **nunca el token** — la cookie es la única fuente de verdad para `fetchFromApi` y `proxy.ts`
 - Rutas públicas: `/`, `/login`, `/register`, `/products`, `/accesorios`, `/creadores`, `/nosotros`, `/contacto`, `/compare`
 - Rutas protegidas: `/account`, `/admin`, `/cart`, `/checkout`
