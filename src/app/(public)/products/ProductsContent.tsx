@@ -13,11 +13,11 @@ import { useCompare } from "@/context/CompareContext";
 import { Accesorio, CATEGORIA_LABELS } from "@/interfaces/accesorio";
 import { Producto } from "@/interfaces/producto";
 import { AccesoriosService, getProductos } from "@/lib/api";
+import { CLAVE_DESTACADO } from "@/lib/inventario";
 import { leerFiltros, opcionesDeFiltro, tarjetasDelCatalogo, type Orden } from "@/lib/catalogo";
 import CatalogoEsqueleto from "./CatalogoEsqueleto";
 
 const MAXIMO_A_COMPARAR = 3;
-const CLAVE_DESTACADO = "wave-featured-product-id";
 
 const ORDENES: { valor: Orden; texto: string }[] = [
   { valor: "predeterminado", texto: "Predeterminado" },
@@ -25,7 +25,7 @@ const ORDENES: { valor: Orden; texto: string }[] = [
   { valor: "precio-desc", texto: "Mayor precio" },
 ];
 
-// El destacado lo elige el admin y queda en su navegador (ver CLAUDE.md): sólo lo ve él.
+// El destacado lo elige el admin desde su navegador (lib/inventario.ts).
 function useDestacado(): number | null {
   const valor = useSyncExternalStore(
     () => () => {},

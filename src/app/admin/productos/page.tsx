@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState, useCallback } from "react";
 import { ProductService, Producto } from "@/lib/api";
+import { agruparPorModelo, CLAVE_DESTACADO } from "@/lib/inventario";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Trash2, Edit3, Image as ImageIcon, Smartphone, Star } from "lucide-react";
@@ -19,8 +20,6 @@ import {
   th,
 } from "../components/estilos";
 
-const FEATURED_KEY = "wave-featured-product-id";
-
 export default function InventarioPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,17 +29,17 @@ export default function InventarioPage() {
   const [featuredId, setFeaturedId] = useState<number | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(FEATURED_KEY);
+    const stored = localStorage.getItem(CLAVE_DESTACADO);
     if (stored) setFeaturedId(Number(stored));
   }, []);
 
   const toggleFeatured = (id: number) => {
     if (featuredId === id) {
-      localStorage.removeItem(FEATURED_KEY);
+      localStorage.removeItem(CLAVE_DESTACADO);
       setFeaturedId(null);
       toast.success("Producto destacado removido");
     } else {
-      localStorage.setItem(FEATURED_KEY, String(id));
+      localStorage.setItem(CLAVE_DESTACADO, String(id));
       setFeaturedId(id);
       toast.success("Producto marcado como destacado");
     }
@@ -82,20 +81,7 @@ export default function InventarioPage() {
     traerProductos();
   }, [traerProductos]);
 
-  // Lógica de agrupación
-  const productosAgrupados = productos.reduce((acc: Producto[], current) => {
-    const key = `${current.nombre}-${current.modelo}`.toLowerCase();
-
-    const existente = acc.find((p) => `${p.nombre}-${p.modelo}`.toLowerCase() === key);
-
-    if (existente) {
-      existente.variantes = [...(existente.variantes || []), ...(current.variantes || [])];
-      existente.imagenes = [...(existente.imagenes || []), ...(current.imagenes || [])];
-    } else {
-      acc.push({ ...current });
-    }
-    return acc;
-  }, []);
+  const productosAgrupados = agruparPorModelo(productos);
 
   return (
     <div>

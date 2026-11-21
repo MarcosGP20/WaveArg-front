@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState, useCallback } from "react";
 import { AccesoriosService, Accesorio } from "@/lib/api";
+import { agruparPorModelo } from "@/lib/inventario";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Trash2, Edit3, Image as ImageIcon, Headphones } from "lucide-react";
@@ -62,20 +63,7 @@ export default function InventarioPage() {
     traerAccesorios();
   }, [traerAccesorios]);
 
-  // Lógica de agrupación
-  const accesoriosAgrupados = accesorios.reduce((acc: Accesorio[], current) => {
-    const key = `${current.nombre}-${current.modelo}`.toLowerCase();
-
-    const existente = acc.find((p) => `${p.nombre}-${p.modelo}`.toLowerCase() === key);
-
-    if (existente) {
-      existente.variantes = [...(existente.variantes || []), ...(current.variantes || [])];
-      existente.imagenes = [...(existente.imagenes || []), ...(current.imagenes || [])];
-    } else {
-      acc.push({ ...current });
-    }
-    return acc;
-  }, []);
+  const accesoriosAgrupados = agruparPorModelo(accesorios);
 
   return (
     <div>
