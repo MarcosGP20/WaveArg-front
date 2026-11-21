@@ -26,6 +26,12 @@ describe("accesoAdmin", () => {
     expect(await accesoAdmin(await tokenFirmado("Admin"))).toBe("login");
   });
 
+  it("si el back responde 403 no usa el rol del token", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 403 }));
+
+    expect(await accesoAdmin(await tokenFirmado("Admin"))).toBe("login");
+  });
+
   it("un token inválido va al login sin consultar al back", async () => {
     expect(await accesoAdmin(await tokenFirmado("Admin", { secreto: "otra-clave-de-al-menos-32-bytes!!!" }))).toBe("login");
     expect(await accesoAdmin(undefined)).toBe("login");

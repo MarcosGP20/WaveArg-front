@@ -48,7 +48,7 @@ src/
     api.ts        → todos los servicios y DTOs de la API
     jwt.ts        → decodificación JWT sin validación de firma (sólo client-side, para la UI)
     sesion.ts     → verificarSesion(): firma HS256, vencimiento, issuer y audience (server-side)
-    acceso-admin.ts → accesoAdmin(): el layout de admin revalida el rol con GET /Auth/me (#119); si el back no responde usa el del token
+    acceso-admin.ts → accesoAdmin(): el layout de admin revalida el rol con GET /Auth/me (#119); 401/403 del back mandan al login; si el back no responde usa el del token
     auth-cookie.ts → nombre y opciones de la cookie auth-token (única definición)
     backend.ts    → BACKEND_API_BASE para código server-side (route handlers, server components, sitemap)
     colorMap.ts   → mapeo de nombres de colores a valores hex
@@ -132,7 +132,7 @@ MERCADOPAGO_WEBHOOK_SECRET     # Para validar firma HMAC del webhook (producció
 - **Notificaciones**: No hay ningún endpoint en el backend. Los toggles en settings muestran badge "Próximamente", contador en perfil hardcodeado a `0`
 
 ### Bugs conocidos pendientes 🐛
-- Fetches de productos sin caché: `getProductos()` se llama de forma independiente en catálogo y detalle (para sugeridos). En la home, una sola request cacheada (`hooks/useProductosHome`)
+- Ninguno anotado. (Resuelto: `getProductos()` comparte una request de 30 s entre catálogo, ficha, comparador y home; `invalidarProductos()` la limpia al aprobarse un pago)
 
 ### Mejoras de UI pendientes 📋
 - **FAQSection** ✅ refactorizada: datos en una lista y estilo del sistema "Precisión"
