@@ -5,17 +5,11 @@ import { getProductos } from "@/lib/api";
 import type { Producto } from "@/interfaces/producto";
 import { horaDeLectura } from "@/lib/home";
 
-// Una sola request a /Productos por carga de la home, aunque la pidan varias islas.
-let pedido: Promise<{ productos: Producto[]; leido: Date }> | null = null;
-
+// Las islas de la home comparten la request de getProductos (lib/api.ts), que vence a los 30 s y
+// se limpia con invalidarProductos() al aprobarse un pago: no hay una segunda caché acá que
+// pueda quedar con stock viejo.
 function cargar() {
-  pedido ??= getProductos()
-    .then((productos) => ({ productos, leido: new Date() }))
-    .catch((e) => {
-      pedido = null; // un error no queda cacheado: la próxima visita reintenta
-      throw e;
-    });
-  return pedido;
+  return getProductos().then((productos) => ({ productos, leido: new Date() }));
 }
 
 export function useProductosHome() {
