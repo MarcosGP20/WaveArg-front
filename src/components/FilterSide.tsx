@@ -222,12 +222,12 @@ function PriceRangeSlider({
 
         {/* Visual thumb — min */}
         <div
-          className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-color-principal bg-white peer-focus-visible/min:ring-2 peer-focus-visible/min:ring-[#2563eb] peer-focus-visible/min:ring-offset-2"
+          className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-color-principal bg-white peer-focus-visible/min:ring-2 peer-focus-visible/min:ring-foco peer-focus-visible/min:ring-offset-2"
           style={{ left: `${lowPct}%` }}
         />
         {/* Visual thumb — max */}
         <div
-          className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-color-principal bg-white peer-focus-visible/max:ring-2 peer-focus-visible/max:ring-[#2563eb] peer-focus-visible/max:ring-offset-2"
+          className="pointer-events-none absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-color-principal bg-white peer-focus-visible/max:ring-2 peer-focus-visible/max:ring-foco peer-focus-visible/max:ring-offset-2"
           style={{ left: `${highPct}%` }}
         />
       </div>

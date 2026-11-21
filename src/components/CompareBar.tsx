@@ -65,7 +65,7 @@ function SlotDropdown({ currentId, excludedIds, onSelect, onClose }: SlotDropdow
       className="absolute bottom-full mb-2 left-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
     >
       {/* Buscador */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 focus-within:ring-2 focus-within:ring-inset focus-within:ring-[#2563eb]">
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 focus-within:ring-2 focus-within:ring-inset focus-within:ring-foco">
         <Search size={14} className="text-gray-500 shrink-0" aria-hidden="true" />
         <input
           ref={inputRef}

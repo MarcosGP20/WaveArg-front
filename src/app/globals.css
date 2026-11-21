@@ -42,6 +42,8 @@
   --color-guardavidas: #F2611D;
   /* Fin del degradé del titular del hero (blanco → bruma), el único degradé de la home. */
   --color-bruma: #9B9B9B;
+  /* Foco visible (front#14): mismo azul que el outline de :focus-visible. */
+  --color-foco: #2563eb;
   --radius-control: 12px;
   --radius-panel: 20px;
   --ease-ola: var(--curva-ola);
