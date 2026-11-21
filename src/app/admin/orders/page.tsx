@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
 import { PedidosService, Pedido, PedidoItem } from "@/lib/api";
 import { ESTADOS_PEDIDO, estadoClase, estadoLabel, requiereAtencion } from "@/lib/pedidos";
 import EstadoBadge from "../components/EstadoBadge";
@@ -141,6 +142,11 @@ export default function OrdersPage() {
   useEffect(() => {
     traerPedidos(filtroEstado || undefined);
   }, [filtroEstado]);
+
+  useRecargarAlVolver(() => {
+    setError(null);
+    traerPedidos(filtroEstado || undefined);
+  });
 
   // Se recarga en vez de actualizar en el lugar: el cambio de estado modifica las
   // transiciones permitidas (y puede sacar el pedido del filtro actual).

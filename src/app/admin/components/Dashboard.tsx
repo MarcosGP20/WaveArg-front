@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
 import MetricCard from "./MetricCard";
 import DataGrid, { type Column } from "./DataGrid";
 import EstadoBadge from "./EstadoBadge";
@@ -59,7 +60,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  function traer() {
     Promise.allSettled([
       AdminService.getDashboard(),
       PedidosService.getAll(),
@@ -88,7 +90,16 @@ export default function Dashboard() {
 
       setLoading(false);
     });
+  }
+
+  useEffect(() => {
+    traer();
   }, []);
+
+  useRecargarAlVolver(() => {
+    setError(null);
+    traer();
+  });
 
   if (loading) return <DashboardSkeleton />;
 

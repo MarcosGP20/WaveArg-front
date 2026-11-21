@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Trash2, Edit3, Image as ImageIcon, Headphones } from "lucide-react";
 import { toast } from "sonner";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
 import { CabeceraPagina, EstadoError, EstadoVacio, TablaSkeleton } from "../components/PaginaAdmin";
 import { FilaConfirmarBorrado, StockBadge } from "../components/InventarioFilas";
 import {
@@ -62,6 +63,11 @@ export default function InventarioPage() {
   useEffect(() => {
     traerAccesorios();
   }, [traerAccesorios]);
+
+  useRecargarAlVolver(() => {
+    setError(null);
+    traerAccesorios();
+  });
 
   const accesoriosAgrupados = agruparPorModelo(accesorios);
 

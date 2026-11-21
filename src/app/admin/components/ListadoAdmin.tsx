@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
 import { CabeceraPagina, EstadoError, EstadoVacio, TablaSkeleton } from "./PaginaAdmin";
 import { botonIcono, encabezadoTabla, filaTabla, panel, th } from "./estilos";
 
@@ -48,6 +49,11 @@ export function ListadoAdmin<T extends { id: number }>({
   useEffect(() => {
     traer();
   }, [traer]);
+
+  useRecargarAlVolver(() => {
+    setError(null);
+    traer();
+  });
 
   return (
     <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
 import { UsuariosService, Usuario } from "@/lib/api";
 import { filtrarUsuarios, inicialDeUsuario } from "@/lib/usuarios";
 import { Users, RefreshCw, ShieldCheck, User } from "lucide-react";
@@ -64,6 +65,11 @@ export default function UsersPage() {
   useEffect(() => {
     traerUsuarios();
   }, []);
+
+  useRecargarAlVolver(() => {
+    setError(null);
+    traerUsuarios();
+  });
 
   // Filtrado local (por rol y búsqueda de email/nombre)
   const usuariosFiltrados = filtrarUsuarios(usuarios, filtroRol, busqueda);

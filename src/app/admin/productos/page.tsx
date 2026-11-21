@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Trash2, Edit3, Image as ImageIcon, Smartphone, Star } from "lucide-react";
 import { toast } from "sonner";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
 import { CabeceraPagina, EstadoError, EstadoVacio, TablaSkeleton } from "../components/PaginaAdmin";
 import { FilaConfirmarBorrado, StockBadge } from "../components/InventarioFilas";
 import {
@@ -80,6 +81,11 @@ export default function InventarioPage() {
   useEffect(() => {
     traerProductos();
   }, [traerProductos]);
+
+  useRecargarAlVolver(() => {
+    setError(null);
+    traerProductos();
+  });
 
   const productosAgrupados = agruparPorModelo(productos);
 
