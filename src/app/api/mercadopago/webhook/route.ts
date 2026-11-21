@@ -11,6 +11,10 @@ const isProduction = process.env.NODE_ENV === "production";
  * El mensaje firmado es: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;"
  * Si falta data.id o x-request-id, MP omite ese tramo entero (igual que el backend en
  * FirmaWebhookMp.cs: los dos tienen que armar el mismo texto).
+ *
+ * Un ts viejo no invalida la firma, igual que en el back: MP reintenta durante horas y no está
+ * confirmado que renueve el ts, y repetir una notificación es inofensivo (el back consulta el pago
+ * a la API de MP y el upsert es idempotente).
  */
 function isValidSignature(req: NextRequest, dataId: string, secret: string): boolean {
   const xSignature = req.headers.get("x-signature") ?? "";

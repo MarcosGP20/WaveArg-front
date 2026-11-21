@@ -3,15 +3,27 @@
 import { fetchFromApi } from "@/lib/api";
 import type { ArrepentimientoFormValues } from "@/schemas/arrepentimiento.schema";
 
+/** Lo que se le manda al back. */
+export interface ArrepentimientoDTO {
+  nombre: string;
+  email: string;
+  numeroPedido: string | null;
+  detalle: string | null;
+}
+
+export function arrepentimientoDesdeFormulario(valores: ArrepentimientoFormValues): ArrepentimientoDTO {
+  return {
+    nombre: valores.nombre.trim(),
+    email: valores.email.trim(),
+    numeroPedido: valores.numeroPedido.trim() || null,
+    detalle: valores.detalle.trim() || null,
+  };
+}
+
 export async function solicitarArrepentimiento(valores: ArrepentimientoFormValues): Promise<string> {
   const { codigo } = await fetchFromApi<{ codigo: string }>("/Arrepentimientos", {
     method: "POST",
-    body: JSON.stringify({
-      nombre: valores.nombre.trim(),
-      email: valores.email.trim(),
-      numeroPedido: valores.numeroPedido.trim() || null,
-      detalle: valores.detalle.trim() || null,
-    }),
+    body: JSON.stringify(arrepentimientoDesdeFormulario(valores)),
   });
   return codigo;
 }

@@ -4,10 +4,9 @@ import { linkWhatsApp } from "@/lib/whatsapp";
 import type { LeadFormValues } from "@/schemas/lead.schema";
 
 /**
- * El back todavía no tiene dónde guardar contactos (falta POST /api/Leads). Hasta que exista, el
- * pedido de aviso sale por WhatsApp con el mensaje ya escrito, que es como hoy llegan las
- * consultas. Cuando el endpoint esté, se prende con NEXT_PUBLIC_LEADS_API=true y el formulario
- * guarda el contacto sin sacar a la persona de la página.
+ * Con NEXT_PUBLIC_LEADS_API=true el formulario guarda el contacto con POST /Leads sin sacar a la
+ * persona de la página. Sin la variable (back sin ese endpoint deployado), el pedido de aviso sale
+ * por WhatsApp con el mensaje ya escrito, que es como llegan las consultas.
  */
 export const LEADS_POR_API = process.env.NEXT_PUBLIC_LEADS_API === "true";
 

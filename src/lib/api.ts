@@ -404,7 +404,6 @@ export function invalidarProductos() {
 export async function getProductos() {
   const ahora = Date.now();
   if (!productosEnCurso || ahora - productosEnCurso.pedidoEn > VIGENCIA_PRODUCTOS_MS) {
-    // Según tu Swagger es /api/Productos?soloDisponibles=true
     const promesa = fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
       method: "GET",
     });
