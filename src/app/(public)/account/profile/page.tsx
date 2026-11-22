@@ -3,7 +3,6 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useMontado } from "@/hooks/useMontado";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { PedidosService, UsuariosService } from "@/lib/api";
@@ -21,6 +20,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { esPedidoActivo } from "@/lib/pedidos";
+import { useCuenta } from "../SesionCuenta";
 
 interface EditForm {
   nombre: string;
@@ -28,8 +28,8 @@ interface EditForm {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, token, logout, updateUser } = useAuthStore();
-  const mounted = useMontado();
+  const { sesion, usuario } = useCuenta();
+  const { logout, updateUser } = useAuthStore();
   const [pedidosActivos, setPedidosActivos] = useState<number | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -37,14 +37,6 @@ export default function ProfilePage() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<EditForm>();
 
   useEffect(() => {
-    if (!mounted) return;
-    if (!token || !user) {
-      router.replace("/login");
-    }
-  }, [mounted, token, user, router]);
-
-  useEffect(() => {
-    if (!mounted || !token) return;
     PedidosService.getMisPedidos()
       .then((pedidos) => {
         const activos = pedidos.filter((p) =>
@@ -53,10 +45,10 @@ export default function ProfilePage() {
         setPedidosActivos(activos);
       })
       .catch(() => setPedidosActivos(0));
-  }, [mounted, token]);
+  }, []);
 
   const handleEdit = () => {
-    reset({ nombre: user?.nombre ?? "" });
+    reset({ nombre: usuario?.nombre ?? "" });
     setEditing(true);
   };
 
@@ -65,10 +57,9 @@ export default function ProfilePage() {
   };
 
   const onSubmit = async (data: EditForm) => {
-    if (!user) return;
     setSaving(true);
     try {
-      const updated = await UsuariosService.updateMe(user.id, { nombre: data.nombre });
+      const updated = await UsuariosService.updateMe(sesion.id, { nombre: data.nombre });
       updateUser({ nombre: updated.nombre ?? data.nombre });
       setEditing(false);
       toast.success("Perfil actualizado");
@@ -84,13 +75,7 @@ export default function ProfilePage() {
     router.push("/login");
   };
 
-  if (!mounted) return <ProfileSkeleton />;
-
-  if (!token || !user) {
-    return <ProfileSkeleton />;
-  }
-
-  const displayName = user.nombre || user.email.split("@")[0];
+  const displayName = usuario?.nombre || sesion.email.split("@")[0];
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
@@ -202,7 +187,7 @@ export default function ProfilePage() {
                       Nombre
                     </p>
                     <p className="font-semibold text-gray-800">
-                      {user.nombre || <span className="text-gray-500 font-normal">Sin nombre</span>}
+                      {usuario?.nombre || <span className="text-gray-500 font-normal">Sin nombre</span>}
                     </p>
                   </div>
                 </div>
@@ -217,7 +202,7 @@ export default function ProfilePage() {
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                     Correo electrónico
                   </p>
-                  <p className="font-semibold text-gray-800">{user.email}</p>
+                  <p className="font-semibold text-gray-800">{sesion.email}</p>
                 </div>
               </div>
             </div>
@@ -254,17 +239,6 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function ProfileSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-12 px-4 animate-pulse">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="w-full lg:w-1/3 h-64 bg-gray-200 rounded-2xl" />
-        <div className="flex-1 h-96 bg-gray-100 rounded-2xl" />
       </div>
     </div>
   );

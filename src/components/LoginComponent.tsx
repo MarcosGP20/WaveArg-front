@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api";
 import type { AuthResponse } from "@/interfaces/auth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { crearSesion } from "@/lib/crear-sesion";
 import { loginSchema, LoginFormValues } from "@/schemas/auth.schema";
 import { getUserIdFromJWT, getEmailFromJWT, getRoleFromJWT } from "@/lib/jwt";
 import GoogleAuth from "@/components/GoogleAuth";
@@ -60,7 +61,8 @@ export function LoginForm() {
           };
         }
 
-        await setAuth(response.token, user);
+        await crearSesion(response.token);
+        setAuth(user);
         setStatusMessage("Sesión iniciada con éxito. Redirigiendo...");
 
         // 3. Redirección basada en Rol (con validación)
@@ -87,7 +89,8 @@ export function LoginForm() {
         rol: getRoleFromJWT(response.token) || "User",
       };
     }
-    await setAuth(response.token, user);
+    await crearSesion(response.token);
+    setAuth(user);
     setStatusMessage("Sesión iniciada con Google. Redirigiendo...");
     const isAdmin = user?.rol?.toLowerCase() === "admin";
     setTimeout(() => router.push(isAdmin ? "/admin" : "/account/profile"), 1000);

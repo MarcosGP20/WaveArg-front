@@ -2,8 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useMontado } from "@/hooks/useMontado";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Bell, Shield, Trash2, ChevronRight, Loader2, X } from "lucide-react";
@@ -21,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useCuenta } from "../SesionCuenta";
 
 interface CambiarContrasenaForm {
   contrasenaActual: string;
@@ -29,31 +29,18 @@ interface CambiarContrasenaForm {
 }
 
 export default function SettingsPage() {
-  const { token, user, logout } = useAuthStore();
+  // El acceso lo resuelve account/layout.tsx en el servidor: acá ya hay sesión.
+  const { sesion } = useCuenta();
+  const { logout } = useAuthStore();
   const router = useRouter();
-  const mounted = useMontado();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [borrando, setBorrando] = useState(false);
-
-  useEffect(() => {
-    if (!mounted) return;
-    if (!token || !user) router.replace("/login");
-  }, [mounted, token, user, router]);
-
-  if (!mounted || !token || !user) {
-    return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-500" />
-        <span className="text-gray-500">Cargando...</span>
-      </div>
-    );
-  }
 
   // El back anonimiza la cuenta (saca email, nombre y contraseña) y conserva los pedidos.
   const handleDeleteAccount = async () => {
     setBorrando(true);
     try {
-      await UsuariosService.borrarCuenta(user.id);
+      await UsuariosService.borrarCuenta(sesion.id);
       await logout();
       toast.success("Tu cuenta fue eliminada.");
       router.replace("/");

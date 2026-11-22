@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMontado } from "@/hooks/useMontado";
 import { PedidosService, Pedido, PedidoItem } from "@/lib/api";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
 import {
   ShoppingBag,
   AlertCircle,
@@ -68,26 +65,17 @@ function CardSkeleton() {
 // PÁGINA
 // ================================================================
 export default function MisPedidosPage() {
-  const { token, user } = useAuthStore();
-  const router = useRouter();
-  const mounted = useMontado();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // El acceso lo resuelve account/layout.tsx en el servidor: acá ya hay sesión.
   useEffect(() => {
-    if (!mounted) return;
-    if (!token || !user) {
-      router.replace("/login");
-      return;
-    }
     PedidosService.getMisPedidos()
       .then(setPedidos)
       .catch((err: Error) => setError(err instanceof Error ? err.message : String(err)))
       .finally(() => setLoading(false));
-  }, [mounted, token, user, router]);
-
-  if (!mounted || !token || !user) return null;
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
