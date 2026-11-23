@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import AdminSidebar from "@/app/admin/components/AdminSideBar";
 import AdminHeader from "@/app/admin/components/AdminHeader";
 import { Toaster } from "@/components/ui/sonner";
+import { useRecargarSiVuelveDeBfcache } from "@/hooks/useRecargarSiVuelveDeBfcache";
 
 export default function AdminShell({
   children,
@@ -13,6 +14,7 @@ export default function AdminShell({
   sesion: { email: string; rol: string };
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useRecargarSiVuelveDeBfcache();
 
   // Cerrar con Escape
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect } from "react";
 import { useMontado } from "@/hooks/useMontado";
+import { useRecargarSiVuelveDeBfcache } from "@/hooks/useRecargarSiVuelveDeBfcache";
 import { decidirAccesoCuenta } from "@/lib/acceso-cuenta";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { User } from "@/interfaces/auth";
@@ -29,6 +30,7 @@ export function useCuenta(): Cuenta {
 
 export default function SesionCuenta({ sesion, children }: { sesion: SesionVerificada; children: React.ReactNode }) {
   const guardado = useAuthStore((s) => s.user);
+  useRecargarSiVuelveDeBfcache();
 
   // Zustand se hidrata desde localStorage, que el servidor no tiene: lo guardado se usa recién
   // después de montar, para que el primer render coincida con el HTML del servidor.
