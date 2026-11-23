@@ -146,7 +146,7 @@ export default function ProfilePage() {
                           minLength: { value: 2, message: "Mínimo 2 caracteres" },
                           maxLength: { value: 60, message: "Máximo 60 caracteres" },
                         })}
-                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
                         placeholder="Tu nombre"
                         autoFocus
                       />

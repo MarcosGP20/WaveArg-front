@@ -286,7 +286,7 @@ export default function CheckoutPage() {
                 value: direccion[campo],
                 "aria-invalid": error ? true : undefined,
                 "aria-describedby": error ? `${id}-error` : undefined,
-                className: `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal ${
+                className: `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-foco focus:border-foco ${
                   error ? "border-red-600 bg-red-50" : "border-gray-300 bg-gray-50"
                 }`,
               };

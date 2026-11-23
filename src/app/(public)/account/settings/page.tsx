@@ -227,7 +227,7 @@ function PasswordForm({
         <input
           type="password"
           {...register("contrasenaActual", { required: "Requerido" })}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
           autoFocus
         />
         {errors.contrasenaActual && (
@@ -245,7 +245,7 @@ function PasswordForm({
             required: "Requerido",
             minLength: { value: 6, message: "Mínimo 6 caracteres" },
           })}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
         />
         {errors.nuevaContrasena && (
           <p className="text-xs text-red-500 mt-1">{errors.nuevaContrasena.message}</p>
@@ -262,7 +262,7 @@ function PasswordForm({
             required: "Requerido",
             validate: (v) => v === nuevaContrasena || "Las contraseñas no coinciden",
           })}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
         />
         {errors.confirmarContrasena && (
           <p className="text-xs text-red-500 mt-1">{errors.confirmarContrasena.message}</p>
