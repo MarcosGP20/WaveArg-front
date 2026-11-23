@@ -8,10 +8,10 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { LogOut, Settings, User, ChevronDown, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useMontado } from "@/hooks/useMontado";
 import { usuarioAdmin } from "@/lib/usuario-admin";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCerrarSesion } from "@/hooks/useCerrarSesion";
 
 const itemClass =
   "flex items-center px-4 py-2 text-sm text-tinta outline-none transition-colors duration-300 ease-ola data-[highlighted]:bg-superficie";
@@ -23,8 +23,8 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ sesion, onMenuToggle }: AdminHeaderProps) {
-  const router = useRouter();
-  const { user: guardado, logout } = useAuthStore();
+  const { user: guardado } = useAuthStore();
+  const cerrarSesion = useCerrarSesion();
 
   // Zustand se hidrata desde localStorage, que el servidor no tiene: el nombre guardado se usa
   // recién después de montar, para que el primer render coincida con el HTML del servidor.
@@ -32,8 +32,7 @@ export default function AdminHeader({ sesion, onMenuToggle }: AdminHeaderProps) 
   const usuario = usuarioAdmin(sesion, montado ? guardado : null);
 
   const handleLogout = async () => {
-    await logout();
-    router.push("/login");
+    await cerrarSesion("/login");
   };
 
   return (

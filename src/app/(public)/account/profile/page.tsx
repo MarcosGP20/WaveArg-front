@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
+import { useCerrarSesion } from "@/hooks/useCerrarSesion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -27,9 +27,9 @@ interface EditForm {
 }
 
 export default function ProfilePage() {
-  const router = useRouter();
   const { sesion, usuario } = useCuenta();
-  const { logout, updateUser } = useAuthStore();
+  const { updateUser } = useAuthStore();
+  const cerrarSesion = useCerrarSesion();
   const [pedidosActivos, setPedidosActivos] = useState<number | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -71,8 +71,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    await logout();
-    router.push("/login");
+    await cerrarSesion("/login");
   };
 
   const displayName = usuario?.nombre || sesion.email.split("@")[0];

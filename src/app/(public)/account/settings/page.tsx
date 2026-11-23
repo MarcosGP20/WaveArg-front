@@ -1,7 +1,6 @@
 "use client";
 
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
+import { useCerrarSesion } from "@/hooks/useCerrarSesion";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -31,8 +30,7 @@ interface CambiarContrasenaForm {
 export default function SettingsPage() {
   // El acceso lo resuelve account/layout.tsx en el servidor: acá ya hay sesión.
   const { sesion } = useCuenta();
-  const { logout } = useAuthStore();
-  const router = useRouter();
+  const cerrarSesion = useCerrarSesion();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [borrando, setBorrando] = useState(false);
 
@@ -41,9 +39,8 @@ export default function SettingsPage() {
     setBorrando(true);
     try {
       await UsuariosService.borrarCuenta(sesion.id);
-      await logout();
       toast.success("Tu cuenta fue eliminada.");
-      router.replace("/");
+      await cerrarSesion("/");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "No pudimos eliminar tu cuenta. Probá de nuevo.");
       setBorrando(false);
@@ -120,8 +117,7 @@ export default function SettingsPage() {
                 onClose={() => setShowPasswordForm(false)}
                 onSuccess={async () => {
                   setShowPasswordForm(false);
-                  await logout();
-                  router.push("/login");
+                  await cerrarSesion("/login");
                 }}
               />
             )}

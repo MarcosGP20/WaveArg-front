@@ -38,13 +38,14 @@ export default function SesionCuenta({ sesion, children }: { sesion: SesionVerif
   // estaba vacío (se borró localStorage) o era de otro usuario, se reemplaza por los datos de la
   // sesión (sin nombre, que el token no trae). No reacciona a cambios posteriores del store: si el
   // usuario cierra sesión estando acá (logout vacía el store), no hay que volver a loguearlo.
+  const { id, email, rol } = sesion;
   useEffect(() => {
     const actual = useAuthStore.getState().user;
-    const acceso = decidirAccesoCuenta(sesion, actual?.id);
+    const acceso = decidirAccesoCuenta({ id, email, rol }, actual?.id);
     if (acceso.tipo === "renderizar" && (acceso.limpiarUsuario || !actual)) {
-      useAuthStore.setState({ user: { id: sesion.id, email: sesion.email, rol: sesion.rol }, isLoggedIn: true });
+      useAuthStore.setState({ user: { id, email, rol }, isLoggedIn: true });
     }
-  }, [sesion]);
+  }, [id, email, rol]);
 
   const usuario = montado && guardado?.id === sesion.id ? guardado : null;
   return <CuentaContext.Provider value={{ sesion, usuario }}>{children}</CuentaContext.Provider>;
