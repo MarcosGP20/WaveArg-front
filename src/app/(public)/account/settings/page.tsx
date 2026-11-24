@@ -39,8 +39,7 @@ export default function SettingsPage() {
     setBorrando(true);
     try {
       await UsuariosService.borrarCuenta(sesion.id);
-      toast.success("Tu cuenta fue eliminada.");
-      await cerrarSesion("/");
+      await cerrarSesion("/", { tipo: "success", mensaje: "Tu cuenta fue eliminada." });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "No pudimos eliminar tu cuenta. Probá de nuevo.");
       setBorrando(false);
@@ -117,7 +116,10 @@ export default function SettingsPage() {
                 onClose={() => setShowPasswordForm(false)}
                 onSuccess={async () => {
                   setShowPasswordForm(false);
-                  await cerrarSesion("/login");
+                  await cerrarSesion("/login", {
+                    tipo: "success",
+                    mensaje: "Contraseña actualizada. Iniciá sesión nuevamente.",
+                  });
                 }}
               />
             )}
@@ -205,7 +207,6 @@ function PasswordForm({
         contrasenaActual: data.contrasenaActual,
         nuevaContrasena: data.nuevaContrasena,
       });
-      toast.success("Contraseña actualizada. Iniciá sesión nuevamente.");
       onSuccess();
     } catch (err: unknown) {
       const message =

@@ -9,6 +9,8 @@ import AdminFloatingButton from "@/components/AdminFloatingButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ChatAyuda from "@/components/ChatAyuda";
 import { GoogleProvider } from "@/components/GoogleProvider";
+import { Toaster } from "@/components/ui/sonner";
+import AvisoPendiente from "@/components/AvisoPendiente";
 import MotionProvider from "@/components/MotionProvider";
 
 export default function PublicLayout({
@@ -39,6 +41,8 @@ export default function PublicLayout({
           <WhatsAppButton />
           <ChatAyuda />
           <Footer />
+          <Toaster theme="light" />
+          <AvisoPendiente />
         </div>
       </CompareProvider>
     </CartProvider>
