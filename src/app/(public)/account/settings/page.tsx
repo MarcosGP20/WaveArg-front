@@ -1,14 +1,25 @@
 "use client";
 
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCerrarSesion } from "@/hooks/useCerrarSesion";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Bell, Shield, Trash2, ChevronRight, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { cambiarContrasena } from "@/lib/api";
+import { cambiarContrasena, UsuariosService } from "@/lib/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useCuenta } from "../SesionCuenta";
 
 interface CambiarContrasenaForm {
   contrasenaActual: string;
@@ -17,31 +28,22 @@ interface CambiarContrasenaForm {
 }
 
 export default function SettingsPage() {
-  const { token, user, logout } = useAuthStore();
-  const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  // El acceso lo resuelve account/layout.tsx en el servidor: acá ya hay sesión.
+  const { sesion } = useCuenta();
+  const cerrarSesion = useCerrarSesion();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [borrando, setBorrando] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    if (!token || !user) router.replace("/login");
-  }, [mounted, token, user, router]);
-
-  if (!mounted || !token || !user) {
-    return (
-      <div className="flex justify-center items-center h-[80vh]">
-        <Loader2 className="animate-spin w-6 h-6 mr-2 text-gray-500" />
-        <span className="text-gray-500">Cargando...</span>
-      </div>
-    );
-  }
-
-  const handleDeleteAccount = () => {
-    toast.info("Función disponible próximamente.");
+  // El back anonimiza la cuenta (saca email, nombre y contraseña) y conserva los pedidos.
+  const handleDeleteAccount = async () => {
+    setBorrando(true);
+    try {
+      await UsuariosService.borrarCuenta(sesion.id);
+      await cerrarSesion("/", { tipo: "success", mensaje: "Tu cuenta fue eliminada." });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No pudimos eliminar tu cuenta. Probá de nuevo.");
+      setBorrando(false);
+    }
   };
 
   return (
@@ -114,8 +116,10 @@ export default function SettingsPage() {
                 onClose={() => setShowPasswordForm(false)}
                 onSuccess={async () => {
                   setShowPasswordForm(false);
-                  await logout();
-                  router.push("/login");
+                  await cerrarSesion("/login", {
+                    tipo: "success",
+                    mensaje: "Contraseña actualizada. Iniciá sesión nuevamente.",
+                  });
                 }}
               />
             )}
@@ -138,14 +142,33 @@ export default function SettingsPage() {
                 Esta acción es permanente e irreversible.
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 rounded-full shrink-0"
-              onClick={handleDeleteAccount}
-            >
-              <Trash2 size={14} className="mr-2" />
-              Eliminar cuenta
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 rounded-full shrink-0"
+                  disabled={borrando}
+                >
+                  {borrando ? <Loader2 size={14} className="mr-2 animate-spin" /> : <Trash2 size={14} className="mr-2" />}
+                  Eliminar cuenta
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar tu cuenta?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Borramos tu email, tu nombre y tu contraseña, y se cierra tu sesión. Tus pedidos quedan
+                    registrados sin tus datos de contacto. No se puede deshacer.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700">
+                    Eliminar cuenta
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
@@ -184,7 +207,6 @@ function PasswordForm({
         contrasenaActual: data.contrasenaActual,
         nuevaContrasena: data.nuevaContrasena,
       });
-      toast.success("Contraseña actualizada. Iniciá sesión nuevamente.");
       onSuccess();
     } catch (err: unknown) {
       const message =
@@ -202,7 +224,7 @@ function PasswordForm({
         <input
           type="password"
           {...register("contrasenaActual", { required: "Requerido" })}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
           autoFocus
         />
         {errors.contrasenaActual && (
@@ -220,7 +242,7 @@ function PasswordForm({
             required: "Requerido",
             minLength: { value: 6, message: "Mínimo 6 caracteres" },
           })}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
         />
         {errors.nuevaContrasena && (
           <p className="text-xs text-red-500 mt-1">{errors.nuevaContrasena.message}</p>
@@ -237,7 +259,7 @@ function PasswordForm({
             required: "Requerido",
             validate: (v) => v === nuevaContrasena || "Las contraseñas no coinciden",
           })}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-color-principal/30 focus:border-color-principal"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco"
         />
         {errors.confirmarContrasena && (
           <p className="text-xs text-red-500 mt-1">{errors.confirmarContrasena.message}</p>

@@ -2,47 +2,16 @@
 
 import { LoginForm } from "@/components/LoginComponent";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { token, user, isLoggedIn } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
-
+  // src/proxy.ts manda a /account/profile a quien llega con una cookie de sesión válida, así que
+  // acá la sesión falta o venció. Si el navegador todavía tiene el usuario guardado como logueado,
+  // está desactualizado: se limpia en vez de redirigir con él, que rebotaba entre /login y
+  // /account. Corre sólo al montar: el login exitoso de esta misma página no lo dispara.
   useEffect(() => {
-    setMounted(true);
+    if (useAuthStore.getState().isLoggedIn) void useAuthStore.getState().logout();
   }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    if (isLoggedIn && (token || user)) {
-      router.replace("/account/profile");
-    }
-  }, [mounted, isLoggedIn, token, user, router]);
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Loader2 className="animate-spin w-6 h-6" />
-          <span>Cargando...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoggedIn && (token || user)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Loader2 className="animate-spin w-6 h-6" />
-          <span>Redirigiendo a tu cuenta...</span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F8FB] p-4">

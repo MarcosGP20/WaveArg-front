@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
+import { invalidarProductos } from "@/lib/api";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -19,6 +20,7 @@ export default function SuccessContent() {
     if (!cleared.current) {
       cleared.current = true;
       clearCart();
+      invalidarProductos();
     }
   }, [clearCart]);
 

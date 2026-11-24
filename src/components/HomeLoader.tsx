@@ -39,7 +39,8 @@ export default function HomeLoader() {
   if (!visible) return null;
 
   return (
-    <div className="wave-loader fixed inset-0 z-50 flex items-center justify-center bg-white">
+    // z-[70]: por encima de los botones flotantes (z-50) y del panel del chat (z-60).
+    <div className="wave-loader fixed inset-0 z-[70] flex items-center justify-center bg-white">
       <video
         // src en el <video> (no un <source>): si el navegador no puede reproducir el WebM (Safari),
         // el error llega acá y la intro se cierra sin esperar a MAX_MS.

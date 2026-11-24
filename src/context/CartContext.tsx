@@ -4,19 +4,12 @@ import React, {
   createContext,
   useContext,
   useState,
+  useSyncExternalStore,
   ReactNode,
-  useEffect,
 } from "react";
+import { crearAlmacenCarrito, type ItemCarrito } from "@/lib/carrito";
 
-export type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  stock?: number;
-  image?: string;
-  type?: "producto" | "accesorio";
-};
+export type CartItem = ItemCarrito;
 
 type CartContextType = {
   cart: CartItem[];
@@ -31,29 +24,35 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Estado antes de leer localStorage. Se compara por referencia para no guardarlo: en dev,
-// StrictMode monta los efectos dos veces y el segundo leía el [] que había escrito el primero.
-const SIN_HIDRATAR: CartItem[] = [];
+// Un solo almacén por pestaña. En el servidor no hay localStorage: el carrito arranca vacío
+// (getServerSnapshot) y el cliente lo lee recién al hidratar, sin desajuste.
+const almacen = typeof window !== "undefined" ? crearAlmacenCarrito(window.localStorage) : null;
+const vacio: CartItem[] = [];
+
+function suscribir(aviso: () => void) {
+  if (!almacen) return () => {};
+  const baja = almacen.subscribe(aviso);
+  // Otra pestaña cambió el carrito.
+  const alCambiarStorage = (e: StorageEvent) => {
+    if (e.key === "cart" || e.key === null) almacen.notificar();
+  };
+  window.addEventListener("storage", alCambiarStorage);
+  return () => {
+    baja();
+    window.removeEventListener("storage", alCambiarStorage);
+  };
+}
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>(SIN_HIDRATAR);
+  const cart = useSyncExternalStore(
+    suscribir,
+    () => almacen?.getSnapshot() ?? vacio,
+    () => vacio,
+  );
   const [isCartOpen, setIsCartOpen] = useState(false);
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("cart");
-      if (stored) setCart(JSON.parse(stored));
-    } catch {
-      localStorage.removeItem("cart");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (cart === SIN_HIDRATAR) return;
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+  const setCart = (fn: (prev: CartItem[]) => CartItem[]) => almacen?.actualizar(fn);
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
@@ -75,7 +74,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart((prev) => prev.map((i) => (i.id === id ? { ...i, quantity } : i)));
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => setCart(() => []);
 
   return (
     <CartContext.Provider

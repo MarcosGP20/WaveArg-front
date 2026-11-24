@@ -15,7 +15,7 @@ export default function AdminError({
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
-      <p className="text-7xl font-black text-color-principal mb-4">500</p>
+      <p className="text-7xl font-semibold text-color-principal mb-4">500</p>
       <h1 className="text-2xl font-bold text-gray-800 mb-2">
         Error en el panel
       </h1>

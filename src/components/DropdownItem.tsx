@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useId } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { focoSalioDe } from "@/lib/foco";
 
 type DropdownItemProps = {
   title: string;
@@ -17,7 +18,8 @@ type DropdownItemProps = {
 // Menú desplegable de la NavBar (ej. Productos). El contenido son links de navegación, no un
 // menú de acciones, así que sigue el patrón "disclosure" de la APG (front#10): el botón tiene
 // aria-expanded y aria-controls (aria-haspopup anunciaría un role="menu" que no hay), y el
-// panel cierra con Escape (el foco vuelve al botón) y con un click afuera.
+// panel cierra con Escape (el foco vuelve al botón), con un click afuera y cuando el foco sale
+// del contenedor (tabular más allá del último link).
 const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, linkClassName, transparent = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -58,10 +60,22 @@ const DropdownItem: React.FC<DropdownItemProps> = ({ title, href, children, link
   }, [isOpen]);
 
   // Navegar con un link del panel lo cierra.
-  useEffect(() => setIsOpen(false), [pathname]);
+  const [pathnameAnterior, setPathnameAnterior] = useState(pathname);
+  if (pathnameAnterior !== pathname) {
+    setPathnameAnterior(pathname);
+    setIsOpen(false);
+  }
 
   return (
-    <div ref={raizRef} className="relative" onMouseEnter={open} onMouseLeave={scheduleClose}>
+    <div
+      ref={raizRef}
+      className="relative"
+      onMouseEnter={open}
+      onMouseLeave={scheduleClose}
+      onBlur={(e) => {
+        if (focoSalioDe(raizRef.current, e.relatedTarget)) setIsOpen(false);
+      }}
+    >
       <div className="flex items-center">
         <Link href={href} aria-current={isActive ? "page" : undefined} className={linkClassName}>
           {title}

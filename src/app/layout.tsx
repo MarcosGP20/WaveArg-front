@@ -1,16 +1,23 @@
 // src/app/layout.tsx — único lugar con <html> y <body>
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Archivo, Geist } from "next/font/google";
 import "./globals.css";
 import { GoogleProvider } from "@/components/GoogleProvider";
 import PuertaMantenimiento from "@/components/PuertaMantenimiento";
 import { EstadoProvider } from "@/context/EstadoContext";
 import { obtenerEstado } from "@/lib/estado";
 
-// Tipografía única del sitio (DESIGN.md).
+// Tipografías (DESIGN.md): Geist para el texto, Archivo para los títulos. Archivo va con el eje de
+// ancho (wdth), que usa la ola tipográfica del hero.
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
+});
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+  axes: ["wdth"],
 });
 
 export const metadata: Metadata = {
@@ -39,7 +46,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${geist.variable} font-sans antialiased overflow-x-hidden`}>
+      <body className={`${geist.variable} ${archivo.variable} font-sans antialiased overflow-x-hidden`}>
         <EstadoProvider estado={estado}>
           <GoogleProvider>
             <PuertaMantenimiento>{children}</PuertaMantenimiento>

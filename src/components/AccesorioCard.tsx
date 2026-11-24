@@ -5,32 +5,35 @@ import Image from "next/image";
 import { useState } from "react";
 import { ImageOff } from "lucide-react";
 import { Accesorio, AccesorioVariante, CATEGORIA_LABELS } from "@/lib/api";
-import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
+import { formatearPrecio } from "@/lib/precio";
 
 type AccesorioCardProps = {
   accesorio: Accesorio;
   className?: string;
+  /** Nivel del título de la tarjeta, según dónde se use. */
+  titulo?: "h2" | "h3";
 };
 
-export default function AccesorioCard({ accesorio, className }: AccesorioCardProps) {
+// Helper: extrae la primera URL de imagen sin importar si el backend
+// devuelve string[], { url: string }[], u otro shape
+function extractUrl(val: unknown): string | null {
+  if (!val) return null;
+  if (typeof val === "string") return val;
+  if (typeof val === "object" && "url" in val && typeof val.url === "string") return val.url;
+  return null;
+}
+
+// Tarjeta de accesorio, con el mismo lenguaje que la de iPhone (TarjetaDeModelo): panel gris, la
+// foto fundida con el fondo y toda la tarjeta como link a la ficha.
+export default function AccesorioCard({ accesorio, className, titulo: Titulo = "h2" }: AccesorioCardProps) {
   const [imgError, setImgError] = useState(false);
   // Precio desde la variante más barata disponible
   const variantesConStock = accesorio.variantes?.filter((v) => v.stock > 0) ?? [];
   const stockTotal = accesorio.variantes?.reduce((sum, v) => sum + (v.stock ?? 0), 0) ?? 0;
   const varianteMasBarata: AccesorioVariante | undefined =
-    variantesConStock.sort((a, b) => a.precio - b.precio)[0] ??
-    accesorio.variantes?.[0];
-
+    variantesConStock.sort((a, b) => a.precio - b.precio)[0] ?? accesorio.variantes?.[0];
   const precio = varianteMasBarata?.precio;
-
-  // Helper: extrae la primera URL de imagen sin importar si el backend
-  // devuelve string[], { url: string }[], u otro shape
-  function extractUrl(val: unknown): string | null {
-    if (!val) return null;
-    if (typeof val === "string") return val;
-    if (typeof val === "object" && "url" in val && typeof val.url === "string") return val.url;
-    return null;
-  }
+  const sinStock = variantesConStock.length === 0;
 
   // Buscamos imagen en este orden:
   //  1. variante.imagenes[0]        (array propio de la variante)
@@ -38,18 +41,11 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
   //  3. variante.fotoEstadoUrl      (foto de estado individual)
   const rawVarianteImgs: unknown = varianteMasBarata?.imagenes;
   const rawAccesorioImgs: unknown = accesorio.imagenes;
-
   const imagen =
     extractUrl(Array.isArray(rawVarianteImgs) ? rawVarianteImgs[0] : rawVarianteImgs) ??
     extractUrl(Array.isArray(rawAccesorioImgs) ? rawAccesorioImgs[0] : rawAccesorioImgs) ??
     varianteMasBarata?.fotoEstadoUrl ??
     null;
-
-
-  // Colores únicos disponibles
-  const coloresUnicos: AccesorioVariante[] = Array.from(
-    new Map(accesorio.variantes?.map((v) => [v.color, v]) ?? []).values()
-  );
 
   // Label de categoría — el enum llega como número desde el backend
   const categoriaLabel =
@@ -58,114 +54,58 @@ export default function AccesorioCard({ accesorio, className }: AccesorioCardPro
     "Accesorio";
 
   return (
-    <div
-      className={`rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 will-change-transform transition-all duration-300 flex flex-col bg-white group overflow-hidden has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#2563eb] has-[:focus-visible]:ring-offset-2 ${className}`}
+    <article
+      className={`flex h-full flex-col rounded-panel bg-superficie transition-colors duration-300 ease-ola has-[a:hover]:bg-borde ${className ?? ""}`}
     >
-      {/* ── ZONA DE IMAGEN ── */}
-      <Link href={`/accesorios/${accesorio.id}`} className="block relative">
-        <div className="relative w-full h-52 bg-gray-50 overflow-hidden">
+      <Link href={`/accesorios/${accesorio.id}`} className="group flex flex-1 flex-col rounded-panel p-3 md:p-6">
+        <div className="relative aspect-square md:aspect-[4/3]">
           {imagen && !imgError ? (
             <Image
               src={imagen}
-              alt={accesorio.nombre}
+              alt=""
               fill
               unoptimized
-              className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+              className="object-contain p-2 mix-blend-multiply transition-transform duration-500 ease-ola group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 gap-2">
-              <ImageOff size={36} />
-              <span className="text-[10px] text-gray-300 font-medium uppercase tracking-wide">Sin imagen</span>
-            </div>
-          )}
-
-          {/* Badge de categoría */}
-          <span className="absolute top-2 left-2 bg-color-principal/10 text-color-principal text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide border border-color-principal/20">
-            {categoriaLabel}
-          </span>
-
-          {/* Badge "Usado" si aplica */}
-          {varianteMasBarata?.esUsado && (
-            <span className="absolute top-2 right-2 bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
-              Usado
-            </span>
-          )}
-
-          {/* Urgency strip */}
-          {stockTotal > 0 && stockTotal <= 3 && (
-            <div className="absolute bottom-0 inset-x-0 bg-amber-500/90 backdrop-blur-sm py-1.5 flex items-center justify-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              <span className="text-white text-[10px] font-bold uppercase tracking-wide">
-                {stockTotal === 1 ? "¡Queda 1 unidad!" : `¡Últimas ${stockTotal} unidades!`}
-              </span>
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-tinta-suave">
+              <ImageOff size={32} strokeWidth={1.75} aria-hidden="true" />
+              <span className="caption-2">Sin imagen</span>
             </div>
           )}
         </div>
-      </Link>
 
-      {/* ── INFO ── */}
-      <div className="flex flex-col flex-1 px-5 pt-4 pb-5 gap-3 border-t border-gray-100">
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="rounded-lg bg-principal-suave px-2 py-1 caption-1 text-color-principal">{categoriaLabel}</span>
+          {varianteMasBarata?.esUsado && <span className="rounded-lg bg-white px-2 py-1 caption-1 text-tinta">Usado</span>}
+          {stockTotal > 0 && stockTotal <= 3 && (
+            <span className="rounded-lg bg-white px-2 py-1 caption-1 tabular-nums text-tinta">
+              {stockTotal === 1 ? "Queda 1" : `Quedan ${stockTotal}`}
+            </span>
+          )}
+        </div>
 
-        {/* Nombre y modelo */}
-        <Link href={`/accesorios/${accesorio.id}`} className="block text-center">
-          <h2 className="text-[17px] font-semibold text-color-principal leading-snug">
-            {accesorio.nombre}
-          </h2>
-          <span className="text-[11px] text-gray-500 uppercase tracking-widest">
-            {accesorio.modelo}
-          </span>
-        </Link>
-
-        {/* Especificación de la variante */}
+        <Titulo className="mt-3 body-1 text-tinta md:heading-6">{accesorio.nombre}</Titulo>
         {varianteMasBarata?.especificacion && (
-          <p className="text-xs text-gray-500 text-center line-clamp-2">
-            {varianteMasBarata.especificacion}
-          </p>
+          <p className="mt-1 line-clamp-2 caption-2 text-tinta-suave">{varianteMasBarata.especificacion}</p>
         )}
 
-        {/* Selector de colores (si hay más de uno) */}
-        {coloresUnicos.length > 1 && (
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            {coloresUnicos.map((cv) => (
-              <div
-                key={cv.color}
-                title={cv.color}
-                className={`w-5 h-5 rounded-full ring-1 ${
-                  needsDarkBorder(cv.color) ? "ring-gray-300" : "ring-transparent"
-                }`}
-                style={{ backgroundColor: mapColorToHex(cv.color) }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Precio */}
-        <p className="text-2xl font-bold text-center text-color-principal">
-          {precio != null
-            ? `$${precio.toLocaleString("es-AR")}`
-            : "Consultar precio"}
+        <p className="mt-auto pt-4 heading-6 tabular-nums text-tinta md:heading-5">
+          {precio != null ? formatearPrecio(precio) : "Consultar precio"}
         </p>
 
-        {/* Stock info */}
-        {variantesConStock.length === 0 && (
-          <p className="text-xs text-center text-red-400 font-medium">Sin stock disponible</p>
-        )}
-
-        {/* Botón */}
-        <Link
-          href={`/accesorios/${accesorio.id}`}
-          aria-disabled={variantesConStock.length === 0}
-          tabIndex={variantesConStock.length === 0 ? -1 : undefined}
-          className={`mt-1 py-2.5 rounded-full font-semibold transition-colors text-center text-sm ${
-            variantesConStock.length === 0
-              ? "bg-gray-200 text-gray-500 pointer-events-none cursor-not-allowed"
-              : "bg-color-principal text-white hover:bg-color-principal-oscuro"
+        {/* Toda la tarjeta es el link: el botón es su parte visible. */}
+        <span
+          className={`mt-4 rounded-lg px-3 py-3 text-center button-sm ring-1 ring-inset transition-colors duration-300 ease-ola md:rounded-control md:button-md ${
+            sinStock
+              ? "bg-superficie text-tinta-suave ring-borde"
+              : "bg-white text-tinta ring-borde-fuerte group-hover:bg-color-principal group-hover:text-white group-hover:ring-color-principal"
           }`}
         >
-          {variantesConStock.length === 0 ? "Sin stock" : "Ver accesorio"}
-        </Link>
-      </div>
-    </div>
+          {sinStock ? "Sin stock" : "Ver accesorio"}
+        </span>
+      </Link>
+    </article>
   );
 }

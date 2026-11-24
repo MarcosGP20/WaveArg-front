@@ -10,9 +10,12 @@ import { SlidersHorizontal, X } from "lucide-react";
 // lg:hidden seguiría siendo modal y dejaría la página bloqueada.
 export default function FiltrosMovil({
   activeFilterCount,
+  resultados,
   children,
 }: {
   activeFilterCount: number;
+  /** Cuántos resultados hay con los filtros puestos: se dice en el botón que cierra el panel. */
+  resultados?: number;
   children: React.ReactNode;
 }) {
   const [abierto, setAbierto] = useState(false);
@@ -28,11 +31,11 @@ export default function FiltrosMovil({
 
   return (
     <Dialog.Root open={abierto} onOpenChange={setAbierto}>
-      <Dialog.Trigger className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm text-sm font-medium text-gray-700 hover:border-color-principal hover:text-color-principal transition-colors">
-        <SlidersHorizontal size={16} aria-hidden="true" />
+      <Dialog.Trigger className="inline-flex items-center gap-2 rounded-control border border-borde-fuerte bg-white px-4 py-3 body-5 text-tinta transition-colors duration-300 hover:border-tinta-suave lg:hidden">
+        <SlidersHorizontal size={16} strokeWidth={1.75} aria-hidden="true" />
         Filtros
         {activeFilterCount > 0 && (
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-color-principal text-white text-[10px] font-bold">
+          <span className="inline-flex size-5 items-center justify-center rounded-full bg-color-principal text-xs font-semibold tabular-nums text-white">
             {activeFilterCount}
             <span className="sr-only"> {activeFilterCount === 1 ? "activo" : "activos"}</span>
           </span>
@@ -43,25 +46,26 @@ export default function FiltrosMovil({
         <Dialog.Overlay className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl max-h-[88vh] flex flex-col animate-slideUp motion-reduce:animate-none focus:outline-none"
+          className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl max-h-[88dvh] flex flex-col animate-slideUp motion-reduce:animate-none focus:outline-none"
         >
           {/* Handle + header */}
-          <div className="relative px-5 pt-4 pb-3 flex items-center justify-between border-b border-gray-100 shrink-0">
-            <div aria-hidden="true" className="absolute left-1/2 -translate-x-1/2 top-2.5 w-10 h-1 bg-gray-200 rounded-full" />
-            <Dialog.Title className="font-bold text-lg text-gray-900 mt-1">Filtros</Dialog.Title>
+          {/* El título visible es el "Filtros" del contenido: acá sólo va para el lector de pantalla. */}
+          <div className="relative flex shrink-0 items-center justify-end border-b border-borde px-2 py-1">
+            <div aria-hidden="true" className="absolute left-1/2 top-2 h-1 w-10 -translate-x-1/2 rounded-full bg-borde-fuerte" />
+            <Dialog.Title className="sr-only">Filtros</Dialog.Title>
             <Dialog.Close
               aria-label="Cerrar filtros"
-              className="p-1.5 rounded-full text-gray-500 hover:text-gray-700 transition-colors"
+              className="grid size-11 place-items-center rounded-full text-tinta-suave transition-colors duration-300 hover:text-tinta"
             >
-              <X size={20} aria-hidden="true" />
+              <X size={20} strokeWidth={1.75} aria-hidden="true" />
             </Dialog.Close>
           </div>
           {/* Scroll area */}
-          <div className="overflow-y-auto flex-1 px-5 py-4">{children}</div>
-          {/* CTA: los filtros se aplican al tocarlos; el botón solo cierra el panel. */}
-          <div className="px-5 py-4 border-t border-gray-100 shrink-0">
-            <Dialog.Close className="w-full bg-color-principal text-white py-3 rounded-full font-semibold text-sm hover:bg-color-principal-oscuro transition-colors">
-              {activeFilterCount > 0 ? `Aplicar filtros (${activeFilterCount})` : "Aplicar filtros"}
+          <div className="flex-1 overflow-y-auto px-4 py-4">{children}</div>
+          {/* Los filtros se aplican al tocarlos; el botón sólo cierra el panel y muestra el resultado. */}
+          <div className="shrink-0 border-t border-borde px-4 py-4">
+            <Dialog.Close className="w-full rounded-control bg-color-principal px-8 py-4 button-md text-white transition-colors duration-300 hover:bg-color-principal-oscuro">
+              {resultados === undefined ? "Ver resultados" : resultados === 1 ? "Ver 1 resultado" : `Ver ${resultados} resultados`}
             </Dialog.Close>
           </div>
         </Dialog.Content>

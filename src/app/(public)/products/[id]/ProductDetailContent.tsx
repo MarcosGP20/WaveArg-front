@@ -5,31 +5,27 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { Camera, Battery, ShieldCheck, Truck, RefreshCw, ArrowUpRight } from "lucide-react";
-import { getProductoById, getProductos, Producto, Variante } from "@/lib/api";
+import { Camera, Battery, ShieldCheck, Truck, RefreshCw, ArrowUpRight, Undo2 } from "lucide-react";
+import { ApiError, getProductoById, getProductos, Producto, Variante } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import Breadcrumb from "@/components/Breadcrumb";
+import { botonPrincipal } from "@/components/home/estilos";
+import { mapColorToHex, needsDarkBorder } from "@/lib/colorMap";
+import { textoCuotas } from "@/lib/cuotas";
+import { especificacionesDe } from "@/lib/especificaciones";
+import { tarjetasDeModelos, type TarjetaDeModelo } from "@/lib/home";
 import { formatearPrecio } from "@/lib/precio";
 import { linkWhatsApp } from "@/lib/whatsapp";
+import {
+  capacidadesDelColor,
+  coloresDelEstado,
+  estadosDisponibles,
+  resolverVariante,
+  varianteInicial,
+  type Eleccion,
+} from "@/lib/configurador";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
-
-function mapColorToHex(color: string): string {
-  const map: Record<string, string> = {
-    Negro: "#1a1a1a", Blanco: "#f5f5f7", Azul: "#1e40af",
-    "Azul Oscuro": "#1e3a5f", Rojo: "#be1b1b", Medianoche: "#0f172a",
-    Estelar: "#e8e3d5", Púrpura: "#6b21a8", Verde: "#15803d",
-    Amarillo: "#ca8a04", Rosa: "#db2777", Titanio: "#8a8a8e",
-    "Titanio Natural": "#c8b89a", "Titanio Negro": "#2c2c2e",
-    "Titanio Blanco": "#f2f2f2", "Titanio Desierto": "#c9a96e",
-    Grafito: "#374151", Plata: "#d1d5db", Dorado: "#b8962e",
-  };
-  return map[color] ?? "#9ca3af";
-}
-
-function needsDarkBorder(color: string): boolean {
-  return ["Blanco", "Estelar", "Plata", "Titanio Blanco", "Titanio Natural", "Dorado", "Titanio Desierto", "Titanio"].includes(color);
-}
 
 function getGalleryImages(product: Producto, variante: Variante): string[] {
   const varImgs = (variante as unknown as Record<string, unknown>)?.imagenes as string[] | undefined;
@@ -39,60 +35,23 @@ function getGalleryImages(product: Producto, variante: Variante): string[] {
   return stockImg ? [stockImg] : ["/placeholder.png"];
 }
 
-type Spec = { label: string; value: string };
-
 // Lo que Wave promete en todos los equipos (mismos textos que la home).
 const GARANTIAS: { icon: LucideIcon; titulo: string; detalle: string }[] = [
   { icon: ShieldCheck, titulo: "Garantía de 3 meses", detalle: "en todos los equipos" },
   { icon: Truck, titulo: "Envío a todo el país", detalle: "con número de seguimiento" },
   { icon: RefreshCw, titulo: "Plan canje", detalle: "tu iPhone como parte de pago" },
+  { icon: Undo2, titulo: "10 días para arrepentirte", detalle: "si lo compraste por la web" },
 ];
-
-function getSpecs(product: Producto): Spec[] {
-  const n = product.nombre.toLowerCase();
-  const isProMax = n.includes("pro max");
-  const isPro    = n.includes("pro") && !isProMax;
-  const isMini   = n.includes("mini");
-  const isPlus   = n.includes("plus");
-  const gen15    = n.includes("15");
-  const gen14    = n.includes("14");
-  const gen13    = n.includes("13");
-  const gen12    = n.includes("12");
-
-  let chip = "Apple Silicon";
-  if      (gen15 && (isPro || isProMax))             chip = "A17 Pro";
-  else if (gen15 || (gen14 && (isPro || isProMax)))  chip = "A16 Bionic";
-  else if (gen14 || gen13)                            chip = "A15 Bionic";
-  else if (gen12)                                     chip = "A14 Bionic";
-
-  let pantalla = "Super Retina XDR";
-  if      (isProMax || isPlus) pantalla = `6.7" Super Retina XDR`;
-  else if (isMini)             pantalla = `5.4" Super Retina XDR`;
-  else                          pantalla = `6.1" Super Retina XDR`;
-  if ((isPro || isProMax) && (gen13 || gen14 || gen15)) pantalla += " ProMotion";
-
-  const camara = (isPro || isProMax) && (gen14 || gen15) ? "48 MP Fusion" : "12 MP avanzada";
-
-  let video = "Dolby Vision 4K 60 fps";
-  if      (isProMax && gen15) video = "4K 120 fps ProRes";
-  else if (isPro || isProMax) video = "ProRes 4K";
-
-  return [
-    { label: "Chip",         value: chip },
-    { label: "Pantalla",     value: pantalla },
-    { label: "Cámara",       value: camara },
-    { label: "Video",        value: video },
-    { label: "Conectividad", value: "5G + Wi-Fi 6" },
-    { label: "Seguridad",    value: "Face ID + SOS" },
-  ];
-}
 
 // ─── componente ────────────────────────────────────────────────────────────
 
 export default function ProductDetailContent({
   params,
+  varianteDelLink,
 }: {
   params: Promise<{ id: string }>;
+  /** ?v= del link: la configuración que alguien compartió. */
+  varianteDelLink?: string;
 }) {
   const { id } = use(params);
   const { addToCart, openCart } = useCart();
@@ -104,10 +63,17 @@ export default function ProductDetailContent({
   const [added, setAdded]                   = useState(false);
   const [activeImage, setActiveImage]       = useState<string | null>(null);
   const [fading, setFading]                 = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState<Producto[]>([]);
+  const [relacionados, setRelacionados]     = useState<TarjetaDeModelo[]>([]);
+  const [noExiste, setNoExiste]             = useState(false);
+  const [intento, setIntento]               = useState(0);
   const [showStickyBar, setShowStickyBar]   = useState(false);
 
   const addBtnRef = useRef<HTMLButtonElement>(null);
+  const fadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (fadeRef.current) clearTimeout(fadeRef.current);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -115,27 +81,26 @@ export default function ProductDetailContent({
         const data = await getProductoById(id);
         setProduct(data);
         if (data.variantes?.length) {
-          const primera = data.variantes.find((v) => !v.esUsado) ?? data.variantes[0];
+          const primera = varianteInicial(data.variantes, varianteDelLink) ?? data.variantes[0];
           setSelectedVariante(primera);
           setActiveImage(primera.fotoEstadoUrl ?? data.imagenes?.[0] ?? null);
         }
       } catch (e) {
-        console.error(e);
+        // Sólo un 404 es "no existe": si falló la conexión se ofrece reintentar, no un "no encontrado".
+        if (e instanceof ApiError && e.status === 404) setNoExiste(true);
+        else console.error(e);
       } finally {
         setLoading(false);
       }
     }
     load();
-  }, [id]);
+  }, [id, varianteDelLink, intento]);
 
   useEffect(() => {
     if (!product) return;
     getProductos()
-      .then((all) =>
-        setRelatedProducts(
-          all.filter((p) => p.id !== product.id && p.stockTotal > 0).slice(0, 4)
-        )
-      )
+      // Sólo modelos con stock, con su precio más bajo: cada uno abre su ficha en esa variante.
+      .then((all) => setRelacionados(tarjetasDeModelos(all.filter((p) => p.id !== product.id)).slice(0, 4)))
       .catch(() => {});
   }, [product]);
 
@@ -154,7 +119,7 @@ export default function ProductDetailContent({
     return () => observer.disconnect();
   }, [product, selectedVariante]);
 
-  // Con la barra visible, el botón de WhatsApp sube para no taparla (ver WhatsAppButton).
+  // Con la barra visible, el botón de WhatsApp sube para no taparla (ver WhatsAppButton; el lanzador del chat también sube, ver ChatAyuda).
   useEffect(() => {
     const raiz = document.documentElement.style;
     if (showStickyBar) raiz.setProperty("--barra-inferior", "4.5rem");
@@ -166,49 +131,76 @@ export default function ProductDetailContent({
 
   if (loading)
     return (
-      <div className="py-20 text-center text-tinta-suave text-sm animate-pulse motion-reduce:animate-none">
-        Cargando producto...
+      <div aria-hidden="true" className="mx-auto max-w-6xl px-4 pb-24 pt-6">
+        <div className="h-5 w-48 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+        <div className="mt-6 flex flex-col gap-8 md:flex-row lg:gap-12">
+          <div className="aspect-square w-full animate-pulse rounded-panel bg-superficie motion-reduce:animate-none md:w-[56%]" />
+          <div className="flex flex-1 flex-col gap-6">
+            <div className="h-12 w-3/4 animate-pulse rounded-lg bg-borde motion-reduce:animate-none" />
+            <div className="h-24 animate-pulse rounded-panel bg-superficie motion-reduce:animate-none" />
+            <div className="h-16 animate-pulse rounded-control bg-superficie motion-reduce:animate-none" />
+            <div className="h-16 animate-pulse rounded-control bg-superficie motion-reduce:animate-none" />
+            <div className="h-14 animate-pulse rounded-control bg-borde motion-reduce:animate-none" />
+          </div>
+        </div>
       </div>
     );
-  if (!product || !selectedVariante) return notFound();
-
-  const coloresUnicos: Variante[] = Array.from(
-    new Map(product.variantes.map((v) => [v.color, v])).values()
-  );
+  if (noExiste) return notFound();
+  if (!product || !selectedVariante)
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16 text-tinta md:py-24">
+        <h1 className="heading-4 md:heading-3">No pudimos cargar este iPhone</h1>
+        <p className="mt-3 body-7 text-tinta-suave">Puede ser la conexión. Probá de nuevo en un momento.</p>
+        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              setIntento((n) => n + 1);
+            }}
+            className={botonPrincipal}
+          >
+            Reintentar
+          </button>
+          <Link href="/products" className="body-2 text-color-principal underline underline-offset-4">
+            Volver al catálogo
+          </Link>
+        </div>
+      </div>
+    );
 
   const galleryImages = getGalleryImages(product, selectedVariante);
 
-  const memoriasParaColor = [
-    ...new Set(
-      product.variantes
-        .filter((v) => v.color === selectedVariante.color)
-        .map((v) => v.memoria)
-    ),
-  ];
+  // Configurador: estado → color → capacidad. Lo que no hay se ve deshabilitado, no se oculta.
+  const estados = estadosDisponibles(product.variantes);
+  const colores = coloresDelEstado(product.variantes, selectedVariante.esUsado);
+  const capacidades = capacidadesDelColor(product.variantes, selectedVariante.esUsado, selectedVariante.color);
 
   const switchVariante = (next: Variante) => {
     if (next.id === selectedVariante.id) return;
+    // La elección queda en el link (?v=) para poder compartir la configuración exacta.
+    window.history.replaceState(null, "", `?v=${next.id}`);
+    // Un cambio nuevo cancela el fade anterior: si no, un clic rápido dejaba la variante vieja.
+    if (fadeRef.current) clearTimeout(fadeRef.current);
     setFading(true);
-    setTimeout(() => {
+    fadeRef.current = setTimeout(() => {
       setSelectedVariante(next);
       setActiveImage(getGalleryImages(product, next)[0] ?? null);
       setFading(false);
     }, 150);
   };
 
-  const handleColorClick = (cv: Variante) => {
-    const match =
-      product.variantes.find(
-        (v) => v.color === cv.color && v.memoria === selectedVariante.memoria
-      ) ?? cv;
-    switchVariante(match);
-  };
-
-  const handleMemoriaClick = (mem: string) => {
-    const match = product.variantes.find(
-      (v) => v.memoria === mem && v.color === selectedVariante.color
-    );
-    if (match) switchVariante(match);
+  const elegir = (cambio: Partial<Eleccion>) => {
+    const next = resolverVariante(product.variantes, {
+      esUsado: selectedVariante.esUsado,
+      color: selectedVariante.color,
+      memoria: selectedVariante.memoria,
+      ...cambio,
+    });
+    if (next) {
+      setQuantity(1);
+      switchVariante(next);
+    }
   };
 
   const handleAddToCart = () => {
@@ -230,14 +222,17 @@ export default function ProductDetailContent({
     selectedVariante.fotoEstadoUrl &&
     activeImage === selectedVariante.fotoEstadoUrl;
 
-  const specs = getSpecs(product);
-  const minPrice = (p: Producto) => Math.min(...p.variantes.map((v) => v.precio));
+  const specs = especificacionesDe(product.nombre);
 
   const sinStock = selectedVariante.stock < 1;
   const ultimas = selectedVariante.stock > 0 && selectedVariante.stock <= 3;
-  // WhatsApp es ayuda secundaria: la venta se concreta en la web (DESIGN.md).
+  // WhatsApp es ayuda secundaria: la venta se concreta en la web (DESIGN.md). El mensaje lleva la
+  // configuración, el precio y el link, así quien atiende ve el mismo equipo sin preguntar.
+  const estadoTexto = selectedVariante.esUsado ? "usado" : "nuevo sellado";
+  const linkFicha = typeof window !== "undefined" ? ` ${window.location.origin}/products/${product.id}?v=${selectedVariante.id}` : "";
   const consultaWhatsApp = linkWhatsApp(
-    `Hola, tengo una consulta sobre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}.`
+    `Hola, tengo una consulta sobre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}, ` +
+      `${estadoTexto}, a ${formatearPrecio(selectedVariante.precio)}.${linkFicha}`
   );
 
   return (
@@ -344,32 +339,31 @@ export default function ProductDetailContent({
               <p className="text-[32px] font-semibold tracking-tight tabular-nums leading-tight">
                 {formatearPrecio(selectedVariante.precio)}
               </p>
-              <p className="mt-0.5 text-sm text-tinta-suave">Pagás con MercadoPago: tarjeta, débito o transferencia.</p>
+              <p className="mt-0.5 text-sm text-tinta-suave">
+                {textoCuotas(selectedVariante.precio)}. Pagás con tarjeta, débito o transferencia.
+              </p>
             </div>
 
-            {coloresUnicos.length > 1 && (
+            {estados.length > 1 && (
               <fieldset>
-                <legend className="mb-2.5 text-sm font-semibold">
-                  Color · <span className="font-normal text-tinta-suave">{selectedVariante.color}</span>
-                </legend>
-                <div className="flex flex-wrap gap-2.5">
-                  {coloresUnicos.map((cv) => {
-                    const activo = selectedVariante.color === cv.color;
+                <legend className="mb-2.5 text-sm font-semibold">Estado</legend>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {estados.map(({ esUsado, desde, hayStock }) => {
+                    const activo = selectedVariante.esUsado === esUsado;
                     return (
                       <button
-                        key={cv.color}
+                        key={String(esUsado)}
                         type="button"
-                        onClick={() => handleColorClick(cv)}
-                        aria-label={cv.color}
+                        onClick={() => elegir({ esUsado })}
                         aria-pressed={activo}
-                        className={`size-11 rounded-full bg-white p-[3px] border-2 transition-colors ${
-                          activo ? "border-color-principal" : "border-borde hover:border-borde-fuerte"
+                        className={`flex min-h-16 flex-col items-start justify-center rounded-control bg-white px-4 py-2.5 text-left transition-colors ${
+                          activo ? "border-2 border-color-principal" : "border border-borde-fuerte hover:border-tinta-suave"
                         }`}
                       >
-                        <span
-                          className={`block size-full rounded-full ${needsDarkBorder(cv.color) ? "ring-1 ring-inset ring-black/15" : ""}`}
-                          style={{ backgroundColor: mapColorToHex(cv.color) }}
-                        />
+                        <span className="text-[15px] font-medium">{esUsado ? "Usado" : "Nuevo sellado"}</span>
+                        <span className="text-[13px] text-tinta-suave tabular-nums">
+                          {hayStock ? `Desde ${formatearPrecio(desde)}` : "Sin stock"}
+                        </span>
                       </button>
                     );
                   })}
@@ -377,23 +371,69 @@ export default function ProductDetailContent({
               </fieldset>
             )}
 
-            {memoriasParaColor.length > 0 && (
+            {colores.length > 1 && (
               <fieldset>
-                <legend className="mb-2.5 text-sm font-semibold">Capacidad</legend>
-                <div className="grid grid-cols-3 gap-2.5">
-                  {memoriasParaColor.map((mem) => {
-                    const activo = selectedVariante.memoria === mem;
+                <legend className="mb-2.5 text-sm font-semibold">
+                  Color <span className="font-normal text-tinta-suave">{selectedVariante.color}</span>
+                </legend>
+                <div className="flex flex-wrap gap-2.5">
+                  {colores.map(({ color, hayStock }) => {
+                    const activo = selectedVariante.color === color;
                     return (
                       <button
-                        key={mem}
+                        key={color}
                         type="button"
-                        onClick={() => handleMemoriaClick(mem)}
+                        onClick={() => elegir({ color })}
+                        aria-label={hayStock ? color : `${color}, sin stock`}
                         aria-pressed={activo}
-                        className={`min-h-12 rounded-control bg-white text-[15px] font-medium transition-colors ${
-                          activo ? "border-2 border-color-principal" : "border border-borde-fuerte hover:border-tinta-suave"
+                        className={`relative size-11 rounded-full bg-white p-[3px] border-2 transition-colors ${
+                          activo ? "border-color-principal" : "border-borde hover:border-borde-fuerte"
                         }`}
                       >
-                        {mem}
+                        <span
+                          className={`block size-full rounded-full ${needsDarkBorder(color) ? "ring-1 ring-inset ring-black/15" : ""} ${hayStock ? "" : "opacity-40"}`}
+                          style={{ backgroundColor: mapColorToHex(color) }}
+                        />
+                        {/* Sin stock en ninguna capacidad: se puede mirar, pero queda tachado. */}
+                        {!hayStock && (
+                          <span aria-hidden="true" className="absolute left-1/2 top-1/2 h-0.5 w-7 -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded bg-tinta-suave" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            )}
+
+            {capacidades.length > 0 && (
+              <fieldset>
+                <legend className="mb-2.5 text-sm font-semibold">Capacidad</legend>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {capacidades.map(({ memoria, variante, disponible }) => {
+                    const activo = selectedVariante.memoria === memoria;
+                    return (
+                      <button
+                        key={memoria}
+                        type="button"
+                        onClick={() => elegir({ memoria })}
+                        disabled={!disponible && !activo}
+                        aria-pressed={activo}
+                        className={`flex min-h-16 flex-col items-center justify-center rounded-control px-2 py-2 transition-colors disabled:cursor-not-allowed ${
+                          activo
+                            ? "border-2 border-color-principal bg-white"
+                            : "border border-borde-fuerte bg-white enabled:hover:border-tinta-suave disabled:border-borde disabled:bg-superficie"
+                        }`}
+                      >
+                        <span className={`text-[15px] font-medium ${disponible || activo ? "" : "text-tinta-suave line-through"}`}>
+                          {memoria}
+                        </span>
+                        <span className="text-[13px] text-tinta-suave tabular-nums">
+                          {disponible && variante
+                            ? formatearPrecio(variante.precio)
+                            : variante
+                              ? "Sin stock"
+                              : `No hay en ${selectedVariante.color.toLowerCase()}`}
+                        </span>
                       </button>
                     );
                   })}
@@ -445,8 +485,26 @@ export default function ProductDetailContent({
               <p className={`text-sm ${sinStock ? "text-tinta-suave" : "text-exito"}`}>
                 {sinStock
                   ? "Sin stock en esta combinación. Probá con otro color o capacidad."
-                  : `En stock · ${selectedVariante.stock} ${selectedVariante.stock === 1 ? "unidad" : "unidades"}${ultimas ? " · Últimas unidades" : ""}`}
+                  : ultimas
+                    ? selectedVariante.stock === 1
+                      ? "En stock, queda la última unidad"
+                      : `En stock, quedan las últimas ${selectedVariante.stock} unidades`
+                    : `En stock, ${selectedVariante.stock} unidades para enviar`}
               </p>
+              {sinStock && (
+                <p className="text-sm text-tinta-suave">
+                  <a
+                    href={linkWhatsApp(
+                      `Hola, quiero que me avisen cuando entre el ${product.nombre} ${selectedVariante.memoria} ${selectedVariante.color}, ${estadoTexto}.`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-color-principal underline underline-offset-[3px] hover:text-color-principal-oscuro"
+                  >
+                    Avisame por WhatsApp cuando vuelva
+                  </a>
+                </p>
+              )}
               <p className="text-sm text-tinta-suave">
                 ¿Tenés dudas?{" "}
                 <a
@@ -479,6 +537,7 @@ export default function ProductDetailContent({
         </div>
 
         {/* ── Especificaciones ── */}
+        {specs && (
         <section aria-labelledby="specs" className="mt-20">
           <h2 id="specs" className="mb-5 text-[28px] font-semibold tracking-tight">Especificaciones</h2>
           <dl className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -490,32 +549,31 @@ export default function ProductDetailContent({
             ))}
           </dl>
         </section>
+        )}
 
         {/* ── Relacionados ── */}
-        {relatedProducts.length > 0 && (
+        {relacionados.length > 0 && (
           <section aria-labelledby="relacionados" className="mt-20">
             <h2 id="relacionados" className="mb-5 text-[28px] font-semibold tracking-tight">También te puede interesar</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {relatedProducts.map((p) => (
+              {relacionados.map(({ producto: p, desde }) => (
                 <Link
                   key={p.id}
-                  href={`/products/${p.id}`}
+                  href={`/products/${p.id}?v=${desde.id}`}
                   className="group rounded-panel bg-superficie p-4 transition-colors hover:bg-borde"
                 >
                   <div className="relative aspect-square">
-                    {p.imagenes?.[0] && (
-                      <Image
-                        src={p.imagenes[0]}
-                        alt=""
-                        fill
-                        sizes="(min-width: 768px) 25vw, 50vw"
-                        className="object-contain p-3 mix-blend-multiply transition-transform duration-300 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                      />
-                    )}
+                    <Image
+                      src={desde.imagenes?.[0] ?? p.imagenes?.[0] ?? "/placeholder.png"}
+                      alt=""
+                      fill
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="object-contain p-3 mix-blend-multiply transition-transform duration-300 group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    />
                   </div>
                   <p className="mt-3 text-[15px] font-semibold line-clamp-1">{p.nombre}</p>
-                  <p className="mt-0.5 flex items-center justify-between text-sm text-tinta-suave">
-                    Desde {formatearPrecio(minPrice(p))}
+                  <p className="mt-0.5 flex items-center justify-between text-sm text-tinta-suave tabular-nums">
+                    Desde {formatearPrecio(desde.precio)}
                     <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" className="group-hover:text-color-principal" />
                   </p>
                 </Link>

@@ -77,6 +77,16 @@ describe("webhook de MercadoPago (route de Next)", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("una firma de otro largo o que no es hex se rechaza con 401, sin romper", async () => {
+    const { POST } = await import("./route");
+
+    for (const v1 of ["abc", "z".repeat(64)]) {
+      const response = await POST(notificacion({ "x-signature": `ts=1,v1=${v1}`, "x-request-id": "req-1" }));
+      expect(response.status).toBe(401);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("en producción sin secreto rechaza todo (fail-closed)", async () => {
     vi.stubEnv("MERCADOPAGO_WEBHOOK_SECRET", "");
     vi.stubEnv("NODE_ENV", "production");

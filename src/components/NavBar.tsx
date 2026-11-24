@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   ShoppingCart,
   UserCircle,
@@ -18,6 +18,7 @@ import DropdownItem from "./DropdownItem";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { etiquetaBotonCarrito } from "@/lib/carrito";
 import { formatearPrecio } from "@/lib/precio";
+import { useCerrarSesion } from "@/hooks/useCerrarSesion";
 
 // Panel de "Productos": sólo filtros que el catálogo entiende (?estado=), nada de modelos
 // escritos a mano que pueden no estar en stock.
@@ -47,13 +48,13 @@ const LINKS = [
 
 export default function NavBar() {
   const pathname = usePathname();
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartHoverOpen, setCartHoverOpen] = useState(false);
   const cartCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { cart, removeFromCart, openCart } = useCart();
-  const { user, logout, isLoggedIn } = useAuthStore();
+  const { user, isLoggedIn } = useAuthStore();
+  const cerrarSesion = useCerrarSesion();
 
   const [scrolled, setScrolled] = useState(false);
   const isHome = pathname === "/";
@@ -100,8 +101,7 @@ export default function NavBar() {
   }, [cartCount]);
 
   const handleLogout = async () => {
-    await logout();
-    router.push("/");
+    await cerrarSesion("/");
   };
 
   // En la home, antes de scrollear, la barra va sobre el video: texto y logo blancos. En el resto
@@ -199,7 +199,7 @@ export default function NavBar() {
             alt=""
             width={112}
             height={28}
-            className={`hidden md:block h-7 w-auto transition-[filter] duration-300 ${isTransparent ? "brightness-0 invert" : ""}`}
+            className={`hidden md:block transition-[filter] duration-300 ${isTransparent ? "brightness-0 invert" : ""}`}
             priority
           />
           <Image

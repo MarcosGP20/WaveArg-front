@@ -346,12 +346,22 @@ export function esCheckoutPausado(error: unknown): boolean {
   return error instanceof ApiError && error.status === 503 && error.data.codigo === CODIGO_CHECKOUT_PAUSADO;
 }
 
-export async function registerUser(data: RegisterDTO) {
-  // Ahora usamos fetchFromApi para ser consistentes
-  return fetchFromApi<{ message: string }>("/Auth/register", {
+export const MENSAJE_REGISTRO_POR_DEFECTO = "¡Cuenta creada! Ya podés iniciar sesión.";
+
+/**
+ * Registra y devuelve el mensaje para mostrar. El back (back#104) responde lo mismo exista o no
+ * la cuenta, y si ya existía le manda un mail al dueño: por eso el texto lo decide el back.
+ */
+export async function registerUser(data: RegisterDTO): Promise<string> {
+  const respuesta = await fetchFromApi<unknown>("/Auth/register", {
     method: "POST",
     body: JSON.stringify(data),
   });
+  if (typeof respuesta === "object" && respuesta !== null && "message" in respuesta) {
+    const { message } = respuesta;
+    if (typeof message === "string" && message) return message;
+  }
+  return MENSAJE_REGISTRO_POR_DEFECTO;
 }
 
 export async function solicitarResetContrasena(email: string) {
@@ -382,11 +392,30 @@ export async function cambiarContrasena(data: CambiarContrasenaDTO) {
 
 // Ejemplo de lo que necesitas para el catálogo
 // lib/api.ts
+// Catálogo, ficha, comparador y home piden la misma lista: una sola request compartida, que
+// se reusa un rato corto para que el stock mostrado no quede viejo.
+const VIGENCIA_PRODUCTOS_MS = 30_000;
+let productosEnCurso: { promesa: Promise<Producto[]>; pedidoEn: number } | null = null;
+
+export function invalidarProductos() {
+  productosEnCurso = null;
+}
+
 export async function getProductos() {
-  // Según tu Swagger es /api/Productos?soloDisponibles=true
-  return fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
-    method: "GET",
-  });
+  const ahora = Date.now();
+  if (!productosEnCurso || ahora - productosEnCurso.pedidoEn > VIGENCIA_PRODUCTOS_MS) {
+    const promesa = fetchFromApi<Producto[]>("/Productos?soloDisponibles=true", {
+      method: "GET",
+    });
+    const entrada = { promesa, pedidoEn: ahora };
+    productosEnCurso = entrada;
+    // Un error no queda cacheado: la próxima llamada reintenta.
+    promesa.catch(() => {
+      if (productosEnCurso === entrada) productosEnCurso = null;
+    });
+  }
+  // Cada llamador recibe su copia: varios ordenan o filtran la lista.
+  return structuredClone(await productosEnCurso.promesa);
 }
 
 export async function getProductoById(id: number | string) {
@@ -470,7 +499,8 @@ export const PedidosService = {
 export interface Usuario {
   id: number | string;
   nombre: string | null;
-  email: string;
+  /** null en una cuenta borrada (el back la anonimiza). */
+  email: string | null;
   rol: string;
   fechaRegistro?: string;
 }
@@ -486,6 +516,39 @@ export const UsuariosService = {
       method: "PUT",
       body: JSON.stringify(data),
     }),
+  /** Borra la propia cuenta: el back la anonimiza y conserva los pedidos. Responde 204. */
+  borrarCuenta: async (id: string | number): Promise<void> => {
+    await fetchFromApi<unknown>(`/Usuarios/${id}`, { method: "DELETE" });
+  },
+};
+
+// --- Avisos de stock y arrepentimientos (sólo admin) ---
+
+export interface LeadAdmin {
+  id: number;
+  email: string;
+  modelo: string | null;
+  whatsapp: string | null;
+  origen: string;
+  creadoEn: string;
+}
+
+export interface ArrepentimientoAdmin {
+  id: number;
+  codigo: string;
+  nombre: string;
+  email: string;
+  numeroPedido: string | null;
+  detalle: string | null;
+  creadoEn: string;
+}
+
+export const LeadsService = {
+  getAll: () => fetchFromApi<LeadAdmin[]>("/Leads"),
+};
+
+export const ArrepentimientosService = {
+  getAll: () => fetchFromApi<ArrepentimientoAdmin[]>("/Arrepentimientos"),
 };
 
 // --- MercadoPago ---

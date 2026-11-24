@@ -1,13 +1,25 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { ProductService, Producto } from "@/lib/api";
+import { agruparPorModelo, CLAVE_DESTACADO } from "@/lib/inventario";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Trash2, Edit3, Image as ImageIcon, RefreshCw, AlertTriangle, Loader2, ChevronLeft, Star } from "lucide-react";
+import { Plus, Trash2, Edit3, Image as ImageIcon, Smartphone, Star } from "lucide-react";
 import { toast } from "sonner";
-
-const FEATURED_KEY = "wave-featured-product-id";
+import { useRecargarAlVolver } from "@/hooks/useRecargarAlVolver";
+import { CabeceraPagina, EstadoError, EstadoVacio, TablaSkeleton } from "../components/PaginaAdmin";
+import { FilaConfirmarBorrado, StockBadge } from "../components/InventarioFilas";
+import {
+  botonPrimario,
+  botonTexto,
+  encabezadoTabla,
+  enlaceAccion,
+  filaTabla,
+  panel,
+  td,
+  th,
+} from "../components/estilos";
 
 export default function InventarioPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -18,34 +30,39 @@ export default function InventarioPage() {
   const [featuredId, setFeaturedId] = useState<number | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(FEATURED_KEY);
+    const stored = localStorage.getItem(CLAVE_DESTACADO);
     if (stored) setFeaturedId(Number(stored));
   }, []);
 
   const toggleFeatured = (id: number) => {
     if (featuredId === id) {
-      localStorage.removeItem(FEATURED_KEY);
+      localStorage.removeItem(CLAVE_DESTACADO);
       setFeaturedId(null);
       toast.success("Producto destacado removido");
     } else {
-      localStorage.setItem(FEATURED_KEY, String(id));
+      localStorage.setItem(CLAVE_DESTACADO, String(id));
       setFeaturedId(id);
       toast.success("Producto marcado como destacado");
     }
   };
 
+  // El estado arranca en loading: la carga inicial no vuelve a prenderlo (setState en el efecto).
+  const traerProductos = useCallback(
+    () =>
+      ProductService.getAll()
+        .then(setProductos)
+        .catch((err: unknown) =>
+          setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario."),
+        )
+        .finally(() => setLoading(false)),
+    [],
+  );
+
   const cargarProductos = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const data = await ProductService.getAll();
-      setProductos(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : String(err) ?? "No se pudo cargar el inventario.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await traerProductos();
+  }, [traerProductos]);
 
   const handleDelete = async (id: number) => {
     setIsDeleting(true);
@@ -62,236 +79,145 @@ export default function InventarioPage() {
   };
 
   useEffect(() => {
-    cargarProductos();
-  }, [cargarProductos]);
+    traerProductos();
+  }, [traerProductos]);
 
-  if (loading)
-    return (
-      <div className="p-6 text-center text-gray-500 font-medium">
-        Cargando inventario...
-      </div>
-    );
+  useRecargarAlVolver(() => {
+    setError(null);
+    traerProductos();
+  });
 
-  if (error)
-    return (
-      <div className="p-6">
-        <div className="flex flex-col items-center justify-center gap-4 bg-red-50 border border-red-200 rounded-2xl p-10 text-center">
-          <AlertTriangle size={40} className="text-red-400" />
-          <p className="text-red-700 font-semibold text-lg">Error al cargar el inventario</p>
-          <p className="text-red-500 text-sm max-w-sm">{error}</p>
-          <button
-            onClick={cargarProductos}
-            className="flex items-center gap-2 bg-color-principal text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-color-principal-oscuro transition-colors"
-          >
-            <RefreshCw size={15} />
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-
-  // Lógica de agrupación
-  const productosAgrupados = productos.reduce((acc: Producto[], current) => {
-    const key = `${current.nombre}-${current.modelo}`.toLowerCase();
-
-    const existente = acc.find(
-      (p) => `${p.nombre}-${p.modelo}`.toLowerCase() === key, // Corregido p.p.modelo -> p.modelo
-    );
-
-    if (existente) {
-      existente.variantes = [
-        ...(existente.variantes || []),
-        ...(current.variantes || []),
-      ];
-      existente.imagenes = [
-        ...(existente.imagenes || []),
-        ...(current.imagenes || []),
-      ];
-    } else {
-      acc.push({ ...current });
-    }
-    return acc;
-  }, []);
+  const productosAgrupados = agruparPorModelo(productos);
 
   return (
-    <div className="p-6">
-      {/* Breadcrumb / Volver */}
-      <Link
-        href="/admin"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-color-principal transition-colors mb-6 group"
+    <div>
+      <CabeceraPagina
+        titulo="Productos"
+        subtitulo={
+          loading || error
+            ? undefined
+            : `${productosAgrupados.length} ${productosAgrupados.length === 1 ? "producto" : "productos"}`
+        }
       >
-        <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-        Volver al Dashboard
-      </Link>
-
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-color-principal">
-          Inventario de Productos
-        </h1>
-        <Link
-          href="/admin/productos/nuevo"
-          className="bg-color-principal text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-color-principal-oscuro transition-all shadow-sm"
-        >
-          <Plus size={20} /> Nuevo Producto
+        <Link href="/admin/productos/nuevo" className={botonPrimario}>
+          <Plus size={16} strokeWidth={1.75} />
+          Nuevo producto
         </Link>
-      </div>
+      </CabeceraPagina>
 
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 text-color-principal uppercase text-xs font-semibold">
-            <tr>
-              <th className="px-6 py-4 w-20 text-center">Foto</th>
-              <th className="px-6 py-4">Producto</th>
-              <th className="px-6 py-4">Modelo</th>
-              <th className="px-6 py-4">Stock Total</th>
-              <th className="px-6 py-4 text-center">Destacado</th>
-              <th className="px-6 py-4 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {/* AQUÍ CAMBIAMOS productos por productosAgrupados */}
-            {productosAgrupados.map((p) => {
-              const stockCalculado =
-                p.variantes?.reduce((acc, v) => acc + v.stock, 0) || 0;
+      {loading && <TablaSkeleton />}
 
-              return (
-                <>
-                <tr
-                  key={p.id}
-                  className="hover:bg-blue-50/30 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="w-12 h-12 relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center shadow-sm">
-                      {p.imagenes && p.imagenes.length > 0 ? (
-                        <Image
-                          src={p.imagenes[0]}
-                          alt={p.nombre}
-                          fill
-                          className="object-cover"
-                          unoptimized={true}
-                        />
-                      ) : (
-                        <ImageIcon className="text-gray-300" size={20} />
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-gray-900">
-                    {p.nombre}
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 font-medium">
-                    {p.modelo}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold border ${
-                        stockCalculado > 0
-                          ? "bg-green-100 text-green-700 border-green-200"
-                          : "bg-red-100 text-red-700 border-red-200"
-                      }`}
-                    >
-                      {stockCalculado} unidades
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => toggleFeatured(p.id)}
-                      title={featuredId === p.id ? "Quitar destacado" : "Marcar como destacado"}
-                      className={`p-1.5 rounded-full transition-colors ${
-                        featuredId === p.id
-                          ? "text-amber-400 hover:text-amber-500"
-                          : "text-gray-300 hover:text-amber-400"
-                      }`}
-                    >
-                      <Star
-                        size={18}
-                        strokeWidth={1.75}
-                        fill={featuredId === p.id ? "currentColor" : "none"}
-                      />
-                    </button>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center gap-2">
-                      <Link
-                        href={`/admin/productos/${p.id}/variantes`}
-                        className="flex items-center gap-1 text-sm text-color-principal hover:text-blue-800 font-bold transition-colors"
-                      >
-                        + Variante
-                      </Link>
-                      <Link
-                        href={`/admin/productos/${p.id}/editar`}
-                        className="p-1.5 text-gray-500 hover:text-color-principal transition-colors"
-                        title="Editar producto"
-                      >
-                        <Edit3 size={16} />
-                      </Link>
-                      <button
-                        onClick={() => setDeletingId(p.id)}
-                        className="p-1.5 text-gray-500 hover:text-red-600 transition-colors"
-                        title="Eliminar producto"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+      {error && !loading && (
+        <EstadoError mensaje={`No se pudo cargar el inventario. ${error}`} onReintentar={cargarProductos} />
+      )}
+
+      {!loading && !error && productosAgrupados.length === 0 && (
+        <EstadoVacio icono={<Smartphone size={40} strokeWidth={1.75} />} mensaje="Todavía no cargaste productos.">
+          <Link href="/admin/productos/nuevo" className={botonPrimario}>
+            <Plus size={16} strokeWidth={1.75} />
+            Nuevo producto
+          </Link>
+        </EstadoVacio>
+      )}
+
+      {!loading && !error && productosAgrupados.length > 0 && (
+        <div className={panel}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-tinta">
+              <thead>
+                <tr className={encabezadoTabla}>
+                  <th scope="col" className={`${th} w-20`}>Foto</th>
+                  <th scope="col" className={th}>Producto</th>
+                  <th scope="col" className={th}>Modelo</th>
+                  <th scope="col" className={th}>Stock</th>
+                  <th scope="col" className={`${th} text-center`}>Destacado</th>
+                  <th scope="col" className={`${th} text-right`}>Acciones</th>
                 </tr>
+              </thead>
+              <tbody>
+                {productosAgrupados.map((p) => {
+                  const stockCalculado = p.variantes?.reduce((acc, v) => acc + v.stock, 0) || 0;
+                  const destacado = featuredId === p.id;
 
-                {/* Fila de confirmación de eliminación inline */}
-                {deletingId === p.id && (
-                  <tr key={`delete-${p.id}`} className="bg-red-50/60">
-                    <td colSpan={5} className="px-6 py-3">
-                      {p.variantes && p.variantes.length > 0 ? (
-                        // Tiene variantes → bloquear y guiar al admin
-                        <div className="flex items-center gap-4">
-                          <p className="text-sm font-medium text-orange-700">
-                            ⚠️ <span className="font-bold">{p.nombre}</span> tiene{" "}
-                            <span className="font-bold">{p.variantes.length} variante(s)</span>.
-                            Eliminá primero las variantes para poder borrar el producto.
-                          </p>
-                          <Link
-                            href={`/admin/productos/${p.id}/variantes`}
-                            className="text-sm bg-orange-500 text-white px-4 py-1.5 rounded-lg font-medium hover:bg-orange-600 transition-colors whitespace-nowrap"
-                          >
-                            Ir a variantes
-                          </Link>
+                  return (
+                    <Fragment key={p.id}>
+                      <tr className={filaTabla}>
+                        <td className={td}>
+                          <div className="relative flex size-12 items-center justify-center overflow-hidden rounded-control bg-white">
+                            {p.imagenes && p.imagenes.length > 0 ? (
+                              <Image
+                                src={p.imagenes[0]}
+                                alt={p.nombre}
+                                fill
+                                className="object-cover"
+                                unoptimized={true}
+                              />
+                            ) : (
+                              <ImageIcon className="text-tinta-suave" size={20} strokeWidth={1.75} aria-label="Sin foto" />
+                            )}
+                          </div>
+                        </td>
+                        <td className={`${td} font-semibold`}>{p.nombre}</td>
+                        <td className={`${td} text-tinta-suave`}>{p.modelo}</td>
+                        <td className={td}>
+                          <StockBadge stock={stockCalculado} />
+                        </td>
+                        <td className={`${td} text-center`}>
                           <button
-                            onClick={() => setDeletingId(null)}
-                            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                            onClick={() => toggleFeatured(p.id)}
+                            aria-pressed={destacado}
+                            aria-label={destacado ? `Quitar ${p.nombre} de destacados` : `Marcar ${p.nombre} como destacado`}
+                            className={`${enlaceAccion} ${destacado ? "text-amber-500" : ""}`}
                           >
-                            Cancelar
+                            <Star size={18} strokeWidth={1.75} fill={destacado ? "currentColor" : "none"} />
                           </button>
-                        </div>
-                      ) : (
-                        // Sin variantes → confirmar eliminación normal
-                        <div className="flex items-center gap-4">
-                          <p className="text-sm font-medium text-red-700">
-                            ¿Eliminar <span className="font-bold">{p.nombre}</span>? Esta acción no se puede deshacer.
-                          </p>
-                          <button
-                            onClick={() => handleDelete(p.id)}
-                            disabled={isDeleting}
-                            className="flex items-center gap-1.5 bg-red-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
-                          >
-                            {isDeleting ? <Loader2 size={13} className="animate-spin" /> : null}
-                            Sí, eliminar
-                          </button>
-                          <button
-                            onClick={() => setDeletingId(null)}
-                            disabled={isDeleting}
-                            className="text-sm text-gray-500 hover:text-gray-700 font-medium"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
+                        </td>
+                        <td className={td}>
+                          <div className="flex items-center justify-end gap-1">
+                            <Link
+                              href={`/admin/productos/${p.id}/variantes`}
+                              className={`${botonTexto} !text-color-principal`}
+                            >
+                              Variantes
+                            </Link>
+                            <Link
+                              href={`/admin/productos/${p.id}/editar`}
+                              className={enlaceAccion}
+                              aria-label={`Editar ${p.nombre}`}
+                            >
+                              <Edit3 size={16} strokeWidth={1.75} />
+                            </Link>
+                            <button
+                              onClick={() => setDeletingId(p.id)}
+                              className={`${enlaceAccion} hover:!text-destructive`}
+                              aria-label={`Eliminar ${p.nombre}`}
+                            >
+                              <Trash2 size={16} strokeWidth={1.75} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      {deletingId === p.id && (
+                        <FilaConfirmarBorrado
+                          nombre={p.nombre}
+                          tipo="producto"
+                          cantidadVariantes={p.variantes?.length ?? 0}
+                          hrefVariantes={`/admin/productos/${p.id}/variantes`}
+                          colSpan={6}
+                          borrando={isDeleting}
+                          onConfirmar={() => handleDelete(p.id)}
+                          onCancelar={() => setDeletingId(null)}
+                        />
                       )}
-                    </td>
-                  </tr>
-                )}
-                </>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

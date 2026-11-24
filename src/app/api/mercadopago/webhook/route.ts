@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { BACKEND_API_BASE } from "@/lib/backend";
 
 const MP_WEBHOOK_SECRET = process.env.MERCADOPAGO_WEBHOOK_SECRET;
@@ -11,6 +11,10 @@ const isProduction = process.env.NODE_ENV === "production";
  * El mensaje firmado es: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;"
  * Si falta data.id o x-request-id, MP omite ese tramo entero (igual que el backend en
  * FirmaWebhookMp.cs: los dos tienen que armar el mismo texto).
+ *
+ * Un ts viejo no invalida la firma, igual que en el back: MP reintenta durante horas y no está
+ * confirmado que renueve el ts, y repetir una notificación es inofensivo (el back consulta el pago
+ * a la API de MP y el upsert es idempotente).
  */
 function isValidSignature(req: NextRequest, dataId: string, secret: string): boolean {
   const xSignature = req.headers.get("x-signature") ?? "";
@@ -25,11 +29,12 @@ function isValidSignature(req: NextRequest, dataId: string, secret: string): boo
     (dataId ? `id:${dataId};` : "") +
     (xRequestId ? `request-id:${xRequestId};` : "") +
     `ts:${ts};`;
-  const expected = createHmac("sha256", secret)
-    .update(message)
-    .digest("hex");
+  const expected = createHmac("sha256", secret).update(message).digest();
+  const recibida = Buffer.from(v1.toLowerCase(), "hex");
 
-  return expected === v1;
+  // Comparación en tiempo constante (#100), como FixedTimeEquals en el back. Buffer.from con "hex"
+  // corta en el primer carácter inválido, así que una firma que no es hex queda de otro largo.
+  return recibida.length === expected.length && timingSafeEqual(recibida, expected);
 }
 
 /**
